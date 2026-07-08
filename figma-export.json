@@ -1,0 +1,1001 @@
+{
+  "styles": {
+    "colors": [
+      {
+        "name": "Gradient/Gray",
+        "token": "gradient-gray",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradient/Blue",
+        "token": "gradient-blue",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradient/Purple",
+        "token": "gradient-purple",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradient/Green",
+        "token": "gradient-green",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradient/Orange",
+        "token": "gradient-orange",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradient/Red",
+        "token": "gradient-red",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Image/Placeholder",
+        "token": "image-placeholder",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/100",
+        "token": "image-profile-100",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/200",
+        "token": "image-profile-200",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/300",
+        "token": "image-profile-300",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/400",
+        "token": "image-profile-400",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/500",
+        "token": "image-profile-500",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/600",
+        "token": "image-profile-600",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/700",
+        "token": "image-profile-700",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Profile/800",
+        "token": "image-profile-800",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Place/100",
+        "token": "image-place-100",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Place/200",
+        "token": "image-place-200",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Place/300",
+        "token": "image-place-300",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Place/400",
+        "token": "image-place-400",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Map/Color",
+        "token": "image-map-color",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Map/Light",
+        "token": "image-map-light",
+        "type": "image",
+        "scaleMode": "FILL"
+      },
+      {
+        "name": "Image/Map/Dark",
+        "token": "image-map-dark",
+        "type": "image",
+        "scaleMode": "FILL"
+      }
+    ],
+    "textStyles": [
+      {
+        "name": "Heading XXL",
+        "token": "heading-xxl",
+        "type": "text",
+        "description": "Metrics",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "56px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "-2.5%"
+      },
+      {
+        "name": "Heading XL",
+        "token": "heading-xl",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "36px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Heading L",
+        "token": "heading-l",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "25px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Heading M",
+        "token": "heading-m",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "23px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Heading MS",
+        "token": "heading-ms",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "20px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Heading S",
+        "token": "heading-s",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "18px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Heading XS",
+        "token": "heading-xs",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "16px",
+        "lineHeight": 1.2000000476837158,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body L Strong",
+        "token": "body-l-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body L XStrong",
+        "token": "body-l-xstrong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body L Medium",
+        "token": "body-l-medium",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body L Regular",
+        "token": "body-l-regular",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body L Regular",
+        "token": "body-l-regular",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "16px",
+        "lineHeight": 1.5,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body L Italic",
+        "token": "body-l-italic",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontStyle": "italic",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body M XStrong",
+        "token": "body-m-xstrong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "14px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body M Strong",
+        "token": "body-m-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "14px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body M Medium",
+        "token": "body-m-medium",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "14px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body M Regular",
+        "token": "body-m-regular",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "14px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body M Italic",
+        "token": "body-m-italic",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontStyle": "italic",
+        "fontSize": "14px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body S Strong",
+        "token": "body-s-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "13px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body S Regular",
+        "token": "body-s-regular",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "13px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body S Medium",
+        "token": "body-s-medium",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "13px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0px"
+      },
+      {
+        "name": "Body S Italic",
+        "token": "body-s-italic",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontStyle": "italic",
+        "fontSize": "13px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body XS Med",
+        "token": "body-xs-med",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "12px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body XS Reg",
+        "token": "body-xs-reg",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "12px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body XS Strong",
+        "token": "body-xs-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "12px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Body XS Italic",
+        "token": "body-xs-italic",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontStyle": "italic",
+        "fontSize": "12px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Code L",
+        "token": "code-l",
+        "type": "text",
+        "fontFamily": "Roboto Mono",
+        "fontWeight": "400",
+        "fontSize": "18px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Code M",
+        "token": "code-m",
+        "type": "text",
+        "fontFamily": "Roboto Mono",
+        "fontWeight": "400",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Code S",
+        "token": "code-s",
+        "type": "text",
+        "fontFamily": "Roboto Mono",
+        "fontWeight": "500",
+        "fontSize": "12px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Link L",
+        "token": "link-l",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "18px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%",
+        "textDecoration": "underline"
+      },
+      {
+        "name": "Link M",
+        "token": "link-m",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "16px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%",
+        "textDecoration": "underline"
+      },
+      {
+        "name": "Link S",
+        "token": "link-s",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "14px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%",
+        "textDecoration": "underline"
+      },
+      {
+        "name": "Label M Strong",
+        "token": "label-m-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "14px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Label M",
+        "token": "label-m",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "14px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Label S Strong",
+        "token": "label-s-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "12px",
+        "lineHeight": 1.399999976158142,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Label S",
+        "token": "label-s",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Label XS Regular",
+        "token": "label-xs-regular",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Label XS Medium",
+        "token": "label-xs-medium",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Input M Medium",
+        "token": "input-m-medium",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "500",
+        "fontSize": "14px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Input M Regular",
+        "token": "input-m-regular",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "400",
+        "fontSize": "14px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "Input M Strong",
+        "token": "input-m-strong",
+        "type": "text",
+        "fontFamily": "Inter",
+        "fontWeight": "700",
+        "fontSize": "14px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      }
+    ],
+    "effectStyles": [
+      {
+        "name": "Shadow/Raised 1",
+        "token": "shadow-raised-1",
+        "type": "effect",
+        "value": "box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08)",
+        "description": "Used for components like  Tooltips, Menus, and Date Pickers",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 2,
+            "blur": 4,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.08)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Raised 2",
+        "token": "shadow-raised-2",
+        "type": "effect",
+        "value": "box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.12)",
+        "description": "Used for components like  Tooltips, Menus, and Date Pickers",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 8,
+            "blur": 16,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.12)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Overlay",
+        "token": "shadow-overlay",
+        "type": "effect",
+        "value": "box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.16)",
+        "description": "Used for components like dialogs",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 8,
+            "blur": 32,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.16)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Framed",
+        "token": "shadow-framed",
+        "type": "effect",
+        "value": "box-shadow: 1px 1px 0.5px 0px rgba(0, 0, 0, 0.08), -1px -1px 0px 0px rgba(0, 0, 0, 0.03)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 1,
+            "y": 1,
+            "blur": 0.5,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.08)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": -1,
+            "y": -1,
+            "blur": 0,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.03)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Framed2",
+        "token": "shadow-framed2",
+        "type": "effect",
+        "value": "box-shadow: 1px 1.5px 2px 0px rgba(0, 0, 0, 0.1), -1px -1px 1px 0px rgba(0, 0, 0, 0.06)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 1,
+            "y": 1.5,
+            "blur": 2,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.1)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": -1,
+            "y": -1,
+            "blur": 1,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.06)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Framed - minimal",
+        "token": "shadow-framed-minimal",
+        "type": "effect",
+        "value": "box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 1,
+            "blur": 3,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.08)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Framed - grey bg",
+        "token": "shadow-framed-grey-bg",
+        "type": "effect",
+        "value": "box-shadow: 1px 1px 0.5px 0px rgba(0, 0, 0, 0.1), -1px -1px 0.5px 0px rgba(0, 0, 0, 0.05)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 1,
+            "y": 1,
+            "blur": 0.5,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.1)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": -1,
+            "y": -1,
+            "blur": 0.5,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.05)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/Portfolio raised 1",
+        "token": "shadow-portfolio-raised-1",
+        "type": "effect",
+        "value": "box-shadow: 1px 1px 2px 0px rgba(9, 12, 16, 0.06), -1px -1px 1.5px 0px rgba(9, 12, 16, 0.03)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 1,
+            "y": 1,
+            "blur": 2,
+            "spread": 0,
+            "color": "rgba(9, 12, 16, 0.06)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": -1,
+            "y": -1,
+            "blur": 1.5,
+            "spread": 0,
+            "color": "rgba(9, 12, 16, 0.03)"
+          }
+        ]
+      }
+    ],
+    "gridStyles": [
+      {
+        "name": "Device/Column Fluid/XL",
+        "token": "device-column-fluid-xl",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 12,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fluid/L",
+        "token": "device-column-fluid-l",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 8,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fluid/M",
+        "token": "device-column-fluid-m",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 4,
+            "gutter": 16,
+            "margin": 16
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fluid/S",
+        "token": "device-column-fluid-s",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 2,
+            "gutter": 16,
+            "margin": 16
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fixed/XL",
+        "token": "device-column-fixed-xl",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 12,
+            "gutter": 24,
+            "margin": 0
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fixed/L",
+        "token": "device-column-fixed-l",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 8,
+            "gutter": 24,
+            "margin": 0
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fixed/M",
+        "token": "device-column-fixed-m",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 4,
+            "gutter": 16,
+            "margin": 0
+          }
+        ]
+      },
+      {
+        "name": "Device/Column Fixed/S",
+        "token": "device-column-fixed-s",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 2,
+            "gutter": 16,
+            "margin": 0
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fluid/XL",
+        "token": "device-modular-fluid-xl",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 12,
+            "gutter": 24,
+            "margin": 24
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fluid/L",
+        "token": "device-modular-fluid-l",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 8,
+            "gutter": 24,
+            "margin": 24
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fluid/M",
+        "token": "device-modular-fluid-m",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 4,
+            "gutter": 16,
+            "margin": 16
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 16,
+            "margin": 16
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fluid/S",
+        "token": "device-modular-fluid-s",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 2,
+            "gutter": 16,
+            "margin": 16
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 16,
+            "margin": 16
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fixed/XL",
+        "token": "device-modular-fixed-xl",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 12,
+            "gutter": 24,
+            "margin": 0
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fixed/L",
+        "token": "device-modular-fixed-l",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 8,
+            "gutter": 24,
+            "margin": 0
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fixed/M",
+        "token": "device-modular-fixed-m",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 4,
+            "gutter": 16,
+            "margin": 0
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 16,
+            "margin": 16
+          }
+        ]
+      },
+      {
+        "name": "Device/Modular Fixed/S",
+        "token": "device-modular-fixed-s",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 2,
+            "gutter": 16,
+            "margin": 0
+          },
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 16,
+            "margin": 16
+          }
+        ]
+      },
+      {
+        "name": "General/Baseline",
+        "token": "general-baseline",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "rows",
+            "count": null,
+            "gutter": 8,
+            "margin": 8
+          }
+        ]
+      },
+      {
+        "name": "General/Manuscript",
+        "token": "general-manuscript",
+        "type": "grid",
+        "grids": [
+          {
+            "pattern": "columns",
+            "count": 1,
+            "gutter": 24,
+            "margin": 24
+          }
+        ]
+      }
+    ]
+  }
+}

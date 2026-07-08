@@ -1,0 +1,4959 @@
+[
+  {
+    "Color": {
+      "modes": {
+        "Light": {
+          "Text": {
+            "Bold": {
+              "$scopes": [
+                "TEXT_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Primitives- untitled ui",
+              "$value": "{Gray warm.950}"
+            },
+            "Subtle": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.600}"
+            },
+            "Disabled": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.400}"
+            },
+            "Weak": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.500}"
+            },
+            "Inverse": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.25}"
+            },
+            "Inverse Subtle": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.400}"
+            },
+            "Link": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.600}"
+            },
+            "Link Subtle": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.500}"
+            },
+            "Link Hover": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.700}"
+            },
+            "Link Active": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1100}"
+            },
+            "Brand": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.700}"
+            },
+            "Success": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.900}"
+            },
+            "Danger": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.900}"
+            },
+            "Warning": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.900}"
+            },
+            "Info": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Indigo.900}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.900}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.900}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.900}"
+            },
+            "Accent Gray": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            }
+          },
+          "Bg": {
+            "Surface": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.0}"
+            },
+            "Surface light": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.50}"
+            },
+            "Surface light 2": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.75}"
+            },
+            "Surface Framed": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.0}"
+            },
+            "Surface Raised": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.0}"
+            },
+            "Surface Overlay": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.100}"
+            },
+            "Surface Overlay base": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.200 - EBEEF0}"
+            },
+            "Surface Base": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.200 - EBEEF0}"
+            },
+            "Surface Highlight": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.20}"
+            },
+            "Surface Sunken": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.50}"
+            },
+            "Surface Sunken 2": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$value": "#f9fafb"
+            },
+            "Surface Bold": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            },
+            "Surface Bold Brand": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1400}"
+            },
+            "Neutral": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.10}"
+            },
+            "Neutral Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.100}"
+            },
+            "Neutral Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.200}"
+            },
+            "Neutral Selected": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.100}"
+            },
+            "Neutral Disabled": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.200}"
+            },
+            "Neutral Inverse": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.10}"
+            },
+            "Neutral Inverse Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Neutral Inverse Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Neutral Inverse Selected": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Neutral Inverted Disabled": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Gray Subtler": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.100}"
+            },
+            "Gray Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.75}"
+            },
+            "Gray Subtler Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.200}"
+            },
+            "Gray Subtler Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.300}"
+            },
+            "Gray Subtle": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.200}"
+            },
+            "Gray Subtle Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.300}"
+            },
+            "Gray Subtle Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.400}"
+            },
+            "Gray Bold": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            },
+            "Gray Bold Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.700}"
+            },
+            "Gray Bold Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.600}"
+            },
+            "Input": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.0}"
+            },
+            "Input Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.75}"
+            },
+            "Brand": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.600}"
+            },
+            "Brand Disabled": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral -Blue.500}"
+            },
+            "Brand Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.800}"
+            },
+            "Brand Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1100}"
+            },
+            "Brand Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.25}"
+            },
+            "Brand Subtle": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.75}"
+            },
+            "Info": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Info Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1000}"
+            },
+            "Info Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1100}"
+            },
+            "Info Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.75}"
+            },
+            "Danger": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.900}"
+            },
+            "Danger Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.1000}"
+            },
+            "Danger Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.1100}"
+            },
+            "Danger Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.100}"
+            },
+            "Success": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.900}"
+            },
+            "Success Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.1000}"
+            },
+            "Success Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.1100}"
+            },
+            "Success Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.100}"
+            },
+            "Warning": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.900}"
+            },
+            "Warning Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.1000}"
+            },
+            "Warning Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.1100}"
+            },
+            "Warning Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.100}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.600}"
+            },
+            "Accent Teal": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Teal.600}"
+            },
+            "Accent Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Teal.100}"
+            },
+            "Accent Blue Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.25}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Indigo.600}"
+            },
+            "Accent Purple Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Indigo.75}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.600}"
+            },
+            "Accent Green Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.50}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.600}"
+            },
+            "Accent Red Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.75}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.600}"
+            },
+            "Accent Yellow": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$value": "#ffad00"
+            },
+            "Accent Orange Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.75}"
+            }
+          },
+          "Icon": {
+            "Bold": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            },
+            "Subtle": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.500}"
+            },
+            "Weak": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.400}"
+            },
+            "Reverse": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color",
+              "$value": "{Icon.Inverse}"
+            },
+            "Default": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.600}"
+            },
+            "Subtle Hover": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.700}"
+            },
+            "Subtle Active": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            },
+            "Disabled": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.300}"
+            },
+            "Inverse": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.25}"
+            },
+            "Inverse Subtle": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.400}"
+            },
+            "Inverse Subtle Hover": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.500}"
+            },
+            "Inverse Subtle Active": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.600}"
+            },
+            "Brand": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.700}"
+            },
+            "Success": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$value": "#27bb36"
+            },
+            "Danger": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.900}"
+            },
+            "Warning": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.900}"
+            },
+            "Info": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Link": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Link Hover": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1000}"
+            },
+            "Link Active": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1100}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.600}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Indigo.600}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.600}"
+            },
+            "Accent Teal": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Teal.600}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.600}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.600}"
+            },
+            "Accent Yellow": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$value": "#ffad00"
+            }
+          },
+          "Border": {
+            "Subtle": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.200}"
+            },
+            "Subtler": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.100}"
+            },
+            "Default": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.300}"
+            },
+            "Weak": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.100}"
+            },
+            "Bold": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            },
+            "Bold 2": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.800}"
+            },
+            "Inverse": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.25}"
+            },
+            "Subtle 2": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Gray.600}"
+            },
+            "Brand": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.600}"
+            },
+            "Brand Subtle": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.25}"
+            },
+            "Brand Subtler": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.75}"
+            },
+            "Info": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Focus": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.600}"
+            },
+            "Warning": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.900}"
+            },
+            "Danger": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.900}"
+            },
+            "Success": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.900}"
+            },
+            "Link": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Link Hover": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1000}"
+            },
+            "Link Active": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.1100}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Blue.900}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Indigo.800}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.900}"
+            },
+            "Accent Green 2": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Green.600}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Orange.600}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.900}"
+            },
+            "Accent Red 2": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Red.800}"
+            },
+            "Accent teal": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Teal.700}"
+            }
+          }
+        },
+        "Dark": {
+          "Text": {
+            "Bold": {
+              "$scopes": [
+                "TEXT_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Subtle": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.600}"
+            },
+            "Disabled": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Weak": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Inverse": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.50}"
+            },
+            "Inverse Subtle": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.75}"
+            },
+            "Link": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.700}"
+            },
+            "Link Subtle": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.700}"
+            },
+            "Link Hover": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1000}"
+            },
+            "Link Active": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1100}"
+            },
+            "Brand": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Success": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.900}"
+            },
+            "Danger": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Warning": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.900}"
+            },
+            "Info": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Purple.900}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Purple.900}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.900}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.900}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Accent Gray": {
+              "$scopes": [
+                "TEXT_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            }
+          },
+          "Bg": {
+            "Surface": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.100}"
+            },
+            "Surface light": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.100}"
+            },
+            "Surface light 2": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.100}"
+            },
+            "Surface Framed": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.200}"
+            },
+            "Surface Raised": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.200}"
+            },
+            "Surface Overlay": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Surface Overlay base": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Surface Base": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.50}"
+            },
+            "Surface Highlight": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.50}"
+            },
+            "Surface Sunken": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.50}"
+            },
+            "Surface Sunken 2": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.50}"
+            },
+            "Surface Bold": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Surface Bold Brand": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1000}"
+            },
+            "Neutral": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.10}"
+            },
+            "Neutral Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Neutral Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Neutral Selected": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Neutral Disabled": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Neutral Inverse": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.30}"
+            },
+            "Neutral Inverse Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.100}"
+            },
+            "Neutral Inverse Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.200}"
+            },
+            "Neutral Inverse Selected": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.100}"
+            },
+            "Neutral Inverted Disabled": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Light.Neutral.200}"
+            },
+            "Gray Subtler": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.200}"
+            },
+            "Gray Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.200}"
+            },
+            "Gray Subtler Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Gray Subtler Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Gray Subtle": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Gray Subtle Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Gray Subtle Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.500}"
+            },
+            "Gray Bold": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Gray Bold Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.700}"
+            },
+            "Gray Bold Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.600}"
+            },
+            "Input": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.100}"
+            },
+            "Input Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.200}"
+            },
+            "Brand": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.700}"
+            },
+            "Brand Disabled": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.700}"
+            },
+            "Brand Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1000}"
+            },
+            "Brand Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1100}"
+            },
+            "Brand Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Brand Subtle": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Info": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Info Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1000}"
+            },
+            "Info Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1100}"
+            },
+            "Info Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Danger": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Danger Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.1000}"
+            },
+            "Danger Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.1100}"
+            },
+            "Danger Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Success": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.900}"
+            },
+            "Success Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.1000}"
+            },
+            "Success Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.1000}"
+            },
+            "Success Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Warning": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.900}"
+            },
+            "Warning Hover": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.1000}"
+            },
+            "Warning Active": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.1100}"
+            },
+            "Warning Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.600}"
+            },
+            "Accent Teal": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Teal.600}"
+            },
+            "Accent Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Accent Blue Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.100}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Purple.600}"
+            },
+            "Accent Purple Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.600}"
+            },
+            "Accent Green Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.600}"
+            },
+            "Accent Red Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.600}"
+            },
+            "Accent Yellow": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.600}"
+            },
+            "Accent Orange Subtlest": {
+              "$scopes": [
+                "FRAME_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Neutral.200}"
+            }
+          },
+          "Icon": {
+            "Bold": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Subtle": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.600}"
+            },
+            "Weak": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Reverse": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Default": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.600}"
+            },
+            "Subtle Hover": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.700}"
+            },
+            "Subtle Active": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Disabled": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.500}"
+            },
+            "Inverse": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.50}"
+            },
+            "Inverse Subtle": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.400}"
+            },
+            "Inverse Subtle Hover": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.500}"
+            },
+            "Inverse Subtle Active": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.600}"
+            },
+            "Brand": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Success": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.900}"
+            },
+            "Danger": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Warning": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.900}"
+            },
+            "Info": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Link": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Link Hover": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1000}"
+            },
+            "Link Active": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1100}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.600}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Purple.600}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.600}"
+            },
+            "Accent Teal": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Teal.600}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.600}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.600}"
+            },
+            "Accent Yellow": {
+              "$scopes": [
+                "SHAPE_FILL",
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.600}"
+            }
+          },
+          "Border": {
+            "Subtle": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Subtler": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Default": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.300}"
+            },
+            "Weak": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.100}"
+            },
+            "Bold": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Bold 2": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.800}"
+            },
+            "Inverse": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.100}"
+            },
+            "Subtle 2": {
+              "$scopes": [
+                "SHAPE_FILL"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Gray.600}"
+            },
+            "Brand": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Brand Subtle": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Brand Subtler": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Info": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Focus": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.600}"
+            },
+            "Warning": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.900}"
+            },
+            "Danger": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Success": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.900}"
+            },
+            "Link": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Link Hover": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1000}"
+            },
+            "Link Active": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.1100}"
+            },
+            "Accent Blue": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Blue.900}"
+            },
+            "Accent Purple": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Purple.900}"
+            },
+            "Accent Green": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.900}"
+            },
+            "Accent Green 2": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Green.1100}"
+            },
+            "Accent Orange": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Orange.900}"
+            },
+            "Accent Red": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Accent Red 2": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Red.900}"
+            },
+            "Accent teal": {
+              "$scopes": [
+                "STROKE_COLOR"
+              ],
+              "$type": "color",
+              "$libraryName": "",
+              "$collectionName": "Color Primitive",
+              "$value": "{Dark.Teal.900}"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "Color Primitive": {
+      "modes": {
+        "Value": {
+          "Light": {
+            "Gray": {
+              "0": {
+                "$type": "color",
+                "$value": "#ffffff"
+              },
+              "25": {
+                "$type": "color",
+                "$value": "#fdfdfc"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#fafaf9"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#f7f7f6"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#f5f5f4"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#e7e5e4"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#d6d3d1"
+              },
+              "350": {
+                "$type": "color",
+                "$value": "#bfbbb8"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#a8a29e"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#69615c"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#59524d"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#49423d"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#39332f"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#282320"
+              },
+              "950": {
+                "$type": "color",
+                "$value": "#171412"
+              },
+              "200 - EBEEF0": {
+                "$type": "color",
+                "$value": "#e9eaeb"
+              }
+            },
+            "Blue": {
+              "5": {
+                "$type": "color",
+                "$value": "#fcfeff"
+              },
+              "20": {
+                "$type": "color",
+                "$value": "#f7fbff"
+              },
+              "25": {
+                "$type": "color",
+                "$value": "#f5faff"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#eff8ff"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#e0f1ff"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#d1e9ff"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#b2ddff"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#84caff"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#53b1fd"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#2e90fa"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#1570ef"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#175cd3"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#1849a9"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#194185"
+              },
+              "950": {
+                "$type": "color",
+                "$value": "#102c60"
+              }
+            },
+            "Green": {
+              "5": {
+                "$type": "color",
+                "$value": "#fbfefd"
+              },
+              "20": {
+                "$type": "color",
+                "$value": "#f3fdf6"
+              },
+              "25": {
+                "$type": "color",
+                "$value": "#f6fef9"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#ecfdf3"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#ddffec"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#dcfae6"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#abefc6"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#75e0a7"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#47cd89"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#17b26a"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#079455"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#067647"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#085d3a"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#074d31"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#00653e"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#005132"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#053f27"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#0a2e1d"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#0a2015"
+              }
+            },
+            "Orange": {
+              "25": {
+                "$type": "color",
+                "$value": "#fffcf5"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#fffaeb"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#fff6e6"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#fef0c7"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#fedf89"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#fec84b"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#fdb022"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#f79009"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#dc6803"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#b54708"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#93370d"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#7a2e0e"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#953d00"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#7a2f00"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#612300"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#491901"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#351201"
+              }
+            },
+            "Red": {
+              "25": {
+                "$type": "color",
+                "$value": "#fffbfa"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#fef3f2"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#fff5f3"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#fee4e2"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#fecdca"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#fda29b"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#f97066"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#f04438"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#d92d20"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#b42318"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#912018"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#7a271a"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#b40000"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#930000"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#740000"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#590000"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#430000"
+              },
+              "600 2": {
+                "$type": "color",
+                "$value": "#d92d20"
+              },
+              "600 3": {
+                "$type": "color",
+                "$value": "#d92d20"
+              }
+            },
+            "Indigo": {
+              "25": {
+                "$type": "color",
+                "$value": "#f5f8ff"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#eef4ff"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#f6f7ff"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#e0eaff"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#c7d7fe"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#a4bcfd"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#8098f9"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#6172f3"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#444ce7"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#3538cd"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#2d31a6"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#2d3282"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#4046ca"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#3236a8"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#262986"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#1b1e64"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#141648"
+              },
+              "800 2": {
+                "$type": "color",
+                "$value": "#2d31a6"
+              }
+            },
+            "Teal": {
+              "5": {
+                "$type": "color",
+                "$value": "#fdfffe"
+              },
+              "20": {
+                "$type": "color",
+                "$value": "#f5fdfd"
+              },
+              "25": {
+                "$type": "color",
+                "$value": "#f6fefc"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#f0fdf9"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#e6fbf9"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#ccfbef"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#99f6e0"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#5ee9cf"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#2ed3b7"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#15b79e"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#0e9384"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#107569"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#125d56"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#134e48"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#00635f"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#0c4f4c"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#123c3a"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#122c2b"
+              }
+            },
+            "Neutral": {
+              "10": {
+                "$type": "color",
+                "$value": "rgba(17, 25, 39, 0)"
+              },
+              "30": {
+                "$type": "color",
+                "$value": "rgba(17, 25, 39, 0.05)"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "rgba(0, 0, 0, 0.06)"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "rgba(0, 0, 0, 0.12)"
+              }
+            },
+            "Gray 2": {
+              "0": {
+                "$type": "color",
+                "$value": "#ffffff"
+              },
+              "50": {
+                "$type": "color",
+                "$value": "#f9fafb"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#f5f7f9"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#ebeef0"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#dde1e4"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#cbd2d6"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#b5bec4"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#9ca7af"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#7d8891"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#5c646b"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#3e4449"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#1f2224"
+              }
+            },
+            "Neutral -Blue": {
+              "10": {
+                "$type": "color",
+                "$value": "rgba(15, 98, 254, 0)"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "rgba(15, 98, 254, 0.06)"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "rgba(15, 98, 254, 0.12)"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "rgba(15, 98, 254, 0.5)"
+              }
+            }
+          },
+          "Dark": {
+            "Gray": {
+              "50": {
+                "$type": "color",
+                "$value": "#f7f7f7"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#262626"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#f0f0f1"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#ececed"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#cecfd2"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#94979c"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#85888e"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#61656c"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#373a41"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#22262f"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#13161b"
+              }
+            },
+            "Blue": {
+              "50": {
+                "$type": "color",
+                "$value": "#eff8ff"
+              },
+              "75": {
+                "$type": "color",
+                "$value": "#052241"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "#d1e9ff"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#b2ddff"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#84caff"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#53b1fd"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#2e90fa"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#1570ef"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#175cd3"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#1849a9"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#194185"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#56a8ff"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#6eb5ff"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#87c1ff"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#9fceff"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#b8daff"
+              }
+            },
+            "Green": {
+              "100": {
+                "$type": "color",
+                "$value": "#dcfae6"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#abefc6"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#75e0a7"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#47cd89"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#17b26a"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#079455"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#067647"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#085d3a"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#074d31"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#5ed9a2"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#81e9b8"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#b1f4d1"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#dffaea"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#fefffc"
+              }
+            },
+            "Red": {
+              "100": {
+                "$type": "color",
+                "$value": "#fee4e2"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#fecdca"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#fda29b"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#f97066"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#f04438"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#d92d20"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#b42318"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#912018"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#7a271a"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#ffb0a1"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#ffc9bd"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#ffded8"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#fff1ee"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#ffffff"
+              }
+            },
+            "Orange": {
+              "100": {
+                "$type": "color",
+                "$value": "#fef0c7"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#fedf89"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#fec84b"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#fdb022"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#f79009"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#dc6803"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#b54708"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#93370d"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#7a2e0e"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#ffb558"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#fdce88"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#ffe1b3"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#fff2dd"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#fffdf9"
+              }
+            },
+            "Purple": {
+              "100": {
+                "$type": "color",
+                "$value": "#ebe9fe"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "#d9d6fe"
+              },
+              "300": {
+                "$type": "color",
+                "$value": "#bdb4fe"
+              },
+              "400": {
+                "$type": "color",
+                "$value": "#9b8afb"
+              },
+              "500": {
+                "$type": "color",
+                "$value": "#7a5af8"
+              },
+              "600": {
+                "$type": "color",
+                "$value": "#6938ee"
+              },
+              "700": {
+                "$type": "color",
+                "$value": "#5925dc"
+              },
+              "800": {
+                "$type": "color",
+                "$value": "#4a1fb8"
+              },
+              "900": {
+                "$type": "color",
+                "$value": "#3e1c96"
+              },
+              "1000": {
+                "$type": "color",
+                "$value": "#bcbeff"
+              },
+              "1100": {
+                "$type": "color",
+                "$value": "#d0d2ff"
+              },
+              "1200": {
+                "$type": "color",
+                "$value": "#e2e4ff"
+              },
+              "1300": {
+                "$type": "color",
+                "$value": "#f3f3fe"
+              },
+              "1400": {
+                "$type": "color",
+                "$value": "#ffffff"
+              }
+            },
+            "Teal": {
+              "100": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#ccfbef"
+              },
+              "200": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#99f6e0"
+              },
+              "300": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#5ee9cf"
+              },
+              "400": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#2ed3b7"
+              },
+              "500": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#15b79e"
+              },
+              "600": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#0e9384"
+              },
+              "700": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#107569"
+              },
+              "800": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#125d56"
+              },
+              "900": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#134e48"
+              },
+              "1000": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#5dd6cf"
+              },
+              "1100": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#84e6df"
+              },
+              "1200": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#b0f2ec"
+              },
+              "1300": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#dff9f6"
+              },
+              "1400": {
+                "$scopes": [
+                  "ALL_SCOPES"
+                ],
+                "$type": "color",
+                "$value": "#fefffe"
+              }
+            },
+            "Neutral": {
+              "10": {
+                "$type": "color",
+                "$value": "rgba(255, 255, 255, 0)"
+              },
+              "100": {
+                "$type": "color",
+                "$value": "rgba(255, 255, 255, 0.06)"
+              },
+              "200": {
+                "$type": "color",
+                "$value": "rgba(255, 255, 255, 0.12)"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "Numbers": {
+      "modes": {
+        "Mode 1": {
+          "Space": {
+            "XXXL": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 52
+            },
+            "XXL": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 40
+            },
+            "XL": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 32
+            },
+            "L": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 24
+            },
+            "M L": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 20
+            },
+            "M": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 16
+            },
+            "S-M": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 14
+            },
+            "S": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 12
+            },
+            "S ish": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 10
+            },
+            "XS": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 8
+            },
+            "XXS": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 6
+            },
+            "XXXS": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 4
+            },
+            "XXXXS": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": 2
+            },
+            "Negative M": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": -16
+            },
+            "Negative S": {
+              "$scopes": [
+                "GAP"
+              ],
+              "$type": "float",
+              "$value": -8
+            }
+          },
+          "Corner": {
+            "L": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 16
+            },
+            "M": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 8
+            },
+            "MS": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 6
+            },
+            "S": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 4
+            },
+            "XS": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 2
+            },
+            "Ring": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 12
+            },
+            "Round": {
+              "$scopes": [
+                "CORNER_RADIUS"
+              ],
+              "$type": "float",
+              "$value": 100
+            }
+          },
+          "Icon": {
+            "XS": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 16
+            },
+            "SM": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 20
+            },
+            "M": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 24
+            },
+            "L": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 32
+            },
+            "XL": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "float",
+              "$value": 52
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "Typography": {
+      "modes": {
+        "Desktop": {
+          "Heading": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Size XXL": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.1200}"
+            },
+            "Size XL": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.900}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.600}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.500}"
+            },
+            "Size MS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.400}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.300}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.200}"
+            }
+          },
+          "Body": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Family Mono": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Mono}"
+            },
+            "Weight Regular": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Regular}"
+            },
+            "Weight Medium": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Weight XStrong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Bold}"
+            },
+            "Weight Italic": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Italic}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.200}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.100}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.85}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.75}"
+            },
+            "Size XXS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.50}"
+            }
+          },
+          "Label": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Weight Medium": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.100}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.75}"
+            }
+          },
+          "Code": {
+            "Family Mono": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Mono}"
+            },
+            "Weight Regular": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.100}"
+            }
+          },
+          "Link": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.100}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.75}"
+            }
+          },
+          "Input": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Regular": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Regular}"
+            },
+            "Weight Medium": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Desktop.100}"
+            }
+          }
+        },
+        "Mobile": {
+          "Heading": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Size XXL": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.1200}"
+            },
+            "Size XL": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.900}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.600}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.400}"
+            },
+            "Size MS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.400}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            }
+          },
+          "Body": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Family Mono": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Mono}"
+            },
+            "Weight Regular": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Regular}"
+            },
+            "Weight Medium": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Weight XStrong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Weight Italic": {
+              "$scopes": [
+                "ALL_SCOPES"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Italic}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.100}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.100}"
+            },
+            "Size XXS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.75}"
+            }
+          },
+          "Label": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Weight Medium": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.100}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.75}"
+            }
+          },
+          "Code": {
+            "Family Mono": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Mono}"
+            },
+            "Weight Regular": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.100}"
+            }
+          },
+          "Link": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.100}"
+            },
+            "Size XS": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.75}"
+            }
+          },
+          "Input": {
+            "Family Sans": {
+              "$scopes": [
+                "FONT_FAMILY"
+              ],
+              "$type": "string",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Font Family.Sans}"
+            },
+            "Weight Regular": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Regular}"
+            },
+            "Weight Medium": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Medium}"
+            },
+            "Weight Strong": {
+              "$scopes": [
+                "FONT_WEIGHT"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Weight.Semibold}"
+            },
+            "Size L": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.300}"
+            },
+            "Size M": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.200}"
+            },
+            "Size S": {
+              "$scopes": [
+                "FONT_SIZE"
+              ],
+              "$type": "float",
+              "$libraryName": "",
+              "$collectionName": "Typography Primitives",
+              "$value": "{Size Mobile.100}"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "Typography Primitives": {
+      "modes": {
+        "Value": {
+          "Font Family": {
+            "Sans": {
+              "$type": "string",
+              "$value": "Inter"
+            },
+            "Mono": {
+              "$type": "string",
+              "$value": "Roboto Mono"
+            }
+          },
+          "Weight": {
+            "Regular": {
+              "$type": "float",
+              "$value": 400
+            },
+            "Medium": {
+              "$type": "float",
+              "$value": 500
+            },
+            "Semibold": {
+              "$type": "float",
+              "$value": 600
+            },
+            "Bold": {
+              "$type": "float",
+              "$value": 700
+            },
+            "Italic": {
+              "$type": "string",
+              "$value": "Italic "
+            }
+          },
+          "Size Desktop": {
+            "50": {
+              "$type": "float",
+              "$value": 11
+            },
+            "75": {
+              "$type": "float",
+              "$value": 12
+            },
+            "85": {
+              "$type": "float",
+              "$value": 13
+            },
+            "100": {
+              "$type": "float",
+              "$value": 14
+            },
+            "200": {
+              "$type": "float",
+              "$value": 16
+            },
+            "300": {
+              "$type": "float",
+              "$value": 18
+            },
+            "400": {
+              "$type": "float",
+              "$value": 20
+            },
+            "500": {
+              "$type": "float",
+              "$value": 23
+            },
+            "600": {
+              "$type": "float",
+              "$value": 25
+            },
+            "700": {
+              "$type": "float",
+              "$value": 28
+            },
+            "800": {
+              "$type": "float",
+              "$value": 32
+            },
+            "900": {
+              "$type": "float",
+              "$value": 36
+            },
+            "1000": {
+              "$type": "float",
+              "$value": 40
+            },
+            "1100": {
+              "$type": "float",
+              "$value": 45
+            },
+            "1200": {
+              "$type": "float",
+              "$value": 56
+            },
+            "1300": {
+              "$type": "float",
+              "$value": 60
+            }
+          },
+          "Size Mobile": {
+            "50": {
+              "$type": "float",
+              "$value": 13
+            },
+            "75": {
+              "$type": "float",
+              "$value": 15
+            },
+            "100": {
+              "$type": "float",
+              "$value": 17
+            },
+            "200": {
+              "$type": "float",
+              "$value": 19
+            },
+            "300": {
+              "$type": "float",
+              "$value": 22
+            },
+            "400": {
+              "$type": "float",
+              "$value": 24
+            },
+            "500": {
+              "$type": "float",
+              "$value": 27
+            },
+            "600": {
+              "$type": "float",
+              "$value": 31
+            },
+            "700": {
+              "$type": "float",
+              "$value": 34
+            },
+            "800": {
+              "$type": "float",
+              "$value": 39
+            },
+            "900": {
+              "$type": "float",
+              "$value": 44
+            },
+            "1000": {
+              "$type": "float",
+              "$value": 49
+            },
+            "1100": {
+              "$type": "float",
+              "$value": 55
+            },
+            "1200": {
+              "$type": "float",
+              "$value": 62
+            },
+            "1300": {
+              "$type": "float",
+              "$value": 70
+            }
+          }
+        }
+      }
+    }
+  }
+]

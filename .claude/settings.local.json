@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(npm install *)",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"---EXIT $?---\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(curl -s -X POST http://localhost:5173/api/coach -H 'content-type: application/json' -d '{\"messages\":[{\"role\":\"user\",\"content\":\"I want to build a login feature\"}],\"workItemType\":\"feature_spec\",\"activeStep\":\"brief\",\"spec\":{}}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5173/api/coach)",
+      "Bash(curl -s -X POST http://localhost:5173/api/coach -H 'content-type: application/json' -d '{\"messages\":[]}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(pkill -f \"vite\")",
+      "Bash(node -e \"console.log\\(require\\('@anthropic-ai/sdk/package.json'\\).version\\)\")",
+      "Bash(curl -s -X POST http://localhost:5173/api/coach -H 'content-type: application/json' -d '{\"messages\":[{\"role\":\"user\",\"content\":\"warning modal that deletes a project\"}],\"workItemType\":\"feature_spec\",\"activeStep\":\"brief\",\"spec\":{}}' -w '\\\\n[HTTP %{http_code}, %{time_total}s]\\\\n')",
+      "Bash(python3 -c \"import sys,json; d=json.loads\\(sys.stdin.read\\(\\).split\\('\\\\n['\\)[0]\\); print\\('reply:', d['reply'][:120]\\); print\\('activeStep:', d['activeStep']\\); print\\('specUpdates keys:', list\\(d.get\\('specUpdates',{}\\).keys\\(\\)\\)\\); print\\('guidePanel.nextPrompt:', d['guidePanel'].get\\('nextPrompt',''\\)[:100]\\)\")",
+      "Bash(curl -s -X POST http://localhost:5173/api/coach -H 'content-type: application/json' -d '{\"messages\":[ *)",
+      "Bash(pkill -f vite)",
+      "Bash(node -)",
+      "Bash(cat /tmp/coach_img_b64.txt)",
+      "Bash(grep -c '\"\\\\$value\": \"#' export.json)",
+      "Bash(grep -nE '\"[0-9]{2,4}\":' export.json)",
+      "Bash(grep -nE '\"\\(name|\\\\$?modes\\)\"[[:space:]]*:' export.json)",
+      "Bash(node /private/tmp/claude-501/-Users-jonathanwarrecker-Downloads-teamyou-app/f42438bf-4379-4857-ba23-151198fa363e/scratchpad/gen-tokens.mjs)",
+      "Bash(cd /Users/jonathanwarrecker/Downloads/teamyou-app *)",
+      "Bash(npm run *)",
+      "WebSearch",
+      "WebFetch(domain:findskill.ai)",
+      "Bash(node -e \"const t=require\\('./tokens/design-tokens.json'\\); console.log\\('groups:', Object.keys\\(t\\)\\); console.log\\('color groups:', Object.keys\\(t.color\\)\\); console.log\\('sample text.bold:', JSON.stringify\\(t.color.text.bold\\)\\); console.log\\('sample space.m:', JSON.stringify\\(t.space.m\\)\\); console.log\\('sample fontSize.200:', JSON.stringify\\(t.fontSize['200']\\)\\);\")",
+      "Bash(command -v gh)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git check-ignore *)",
+      "Bash(git add *)"
+    ]
+  }
+}
