@@ -21,6 +21,15 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain("the user still confirms or overrides it");
   });
 
+  it("treats an explicit user override as a traceable revision, not a veto point", () => {
+    const prompt = promptAt("choose_direction");
+    expect(prompt).toContain("locked does NOT mean irreversible");
+    expect(prompt).toContain("A recommendation is advice, not a veto");
+    expect(prompt).toContain('"flowRevision": { "reopenedStep": "find_patterns"');
+    expect(prompt).toContain("existing Joey Shiner directions preserved");
+    expect(prompt).toContain("Never ask them to justify the same choice again");
+  });
+
   it("keeps evidence questions out of Understand the request", () => {
     const prompt = promptAt("understand_request");
     expect(prompt).toContain(
