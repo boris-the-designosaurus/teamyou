@@ -10,9 +10,9 @@ import {
   RocketIcon,
 } from "../icons";
 
-/** Renders coach reply text, honoring the one/two \*\*bold\*\* emphasis spans
- * the prompt is allowed to use for the key judgment phrase per message. */
-function renderContent(text: string) {
+/** Inline emphasis stays deliberately small: the Coach may bold one strategic
+ * phrase, not style the whole response. */
+function renderInline(text: string) {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") ? (
       <strong key={i}>{part.slice(2, -2)}</strong>
@@ -22,11 +22,66 @@ function renderContent(text: string) {
   );
 }
 
+/** Preserve the quiet conversational layout while rendering intentional
+ * paragraph breaks and short markdown-style bullet lists semantically. */
+function renderContent(text: string) {
+  const lines = text.split("\n");
+  const blocks: React.ReactNode[] = [];
+  let paragraph: string[] = [];
+  let bullets: string[] = [];
+
+  function flushParagraph() {
+    if (paragraph.length === 0) return;
+    blocks.push(
+      <p key={`p-${blocks.length}`}>
+        {paragraph.map((line, index) => (
+          <span key={index}>
+            {index > 0 && <br />}
+            {renderInline(line)}
+          </span>
+        ))}
+      </p>,
+    );
+    paragraph = [];
+  }
+
+  function flushBullets() {
+    if (bullets.length === 0) return;
+    blocks.push(
+      <ul key={`ul-${blocks.length}`}>
+        {bullets.map((bullet, index) => (
+          <li key={index}>{renderInline(bullet)}</li>
+        ))}
+      </ul>,
+    );
+    bullets = [];
+  }
+
+  for (const line of lines) {
+    const bullet = line.match(/^\s*[-*•]\s+(.+)$/);
+    if (bullet) {
+      flushParagraph();
+      bullets.push(bullet[1]);
+    } else {
+      flushBullets();
+      if (line.trim()) paragraph.push(line);
+      else flushParagraph();
+    }
+  }
+  flushParagraph();
+  flushBullets();
+  return blocks;
+}
+
 export function ChatPanel(props: {
   messages: Message[];
   loading: boolean;
   error: { message: string; raw?: string } | null;
-  onSend: (text: string, attachments: ImageAttachment[]) => void;
+  onSend: (
+    text: string,
+    attachments: ImageAttachment[],
+    quickReplyMessageId?: string,
+  ) => void;
   milestoneArtifacts?: MilestoneArtifact[];
   onChooseArtifact?: (artifactId: string) => void;
   // Guide "Need" → chat locate (product boundary: the coach's question lives
@@ -242,25 +297,40 @@ export function ChatPanel(props: {
                   />
                 )}
               {m.role === "coach" &&
-                idx === props.messages.length - 1 &&
                 m.quickReplies &&
-                m.quickReplies.length > 0 && (
-                  <div className="quick-replies">
-                    {m.quickReplies.map((qr) => (
-                      <button
-                        key={qr}
-                        type="button"
-                        className={`quick-reply-btn${m.recommendedQuickReply === qr ? " recommended" : ""}`}
-                        disabled={props.loading}
-                        onClick={() => props.onSend(qr, [])}
-                        aria-label={m.recommendedQuickReply === qr ? `${qr}, recommended` : qr}
-                      >
-                        <span>{qr}</span>
-                        {m.recommendedQuickReply === qr && (
-                          <span className="quick-reply-recommended">Recommended</span>
-                        )}
-                      </button>
-                    ))}
+                m.quickReplies.length > 0 &&
+                (idx === props.messages.length - 1 || m.selectedQuickReply) && (
+                  <div
+                    className={`quick-replies${m.selectedQuickReply ? " answered" : ""}`}
+                    role="radiogroup"
+                    aria-label="Choose one answer"
+                  >
+                    {m.quickReplies.map((qr, optionIndex) => {
+                      const selected = m.selectedQuickReply === qr;
+                      const recommended = m.recommendedQuickReply === qr;
+                      const optionLabel = String.fromCharCode(65 + optionIndex);
+                      return (
+                        <button
+                          key={qr}
+                          type="button"
+                          className={`quick-reply-btn${recommended ? " recommended" : ""}${selected ? " selected" : ""}`}
+                          disabled={props.loading || !!m.selectedQuickReply}
+                          onClick={() => props.onSend(qr, [], m.id)}
+                          role="radio"
+                          aria-checked={selected}
+                          aria-label={`Option ${optionLabel}: ${qr}${recommended ? ", recommended" : ""}${selected ? ", selected" : ""}`}
+                        >
+                          <span className="quick-reply-letter" aria-hidden>
+                            {optionLabel}
+                          </span>
+                          <span className="quick-reply-label">{qr}</span>
+                          {recommended && (
+                            <span className="quick-reply-recommended">Recommended</span>
+                          )}
+                          {selected && <span className="quick-reply-selected">Selected</span>}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
             </div>
