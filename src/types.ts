@@ -200,6 +200,11 @@ export type Message = {
   // Milestone artifacts (pattern/wireframe/treatment shortlist) introduced by
   // THIS turn — rendered as a "Choose" card grid under the message.
   milestoneArtifactIds?: string[];
+  // Evidence report created on THIS coach turn. Snapshotting the supporting
+  // records preserves the report's historical position and meaning in chat.
+  evidenceBrief?: EvidenceBrief;
+  evidenceSnapshot?: Evidence[];
+  evidenceOpenItems?: string[];
   createdAt: string;
 };
 
