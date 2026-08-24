@@ -37,6 +37,40 @@ function toImagePayloads(atts: Message["attachments"]) {
   return out.length > 0 ? out : undefined;
 }
 
+export type CoachRequestMessage = {
+  role: Message["role"];
+  content: string;
+  images?: { id: string; name?: string; dataUrl: string }[];
+};
+
+/**
+ * Build the transcript sent to the Coach without repeatedly uploading old
+ * screenshots. Anthropic requests are stateless, but the first grounded coach
+ * reply becomes the durable text interpretation for later turns; resending the
+ * same pixels after that adds substantial latency without adding judgment.
+ *
+ * Screenshots remain attached to their original chat message for local display.
+ * Only the latest user turn may carry raw image bytes to /api/coach.
+ */
+export function toCoachRequestMessages(messages: Message[]): CoachRequestMessage[] {
+  let latestUserIndex = -1;
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === "user") {
+      latestUserIndex = index;
+      break;
+    }
+  }
+
+  return messages.map((message, index) => ({
+    role: message.role,
+    content: message.content,
+    images:
+      index === latestUserIndex
+        ? toImagePayloads(message.attachments)
+        : undefined,
+  }));
+}
+
 export class CoachError extends Error {
   raw?: string;
   code?: string;
@@ -69,11 +103,7 @@ export async function callCoach(args: {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      messages: args.messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-        images: toImagePayloads(m.attachments),
-      })),
+      messages: toCoachRequestMessages(args.messages),
       workItemType: args.workItemType,
       workMode: args.workMode,
       activeStep: args.activeStep,
