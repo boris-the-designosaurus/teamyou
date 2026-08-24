@@ -12,6 +12,7 @@ export type ReplyStyleCheck = {
   questionCount: number;
   sentenceCount: number;
   hasHeadingListOrTable: boolean;
+  hasBlamingProcessLanguage: boolean;
   reasons: string[];
 };
 
@@ -58,6 +59,18 @@ export function hasHeadingListOrTable(text: string): boolean {
   return false;
 }
 
+/** Internal governance belongs in the decision record, not in the user's
+ * face. These phrases either score/blame the user for repetition or expose
+ * mechanical policy language instead of responding like a collaborator. */
+export function hasBlamingProcessLanguage(text: string): boolean {
+  return [
+    /\byou(?:'ve| have) asked (?:twice|again|repeatedly)\b/i,
+    /\bexplicit override\b/i,
+    /\b(?:isn't|is not|wasn't|was not) justified without evidence\b/i,
+    /\bthe frame locked\b/i,
+  ].some((pattern) => pattern.test(text));
+}
+
 /**
  * Checks a reply against the concise-turn contract. "detailed" mode (reports,
  * briefs, critiques, handoffs, explicit user request) lifts every limit —
@@ -71,6 +84,7 @@ export function checkReplyStyle(
   const questionCount = countQuestions(reply);
   const sentenceCount = countSentences(reply);
   const headingListTable = hasHeadingListOrTable(reply);
+  const blamingProcessLanguage = hasBlamingProcessLanguage(reply);
 
   if (responseMode === "detailed") {
     return {
@@ -79,6 +93,7 @@ export function checkReplyStyle(
       questionCount,
       sentenceCount,
       hasHeadingListOrTable: headingListTable,
+      hasBlamingProcessLanguage: blamingProcessLanguage,
       reasons: [],
     };
   }
@@ -98,6 +113,11 @@ export function checkReplyStyle(
   if (headingListTable) {
     reasons.push("the reply uses a heading, list, or table — not allowed in a normal coaching turn");
   }
+  if (blamingProcessLanguage) {
+    reasons.push(
+      "the reply blames the user or exposes internal governance language instead of responding collaboratively",
+    );
+  }
 
   return {
     ok: reasons.length === 0,
@@ -105,6 +125,7 @@ export function checkReplyStyle(
     questionCount,
     sentenceCount,
     hasHeadingListOrTable: headingListTable,
+    hasBlamingProcessLanguage: blamingProcessLanguage,
     reasons,
   };
 }
@@ -120,7 +141,9 @@ export function styleCorrectionPrompt(check: ReplyStyleCheck): string {
     `ONE observation/challenge/recommendation, at most ONE question placed at the end, and no ` +
     `headings/lists/tables. If you just wrote something to the Guide this turn, use at most one brief ` +
     `acknowledgment (e.g. "Got it." / "Captured that.") — do not repeat or paraphrase it back, and do not ` +
-    `narrate your reasoning. If this genuinely is a report/brief/critique/handoff the user asked for, set ` +
+    `narrate your reasoning. Never mention how many times the user asked, call their choice an "explicit ` +
+    `override," or expose other internal governance language; briefly own a miss and act. If this genuinely ` +
+    `is a report/brief/critique/handoff the user asked for, set ` +
     `"responseMode" to "detailed" instead of shortening it.`
   );
 }
