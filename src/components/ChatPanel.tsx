@@ -98,6 +98,11 @@ export function ChatPanel(props: {
   const lastComposerTop = useRef<number | null>(null);
   const wasEmpty = useRef(props.messages.length === 0);
   const highlightTimer = useRef<number | null>(null);
+  const latestMessage = props.messages[props.messages.length - 1];
+  const hasVisibleQuickReplies =
+    latestMessage?.role === "coach" &&
+    !!latestMessage.quickReplies &&
+    latestMessage.quickReplies.length > 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -380,7 +385,11 @@ export function ChatPanel(props: {
           <textarea
             ref={textareaRef}
             value={draft}
-            placeholder="Describe it, or paste a screenshot…"
+            placeholder={
+              hasVisibleQuickReplies
+                ? "Choose an option above, or type your own response…"
+                : "Describe it, or paste a screenshot…"
+            }
             rows={1}
             onChange={(e) => setDraft(e.target.value)}
             onPaste={(e) => {
