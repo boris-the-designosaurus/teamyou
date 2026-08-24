@@ -4,11 +4,18 @@ import {
   FLOW_STEP_LABEL,
   type CoachTurnResponse,
   type FlowStep,
+  type WorkItemType,
 } from "../src/types";
 
 export type TurnPolicyCheck = {
   ok: boolean;
   reasons: string[];
+};
+
+export type TurnPolicyContext = {
+  latestAttachmentCount?: number;
+  workItemType?: WorkItemType;
+  specSnapshot?: unknown;
 };
 
 const QUESTION_LEAD = /^(what|whether|how|who|when|where|why|is|are|do|does|should|can|could|will|would)\b/i;
@@ -26,6 +33,24 @@ const SCREENSHOT_GROUNDING =
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function snapshotBriefValue(
+  snapshot: unknown,
+  key: "user" | "moment" | "task",
+): unknown {
+  if (!snapshot || typeof snapshot !== "object") return undefined;
+  const brief = (snapshot as { brief?: unknown }).brief;
+  if (!brief || typeof brief !== "object") return undefined;
+  return (brief as Record<string, unknown>)[key];
+}
+
+function capturedBriefValue(
+  turn: CoachTurnResponse,
+  context: TurnPolicyContext,
+  key: "user" | "moment" | "task",
+): unknown {
+  return turn.specUpdates.brief?.[key] ?? snapshotBriefValue(context.specSnapshot, key);
 }
 
 /**
@@ -81,7 +106,7 @@ function capturedStepExit(previousStep: FlowStep, turn: CoachTurnResponse): stri
 export function checkTurnPolicy(
   previousStep: FlowStep,
   turn: CoachTurnResponse,
-  context: { latestAttachmentCount?: number } = {},
+  context: TurnPolicyContext = {},
 ): TurnPolicyCheck {
   const reasons: string[] = [];
   const from = FLOW_STEPS.indexOf(previousStep);
@@ -138,6 +163,24 @@ export function checkTurnPolicy(
   const replyQuestions = countQuestions(turn.reply);
   const stayedOnStep = turn.activeStep === previousStep;
   const questionText = `${turn.reply}\n${nextPrompt}`;
+
+  const inferablePortfolioJudgment =
+    previousStep === "identify_users" &&
+    context.workItemType === "design_project" &&
+    hasText(capturedBriefValue(turn, context, "user")) &&
+    hasText(capturedBriefValue(turn, context, "moment"));
+  if (inferablePortfolioJudgment) {
+    if (!hasText(capturedBriefValue(turn, context, "task"))) {
+      reasons.push(
+        "the portfolio visitor and moment are known, so the Coach must synthesize the inferable hiring judgment into brief.task before advancing",
+      );
+    }
+    if (stayedOnStep && replyQuestions > 0) {
+      reasons.push(
+        "the portfolio judgment is inferable from the locked frame; recommend and capture one judgment instead of asking the designer to choose among overlapping evaluation dimensions",
+      );
+    }
+  }
   const newPatterns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
     (artifact) => artifact.kind === "pattern_shortlist",
   );
@@ -301,8 +344,11 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `For an opportunity-seeking portfolio in Understand the request, ask what target work the site ` +
     `must help win before asking what the portfolio should communicate, say, or lead with. Scaffold ` +
     `Target work with two concrete choices plus "Not sure yet," and do not recommend one without evidence. ` +
-    `In Identify users and context, capture user + moment together, then task separately; keep quickReplies ` +
-    `empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
+    `In Identify users and context, capture user + moment together. Ask for a separate concrete task only ` +
+    `when it is genuinely unknown. For a portfolio or other decision surface whose goal, problem, user, and ` +
+    `moment already imply the visitor's judgment, synthesize one recommended judgment into brief.task and ` +
+    `advance instead of asking the designer to choose among overlapping evaluation dimensions. Keep ` +
+    `quickReplies empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
     `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
     `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
     `the user's supported barrier with an unrelated theory. ` +
