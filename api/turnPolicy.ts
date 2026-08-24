@@ -70,7 +70,23 @@ export function checkTurnPolicy(
   const to = FLOW_STEPS.indexOf(turn.activeStep);
 
   if (to < from) {
-    reasons.push(`activeStep regressed from "${previousStep}" to "${turn.activeStep}"`);
+    const reopened = turn.flowRevision
+      ? FLOW_STEPS.indexOf(turn.flowRevision.reopenedStep)
+      : -1;
+    const validRevision =
+      !!turn.flowRevision &&
+      reopened >= 0 &&
+      reopened < from &&
+      to >= reopened &&
+      to <= reopened + 1 &&
+      hasText(turn.flowRevision.reason) &&
+      turn.flowRevision.preservesExistingWork === true;
+
+    if (!validRevision) {
+      reasons.push(
+        `activeStep regressed from "${previousStep}" to "${turn.activeStep}" without a valid user-authorized flowRevision`,
+      );
+    }
   } else if (to > from + 1) {
     reasons.push(
       `activeStep skipped ahead from "${previousStep}" to "${turn.activeStep}" instead of moving to the immediate next step`,
@@ -159,7 +175,10 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `Re-send the SAME substantive turn as valid JSON. The chat reply must contain the one actual ` +
     `question whenever guidePanel.need is non-empty; the Guide may store only the compact noun-phrase ` +
     `need and the matching nextPrompt for hover context. Keep activeStep on the current step or move ` +
-    `only to its immediate next step, and make guidePanel.title exactly match the returned activeStep. ` +
+    `only to its immediate next step unless the user explicitly revised an earlier decision; for that ` +
+    `case include a valid flowRevision, preserve existing work, and reopen only the earliest affected ` +
+    `step (or its immediate next step after completing the reopened work). Make guidePanel.title exactly ` +
+    `match the returned activeStep. ` +
     `When stepGate is nonblocking (anything except disposition "ask"), do not ask for confirmation ` +
     `and do not stay on the same step: capture the judgment, advance to the immediate next step, and ` +
     `ask only the next step's genuinely blocking question. ` +

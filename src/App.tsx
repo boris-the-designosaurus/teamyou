@@ -61,11 +61,11 @@ function nowISO() {
   return new Date().toISOString();
 }
 
-function stepStartedMsg(step: string): Message {
+function stepStartedMsg(step: string, reopened = false): Message {
   return {
     id: crypto.randomUUID(),
     role: "system",
-    content: `${FLOW_STEP_LABEL[step as keyof typeof FLOW_STEP_LABEL] ?? step} started`,
+    content: `${FLOW_STEP_LABEL[step as keyof typeof FLOW_STEP_LABEL] ?? step} ${reopened ? "reopened" : "started"}`,
     createdAt: nowISO(),
   };
 }
@@ -334,12 +334,11 @@ export function App() {
           ? turn.workMode
           : undefined;
 
-      // When the Coach advances, introduce the new step before the Coach reply
-      // that belongs to it. The transcript should read in chronological order:
-      // step starts, then the Coach asks that step's first question.
+      // When the Coach advances or a user revision reopens an earlier step,
+      // introduce that context before the Coach reply that belongs to it.
       const advanceMarker: Message | null =
         turn.activeStep !== withUser.currentStep
-          ? stepStartedMsg(turn.activeStep)
+          ? stepStartedMsg(turn.activeStep, !!turn.flowRevision)
           : null;
 
       setWorkItem((prev) => {

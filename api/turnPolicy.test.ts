@@ -55,6 +55,64 @@ describe("checkTurnPolicy", () => {
     ).toBe(false);
   });
 
+  it("allows a user-authorized revision to reopen an earlier step while preserving work", () => {
+    const result = checkTurnPolicy(
+      "choose_direction",
+      turn({
+        reply:
+          "Understood — I'll keep Joey Shiner as one anchor and add contrasting structures. Which additional structure belongs in the shortlist?",
+        activeStep: "review_shortlist",
+        flowRevision: {
+          reopenedStep: "find_patterns",
+          reason: "The user explicitly chose to broaden the reference set.",
+          preservesExistingWork: true,
+        },
+        stepGate: {
+          linkedDecision: "Additional reference structure",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {
+          decisions: [
+            {
+              text: "Broaden the reference set while retaining Joey Shiner.",
+              rationale: "The user requested more structural comparisons.",
+              step: "find_patterns",
+              source: "user",
+              supersedes: "decision-reference-set",
+            },
+          ],
+        },
+        guidePanel: {
+          title: "Review and shortlist",
+          need: "Additional shortlist",
+          nextPrompt: "Which additional structure belongs in the shortlist?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects a backward move that does not preserve existing work", () => {
+    const result = checkTurnPolicy(
+      "choose_direction",
+      turn({
+        reply: "I'll replace the previous directions.",
+        activeStep: "find_patterns",
+        flowRevision: {
+          reopenedStep: "find_patterns",
+          reason: "The user asked for more references.",
+          preservesExistingWork: false as never,
+        },
+        guidePanel: { title: "Find relevant patterns", need: "" },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/valid user-authorized flowRevision/);
+  });
+
   it("rejects a Guide title that belongs to a different step", () => {
     const result = checkTurnPolicy(
       "define_problem",
@@ -186,6 +244,7 @@ describe("checkTurnPolicy", () => {
     const prompt = turnPolicyCorrectionPrompt(check);
     expect(prompt).toContain("chat reply must contain");
     expect(prompt).toContain("do not ask for confirmation");
+    expect(prompt).toContain("user explicitly revised an earlier decision");
     expect(prompt).toContain("Do not remove captured specUpdates");
   });
 });
