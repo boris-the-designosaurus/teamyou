@@ -58,7 +58,16 @@ describe("coach flow boundaries", () => {
       "When user and moment are both unknown, ask for them together in one natural free-text question",
     );
     expect(prompt).toContain(
-      "For workflow/product problems, task is what the user is doing; for portfolios and other decision surfaces, task is what the visitor is trying to judge or decide",
+      "For workflow/product problems, task is what the user is doing and may require a separate question",
+    );
+    expect(prompt).toContain(
+      "For portfolios and other decision surfaces, task is what the visitor is trying to judge or decide",
+    );
+    expect(prompt).toContain(
+      "advance instead of asking the designer to choose among overlapping evaluation dimensions",
+    );
+    expect(prompt).toContain(
+      "not mutually exclusive alternatives",
     );
     expect(prompt).toContain("Keep `quickReplies` empty throughout this step");
   });

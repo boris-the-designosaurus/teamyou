@@ -123,6 +123,75 @@ describe("checkTurnPolicy", () => {
     expect(result.reasons.join(" ")).toMatch(/user, moment, and task were captured/);
   });
 
+  it("rejects handing an inferable portfolio judgment back as overlapping choices", () => {
+    const result = checkTurnPolicy(
+      "identify_users",
+      turn({
+        reply:
+          "Got it — that gives a clear primary visitor and moment. What are they trying to judge: your seniority/craft level, your thinking process, or fit for their product domain?",
+        activeStep: "identify_users",
+        guidePanel: {
+          title: "Identify users and context",
+          need: "Judgment task",
+          nextPrompt:
+            "What are they trying to judge: your seniority/craft level, your thinking process, or fit for their product domain?",
+        },
+      }),
+      {
+        workItemType: "design_project",
+        specSnapshot: {
+          brief: {
+            user: "A hiring manager or design lead",
+            moment: "After an application, referral, or LinkedIn visit",
+          },
+        },
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/synthesize the inferable hiring judgment/);
+    expect(result.reasons.join(" ")).toMatch(/overlapping evaluation dimensions/);
+  });
+
+  it("accepts synthesizing the portfolio judgment and advancing to evidence", () => {
+    const result = checkTurnPolicy(
+      "identify_users",
+      turn({
+        reply:
+          "**The hiring decision is whether you can own complex SaaS work end-to-end and produce meaningful outcomes.** What evidence do you have that the current portfolio is preventing that judgment?",
+        activeStep: "assess_evidence",
+        specUpdates: {
+          brief: {
+            task:
+              "Decide whether the designer can own complex SaaS work end-to-end and is worth interviewing.",
+          },
+        },
+        stepGate: {
+          linkedDecision: "Evidence that the portfolio blocks the hiring judgment",
+          blocking: true,
+          disposition: "ask",
+        },
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Barrier evidence",
+          nextPrompt:
+            "What evidence do you have that the current portfolio is preventing that judgment?",
+        },
+      }),
+      {
+        workItemType: "design_project",
+        specSnapshot: {
+          brief: {
+            user: "A hiring manager or design lead",
+            moment: "After an application, referral, or LinkedIn visit",
+          },
+        },
+      },
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects an acknowledgement-only framing turn with no prompt to continue", () => {
     const result = checkTurnPolicy(
       "define_problem",
