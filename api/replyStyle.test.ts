@@ -49,6 +49,7 @@ describe("countWords / countQuestions / hasHeadingListOrTable", () => {
     expect(countSentences("One sentence.")).toBe(1);
     expect(countSentences("Captured both steps in the Guide. Should the funnel also be in scope?")).toBe(2);
     expect(countSentences("One. Two! Three?")).toBe(3);
+    expect(countSentences("The bounce rate is 58.3%. We should proceed. What appears first?")).toBe(3);
   });
 
   it("detects scolding or internal process language", () => {
