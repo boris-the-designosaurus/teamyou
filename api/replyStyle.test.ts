@@ -32,9 +32,10 @@ describe("countWords / countQuestions / hasHeadingListOrTable", () => {
     expect(hasHeadingListOrTable("Plain text, no heading")).toBe(false);
   });
 
-  it("detects a 3+ line bullet/numbered list but not 1-2 incidental dashes", () => {
-    expect(hasHeadingListOrTable("- one\n- two\n- three")).toBe(true);
-    expect(hasHeadingListOrTable("1. one\n2. two\n3. three")).toBe(true);
+  it("allows a short bullet list but detects lists longer than four items", () => {
+    expect(hasHeadingListOrTable("- one\n- two\n- three")).toBe(false);
+    expect(hasHeadingListOrTable("1. one\n2. two\n3. three")).toBe(false);
+    expect(hasHeadingListOrTable("- one\n- two\n- three\n- four\n- five")).toBe(true);
     expect(hasHeadingListOrTable("A well-known fact - noted here.")).toBe(false);
   });
 
@@ -90,6 +91,14 @@ describe("checkReplyStyle — concise mode (normal coaching turns)", () => {
     const check = checkReplyStyle("## Summary\n- one\n- two\n- three", "concise");
     expect(check.ok).toBe(false);
     expect(check.hasHeadingListOrTable).toBe(true);
+  });
+
+  it("accepts a short bullet list when it keeps a choice scannable", () => {
+    const check = checkReplyStyle(
+      "These are the useful distinctions:\n- Ongoing support\n- Focused feature work\n- Not sure yet\n\nWhich is closest?",
+      "concise",
+    );
+    expect(check.ok).toBe(true);
   });
 
   it("a short reply under 40 words is still accepted (default is a target, not a floor)", () => {
