@@ -42,6 +42,16 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("ties a transition turn's gate to the new-step question", () => {
+    const prompt = promptAt("assess_evidence");
+    expect(prompt).toContain(
+      "stepGate must describe that new question as blocking with disposition \"ask\"",
+    );
+    expect(prompt).toContain(
+      "do not leave it describing the completed prior-step decision as \"proceed\"",
+    );
+  });
+
   it("requires every framing turn to give the user a prompt to continue", () => {
     const prompt = promptAt("define_problem");
     expect(prompt).toContain(
