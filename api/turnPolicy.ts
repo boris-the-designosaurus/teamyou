@@ -392,7 +392,10 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `need and the matching nextPrompt for hover context. Keep activeStep on the current step or move ` +
     `only to its immediate next step unless every crossed step's required data is captured in specUpdates ` +
     `(for example, define_problem requires brief.problem and identify_users requires brief.user, brief.moment, ` +
-    `and brief.task). Never skip a label while leaving its record empty. If those captures are all present, ` +
+    `and brief.task). Never skip a label while leaving its record empty. If the violation names ` +
+    `define_problem, translate the latest user answer—including terse quick-reply wording—into one concise ` +
+    `brief.problem before advancing; brief.user, brief.moment, and brief.task never replace that record. ` +
+    `Preserve any valid later-step captures while adding the missing problem. If those captures are all present, ` +
     `a concise multi-step advance is allowed. Unless the user explicitly revised an earlier decision; for that ` +
     `case include a valid flowRevision, preserve existing work, and reopen only the earliest affected ` +
     `step (or its immediate next step after completing the reopened work). Make guidePanel.title exactly ` +
