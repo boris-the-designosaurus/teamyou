@@ -21,6 +21,8 @@ const SINGLE_PATTERN_GATE =
 const FLEXIBLE_PATTERN_SELECTION =
   /\b(?:select|choose)\s+(?:one\s+or\s+more|any|multiple|several)\b/i;
 const STRATEGIC_EMPHASIS = /\*\*[^*\n]+\*\*/;
+const SCREENSHOT_GROUNDING =
+  /\b(screenshot|image|reference|comparison|current (?:page|screen|site|portfolio)|shown|visible|looking at|based on what (?:is|you've) shown)\b/i;
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -79,6 +81,7 @@ function capturedStepExit(previousStep: FlowStep, turn: CoachTurnResponse): stri
 export function checkTurnPolicy(
   previousStep: FlowStep,
   turn: CoachTurnResponse,
+  context: { latestAttachmentCount?: number } = {},
 ): TurnPolicyCheck {
   const reasons: string[] = [];
   const from = FLOW_STEPS.indexOf(previousStep);
@@ -111,6 +114,15 @@ export function checkTurnPolicy(
   if (to === from + 1 && !STRATEGIC_EMPHASIS.test(turn.reply)) {
     reasons.push(
       "a forward step transition must emphasize one short judgment or transition phrase with double asterisks",
+    );
+  }
+
+  if (
+    (context.latestAttachmentCount ?? 0) > 0 &&
+    !SCREENSHOT_GROUNDING.test(turn.reply)
+  ) {
+    reasons.push(
+      "the latest user turn included screenshots, but the reply does not ground an observation in what they show",
     );
   }
 
@@ -291,6 +303,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `Target work with two concrete choices plus "Not sure yet," and do not recommend one without evidence. ` +
     `In Identify users and context, capture user + moment together, then task separately; keep quickReplies ` +
     `empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
+    `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
+    `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
+    `the user's supported barrier with an unrelated theory. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }

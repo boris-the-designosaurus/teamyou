@@ -18,6 +18,43 @@ function turn(overrides: Partial<CoachTurnResponse> = {}): CoachTurnResponse {
 }
 
 describe("checkTurnPolicy", () => {
+  it("rejects ignoring screenshots from the latest user turn", () => {
+    const result = checkTurnPolicy("define_problem", turn(), {
+      latestAttachmentCount: 2,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/does not ground an observation/);
+  });
+
+  it("accepts a screenshot-grounded comparison that advances the problem", () => {
+    const result = checkTurnPolicy(
+      "define_problem",
+      turn({
+        reply:
+          "**The screenshots support a comprehension barrier**: the current portfolio shows the work, while the reference makes identity and project choices easier to scan. Who needs to understand this story, and when are they viewing it?",
+        activeStep: "identify_users",
+        specUpdates: {
+          brief: {
+            problem:
+              "Visitors must assemble the designer's role, strengths, and impact from separate parts of the portfolio.",
+            assumedSolution: "A simpler, more scannable structure inspired by the reference.",
+          },
+        },
+        guidePanel: {
+          title: "Identify users and context",
+          need: "User and moment",
+          nextPrompt:
+            "Who needs to understand this story, and when are they viewing it?",
+        },
+        quickReplies: [],
+      }),
+      { latestAttachmentCount: 2 },
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("accepts an immediate step advance with the question in chat", () => {
     expect(checkTurnPolicy("define_problem", turn()).ok).toBe(true);
   });

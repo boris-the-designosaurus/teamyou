@@ -15,7 +15,7 @@ import { isSendableImageDataUrl } from "./image";
  */
 function toImagePayloads(atts: Message["attachments"]) {
   if (!atts || atts.length === 0) return undefined;
-  const out: { dataUrl: string }[] = [];
+  const out: { id: string; name?: string; dataUrl: string }[] = [];
   for (const a of atts) {
     const url = a.dataUrl ?? "";
     const info = {
@@ -31,7 +31,7 @@ function toImagePayloads(atts: Message["attachments"]) {
     };
     // eslint-disable-next-line no-console
     console.log("[coach] attachment →", info);
-    if (info.sendable) out.push({ dataUrl: url });
+    if (info.sendable) out.push({ id: a.id, name: a.name, dataUrl: url });
     else console.warn("[coach] skipping non-sendable attachment", a.name, a.mediaType);
   }
   return out.length > 0 ? out : undefined;

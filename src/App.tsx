@@ -3,7 +3,6 @@ import {
   emptySpec,
   FLOW_STEP_LABEL,
   WORK_MODES,
-  type Attachment,
   type GuidePanel as GuidePanelHints,
   type ImageAttachment,
   type Message,
@@ -33,7 +32,6 @@ import {
 import { buildSeedDocs, LEGACY_SEED_IDS, SEED_DOC_IDS, SEED_VERSION } from "./seedDemo";
 import {
   pinTodoAttachment,
-  linkAttachmentToTarget,
   type ResolveTarget,
 } from "./attachments";
 import { Modal, TYPE_LABELS, type MainTab } from "./components/Modal";
@@ -85,26 +83,6 @@ function createWorkItem(type: WorkItemType): WorkItem {
     createdAt: ts,
     updatedAt: ts,
   };
-}
-
-/** A posted screenshot becomes a persistent artifact on the linked work object. */
-function attachmentFromImage(img: ImageAttachment): Attachment {
-  return {
-    id: `att-${img.id}`,
-    type: "screenshot",
-    label: img.name ?? "Screenshot",
-    url: img.dataUrl,
-    createdAt: nowISO(),
-    isPinned: false,
-  };
-}
-
-/** Human label for where a chat attachment gets linked. */
-function labelForTarget(spec: Spec, target: ResolveTarget): string {
-  if (target.kind === "todo")
-    return spec.rules.todos.find((t) => t.id === target.id)?.title ?? "todo";
-  if (target.kind === "all_todos") return "All todos";
-  return "this spec";
 }
 
 /** Give the doc a real header title once the brief has substance. */
@@ -246,14 +224,9 @@ export function App() {
 
     setError(null);
 
-    // Posted screenshots stay in the chat AND link to the active work target
-    // (a todo / all_todos / the spec as fallback), becoming spec evidence.
-    const targetLabel = labelForTarget(workItem.spec, activeTarget);
-    const artifacts = attachments.map(attachmentFromImage);
-    const linkedSpec = artifacts.reduce(
-      (sp, a) => linkAttachmentToTarget(sp, activeTarget, a),
-      workItem.spec,
-    );
+    // Posted screenshots are conversation context by default. The Coach can
+    // capture the durable observation/reference they support in specUpdates,
+    // but merely attaching an image must not promote it into the decision spine.
 
     const userMsg: Message = {
       id: crypto.randomUUID(),
@@ -261,7 +234,7 @@ export function App() {
       content: trimmed,
       attachments:
         attachments.length > 0
-          ? attachments.map((a) => ({ ...a, linkedTo: targetLabel }))
+          ? attachments
           : undefined,
       createdAt: nowISO(),
     };
@@ -272,7 +245,7 @@ export function App() {
 
     const withUser: WorkItem = {
       ...workItem,
-      spec: linkedSpec,
+      spec: workItem.spec,
       messages: [...workItem.messages, ...startMarkers, userMsg],
       updatedAt: nowISO(),
     };
@@ -298,12 +271,7 @@ export function App() {
       const wasAsk = turnWasAsk(stayedOnStep, turn.stepGate, turn.guidePanel?.need);
       sameStepAskStreakRef.current = nextAskStreak(sameStepAskStreakRef.current, wasAsk);
 
-      // Re-link posted artifacts after the merge (idempotent) so a Coach spec
-      // update can't drop them.
-      const mergedSpec = artifacts.reduce(
-        (sp, a) => linkAttachmentToTarget(sp, activeTarget, a),
-        mergeSpec(withUser.spec, turn.specUpdates),
-      );
+      const mergedSpec = mergeSpec(withUser.spec, turn.specUpdates);
       // Milestone artifacts this turn introduced — the coach message links to
       // them so the "Choose" card grid renders in the right place in history.
       const priorArtifactIds = new Set(withUser.spec.milestoneArtifacts.map((a) => a.id));

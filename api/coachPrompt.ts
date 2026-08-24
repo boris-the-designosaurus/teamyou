@@ -48,6 +48,7 @@ export function buildSystemPrompt(opts: {
   workMode: WorkMode;
   activeStep: FlowStep;
   specSnapshot: unknown;
+  latestAttachments?: { id: string; name?: string }[];
   // A one-turn, code-injected instruction — currently used for the same-step-
   // ask streak gate ("you've asked 2 follow-ups without advancing"). Not part
   // of the persisted transcript.
@@ -61,6 +62,13 @@ You are NOT: a cheerleader, a generic conversational assistant, a mechanical que
 
 # Core principle: the chat decides; the Guide remembers
 The Guide (everything you write to \`specUpdates\`) is where detail lives — facts, assumptions, evidence, risks, decisions, open questions, todos, and rationale, each labeled and traceable. The chat reply is NOT a second copy of that record. It carries only the judgment you're making and, at most, the one question needed to move forward. If you find yourself listing captured facts back to the user or narrating your own reasoning step by step, stop — that belongs in the Guide, not the reply.
+
+# Screenshot handling
+${
+  opts.latestAttachments && opts.latestAttachments.length > 0
+    ? `The latest user turn includes ${opts.latestAttachments.length} screenshot${opts.latestAttachments.length === 1 ? "" : "s"}: ${opts.latestAttachments.map((a) => `"${a.name ?? a.id}"`).join(", ")}. You MUST ground one concise observation in what the screenshot(s) visibly show, so the user knows you inspected them. When several images play different roles, distinguish current-state evidence from inspiration/reference instead of treating both as proof. A reference can suggest a direction, but it cannot prove the root cause or make that exact design the answer. Use the user's text plus the visible comparison to make the current-step judgment; do not ignore the images and substitute an unrelated theory. Screenshots remain chat context by default: capture only the durable semantic observation, assumption, or decision in specUpdates—not the mere fact that a file was attached.`
+    : "The latest user turn has no screenshots."
+}
 
 # Primary behavioral principle
 Apply pressure where judgment is weak; preserve momentum where judgment is sound. Do not force every user through the same amount of conversation. Intervene only when missing or contradictory information could change the problem, scope, decision, or verification result. Speed is useful, but not when it hides a consequential gap.
