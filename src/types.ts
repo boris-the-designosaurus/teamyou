@@ -194,6 +194,9 @@ export type Message = {
   // Short suggested replies the Coach offered on THIS message (rendered as
   // pill buttons under it). Cleared once the user has replied to any turn.
   quickReplies?: string[];
+  // Exact label of the one quick reply the Coach recommends. Kept separate
+  // from the labels so older persisted string-only quick replies still load.
+  recommendedQuickReply?: string;
   // Milestone artifacts (pattern/wireframe/treatment shortlist) introduced by
   // THIS turn — rendered as a "Choose" card grid under the message.
   milestoneArtifactIds?: string[];
@@ -710,6 +713,9 @@ export type CoachTurnResponse = {
   // Short suggested replies (e.g. "Yes" / "No", 2-3 plausible choices) shown as
   // pill buttons under the reply. Omit when a free-text answer is expected.
   quickReplies?: string[];
+  // Exact label of one quick reply when the locked frame supports a defensible
+  // recommendation. Omit when evidence is insufficient or choices are equal.
+  recommendedQuickReply?: string;
   // The gate evaluation behind this turn's question (or lack of one). Optional
   // for backward compatibility with older persisted turns, but the prompt
   // requires it on every turn going forward.
