@@ -20,6 +20,7 @@ const SINGLE_PATTERN_GATE =
   /\bwhich\b[^?]{0,80}\b(?:should|do)\b[^?]{0,50}\b(?:develop(?:\s+further)?|choose|pursue|take\s+forward|move\s+forward)\b/i;
 const FLEXIBLE_PATTERN_SELECTION =
   /\b(?:select|choose)\s+(?:one\s+or\s+more|any|multiple|several)\b/i;
+const STRATEGIC_EMPHASIS = /\*\*[^*\n]+\*\*/;
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -96,6 +97,12 @@ export function checkTurnPolicy(
   } else if (to > from + 1) {
     reasons.push(
       `activeStep skipped ahead from "${previousStep}" to "${turn.activeStep}" instead of moving to the immediate next step`,
+    );
+  }
+
+  if (to === from + 1 && !STRATEGIC_EMPHASIS.test(turn.reply)) {
+    reasons.push(
+      "a forward step transition must emphasize one short judgment or transition phrase with double asterisks",
     );
   }
 
@@ -259,6 +266,8 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `and normally do not stay on the same step: capture the judgment, advance to the immediate next step, and ` +
     `ask only the next step's genuinely blocking question. Every framing turn must leave the user with that ` +
     `one prompt to continue; never return an acknowledgement-only framing turn. ` +
+    `When advancing to the immediate next step, wrap exactly one short judgment or transition phrase ` +
+    `in double asterisks so the chat retains clear visual hierarchy. ` +
     `Pattern exploration is the exception: after adding a useful set, it may stay on Find patterns or ` +
     `Review and shortlist without a question while the user selects cards. Recommend one grounded option, ` +
     `then invite selecting one or more, combining ingredients, requesting more, or adding an example; never ` +
