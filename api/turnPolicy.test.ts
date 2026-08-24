@@ -41,6 +41,51 @@ describe("checkTurnPolicy", () => {
     expect(result.reasons.join(" ")).toMatch(/must emphasize one short judgment/);
   });
 
+  it("keeps Identify users and context as free-text user, moment, then task capture", () => {
+    const result = checkTurnPolicy(
+      "define_problem",
+      turn({
+        reply:
+          "**The barrier is clear**. Who encounters it, and at what point in their workflow?",
+        activeStep: "identify_users",
+        guidePanel: {
+          title: "Identify users and context",
+          need: "User and moment",
+          nextPrompt: "Who encounters it, and at what point in their workflow?",
+        },
+        quickReplies: ["Sales reps", "After an import", "Not sure yet"],
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/user \+ moment, then task, as free text/);
+  });
+
+  it("advances Identify users and context once user, moment, and task are captured", () => {
+    const result = checkTurnPolicy(
+      "identify_users",
+      turn({
+        reply: "Captured. Is there anything else to add?",
+        activeStep: "identify_users",
+        specUpdates: {
+          brief: {
+            user: "Sales reps",
+            moment: "Immediately after importing a lead list",
+            task: "Tagging and cleanup",
+          },
+        },
+        guidePanel: {
+          title: "Identify users and context",
+          need: "Confirmation",
+          nextPrompt: "Is there anything else to add?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/user, moment, and task were captured/);
+  });
+
   it("rejects an acknowledgement-only framing turn with no prompt to continue", () => {
     const result = checkTurnPolicy(
       "define_problem",
