@@ -139,6 +139,7 @@ describe("coach flow boundaries", () => {
     );
     expect(prompt).toContain("even when another question (such as urgency) keeps the step active");
     expect(prompt).toContain("the report never substitutes for the durable evidence record");
+    expect(prompt).toContain("do not repeat its source, stats, or summary in prose");
     expect(prompt).toContain('"title": "Portfolio performance snapshot"');
     expect(prompt).toContain('"strength": "moderate"');
   });
