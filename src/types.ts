@@ -319,6 +319,7 @@ export type MilestoneArtifact = {
   status: ArtifactStatus;
   thumbnailUrl?: string;
   supportingLine?: string; // why chosen / what state it represents
+  ingredients?: string[]; // short reusable pattern traits the user can combine
   createdAt: string;
   step: FlowStep;
 };
@@ -630,6 +631,7 @@ export type ProposedMilestoneArtifact = {
   status: ArtifactStatus;
   thumbnailUrl?: string;
   supportingLine?: string;
+  ingredients?: string[];
   step: FlowStep;
 };
 export type ProposedBuildInstruction = { label: string; text: string; rationale?: string };
