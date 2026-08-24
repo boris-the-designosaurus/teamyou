@@ -70,6 +70,31 @@ function capturedBriefValue(
   return turn.specUpdates.brief?.[key] ?? snapshotBriefValue(context.specSnapshot, key);
 }
 
+function stepHasRequiredCapture(
+  step: FlowStep,
+  turn: CoachTurnResponse,
+  context: TurnPolicyContext,
+): boolean {
+  const brief = turn.specUpdates.brief;
+  const snapshot = context.specSnapshot;
+  const value = (key: "goal" | "productContext" | "assumedSolution" | "problem" | "user" | "moment" | "task") =>
+    brief?.[key] ??
+    (snapshot && typeof snapshot === "object" &&
+    (snapshot as { brief?: Record<string, unknown> }).brief
+      ? (snapshot as { brief: Record<string, unknown> }).brief[key]
+      : undefined);
+
+  if (step === "understand_request") {
+    return hasText(value("goal")) &&
+      (hasText(value("productContext")) || hasText(value("assumedSolution")));
+  }
+  if (step === "define_problem") return hasText(value("problem"));
+  if (step === "identify_users") {
+    return hasText(value("user")) && hasText(value("moment")) && hasText(value("task"));
+  }
+  return false;
+}
+
 /**
  * A few steps have a single canonical capture that is itself the exit signal.
  * If the model writes that capture but stays to ask another question, it has
@@ -148,12 +173,18 @@ export function checkTurnPolicy(
       );
     }
   } else if (to > from + 1) {
-    reasons.push(
-      `activeStep skipped ahead from "${previousStep}" to "${turn.activeStep}" instead of moving to the immediate next step`,
+    const crossedSteps = FLOW_STEPS.slice(from, to);
+    const incompleteSteps = crossedSteps.filter(
+      (step) => !stepHasRequiredCapture(step, turn, context),
     );
+    if (incompleteSteps.length > 0) {
+      reasons.push(
+        `activeStep skipped ahead from "${previousStep}" to "${turn.activeStep}" without capturing required data for: ${incompleteSteps.join(", ")}`,
+      );
+    }
   }
 
-  if (to === from + 1 && !STRATEGIC_EMPHASIS.test(turn.reply)) {
+  if (to > from && !STRATEGIC_EMPHASIS.test(turn.reply)) {
     reasons.push(
       "a forward step transition must emphasize one short judgment or transition phrase with double asterisks",
     );
@@ -359,7 +390,10 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `Re-send the SAME substantive turn as valid JSON. The chat reply must contain the one actual ` +
     `question whenever guidePanel.need is non-empty; the Guide may store only the compact noun-phrase ` +
     `need and the matching nextPrompt for hover context. Keep activeStep on the current step or move ` +
-    `only to its immediate next step unless the user explicitly revised an earlier decision; for that ` +
+    `only to its immediate next step unless every crossed step's required data is captured in specUpdates ` +
+    `(for example, define_problem requires brief.problem and identify_users requires brief.user, brief.moment, ` +
+    `and brief.task). Never skip a label while leaving its record empty. If those captures are all present, ` +
+    `a concise multi-step advance is allowed. Unless the user explicitly revised an earlier decision; for that ` +
     `case include a valid flowRevision, preserve existing work, and reopen only the earliest affected ` +
     `step (or its immediate next step after completing the reopened work). Make guidePanel.title exactly ` +
     `match the returned activeStep. ` +
