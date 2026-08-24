@@ -261,6 +261,7 @@ export function mergeSpec(
         status: a.status,
         thumbnailUrl: a.thumbnailUrl,
         supportingLine: a.supportingLine,
+        ingredients: a.ingredients ? [...a.ingredients] : undefined,
         createdAt: now,
         step: a.step,
       });
