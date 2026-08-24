@@ -90,6 +90,56 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts screenshot grounding carried by the visible evidence report", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply:
+          "Traffic is direct/Pinterest-heavy with a low 1-in-45 screener rate — that's grounded evidence, not just volume. Is fixing this urgent right now, or a lower-pressure improvement?",
+        activeStep: "assess_evidence",
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "226 site users, a 58.3% bounce rate, and 40-50 applications resulting in 1 screener interview.",
+              step: "assess_evidence",
+            },
+            {
+              kind: "risk",
+              text: "Traffic is dominated by direct and Pinterest sources visible in the analytics screenshot, not clearly hiring-manager-qualified channels.",
+              step: "assess_evidence",
+            },
+          ],
+          evidenceBrief: {
+            title: "Portfolio performance snapshot",
+            source: "Google Analytics (Aug 2026) + user-reported outcomes",
+            summary:
+              "Traffic exists, but the application-to-screener conversion rate is very low and qualified distribution is uncertain.",
+            stats: [
+              { label: "Visitors", value: "226" },
+              { label: "Applications", value: "~40-50" },
+              { label: "Screener calls", value: "1" },
+            ],
+            strength: "moderate",
+          },
+        },
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Urgency level",
+          nextPrompt:
+            "Is fixing this urgent right now, or a lower-pressure improvement?",
+        },
+        quickReplies: [
+          "Urgent — actively job hunting",
+          "Important but not urgent",
+        ],
+      }),
+      { latestAttachmentCount: 1 },
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("does not treat a generic mention of data as screenshot grounding", () => {
     const result = checkTurnPolicy(
       "assess_evidence",
@@ -166,7 +216,7 @@ describe("checkTurnPolicy", () => {
     );
 
     expect(result.ok).toBe(false);
-    expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+    expect(result.reasons.join(" ")).toMatch(/must create or refresh a project-appropriate evidenceBrief/);
   });
 
   it("requires the evidence brief while the step stays active to ask about urgency", () => {
@@ -193,7 +243,7 @@ describe("checkTurnPolicy", () => {
     );
 
     expect(result.ok).toBe(false);
-    expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+    expect(result.reasons.join(" ")).toMatch(/must create or refresh a project-appropriate evidenceBrief/);
   });
 
   it("accepts an immediate evidence brief while asking the remaining urgency question", () => {

@@ -158,4 +158,88 @@ describe("withPolicyRetry", () => {
     );
     expect(generate).not.toHaveBeenCalled();
   });
+  it("accepts a decimal-heavy evidence transition after repairing its question gate", async () => {
+    const evidenceTransition: CoachTurnResponse = {
+      reply:
+        "The GA4 data shows 226 active users and a 58.3% bounce rate — visitors are leaving fast. With ~40-50 applications producing one screener, **evidence supports urgency and I'm moving to root cause**. What does the homepage show a visitor first, right now?",
+      activeStep: "find_root_cause",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Whether current evidence justifies urgency",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        evidence: [
+          {
+            kind: "fact",
+            text: "GA4: 226 active users and a 58.3% bounce rate.",
+            step: "assess_evidence",
+          },
+          {
+            kind: "fact",
+            text: "40-50 applications produced one screener interview.",
+            step: "assess_evidence",
+          },
+        ],
+        evidenceBrief: {
+          title: "Portfolio performance snapshot",
+          summary: "Traffic exists, but hiring response is weak.",
+          stats: [
+            { label: "Active users", value: "226" },
+            { label: "Bounce rate", value: "58.3%" },
+          ],
+          strength: "moderate",
+        },
+      },
+      guidePanel: {
+        title: "Find the adoption barrier/root cause",
+        need: "Homepage first impression",
+        nextPrompt: "What does the homepage show a visitor first, right now?",
+      },
+      activityEvents: [
+        {
+          type: "evidence_captured",
+          importance: "significant",
+          label: "Captured GA4 and application evidence",
+        },
+        {
+          type: "step_changed",
+          importance: "milestone",
+          label: "Assess evidence and urgency complete",
+        },
+      ],
+      quickReplies: [],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic repair should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "assess_evidence",
+      [],
+      JSON.stringify(evidenceTransition),
+      evidenceTransition,
+      generate,
+      {
+        latestAttachmentCount: 1,
+        latestUserText: "GA4 shows 226 users and 58.3% bounce.",
+        workItemType: "design_project",
+      },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "find_root_cause",
+      stepGate: {
+        linkedDecision: "Homepage first impression",
+        blocking: true,
+        disposition: "ask",
+      },
+    });
+    expect(generate).not.toHaveBeenCalled();
+  });
+
 });

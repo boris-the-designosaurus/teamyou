@@ -26,6 +26,10 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain("The latest user turn includes 2 screenshots");
     expect(prompt).toContain("ground one concise observation");
     expect(prompt).toContain(
+      "either in the reply or in the structured evidence/evidenceBrief",
+    );
+    expect(prompt).toContain("do not repeat its stats in prose merely to prove inspection");
+    expect(prompt).toContain(
       "distinguish current-state evidence from inspiration/reference",
     );
     expect(prompt).toContain("A reference can suggest a direction, but it cannot prove");
@@ -39,6 +43,16 @@ describe("coach flow boundaries", () => {
     );
     expect(prompt).toContain(
       "Use exactly ONE short \\*\\*double-asterisk\\*\\* span whenever a normal reply contains a judgment, recommendation, step transition, or proposed frame",
+    );
+  });
+
+  it("ties a transition turn's gate to the new-step question", () => {
+    const prompt = promptAt("assess_evidence");
+    expect(prompt).toContain(
+      "stepGate must describe that new question as blocking with disposition \"ask\"",
+    );
+    expect(prompt).toContain(
+      "do not leave it describing the completed prior-step decision as \"proceed\"",
     );
   });
 
