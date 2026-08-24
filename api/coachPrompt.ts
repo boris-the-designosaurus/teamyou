@@ -199,7 +199,7 @@ On EVERY turn: first capture everything the user's message implies into specUpda
 - Material decisions go in \`specUpdates.decisions\` with \`rationale\` and, when applicable, \`evidenceRefs\` pointing at real evidence ids. When a decision changes an earlier one, set \`supersedes\` to the earlier decision's real id — do NOT silently overwrite it; the earlier decision is retained with its history intact.
 - Do not silently rewrite a locked problem statement to match a later artifact — if the frame needs to change, say so explicitly and name what downstream decisions/artifacts it affects.
 - \`brief.keyDecisions\` and \`brief.openItems\` are curated snapshots that OVERWRITE (resend the full current list whenever either changes) — every other array in specUpdates appends.
-- Assess evidence and urgency may produce an \`evidenceBrief\` (an "Opportunity brief" card: title, source, summary, stat tiles, an optional funnel, and a strength rating) when the user has supplied real numbers/data — omit it when there's nothing quantitative to summarize.
+- Assess evidence and urgency MUST produce a project-appropriate \`evidenceBrief\` when the user supplies real numbers/data and the step completes (for example, "Opportunity brief" for product adoption or "Portfolio performance snapshot" for a portfolio). Include title, source, summary, stat tiles, an optional funnel, and a strength rating. Omit it only when there is nothing quantitative to summarize.
 - Define the outcome must never let "ship the feature" stand as the outcome. Capture \`outcome.userOutcome\`/\`businessOutcome\`, a \`successMetric\` when credible, else a \`qualitativeCondition\` — and if measurement itself is missing, say so in \`outcome.measurementGap\` rather than omitting it.
 - Promote into the Guide: confirmed problem statements, user/moment, material facts/evidence, explicit assumptions, root-cause hypotheses, scope + exclusions, acceptance criteria + outcome, material decisions + rationale, unresolved risks, selected milestone artifacts, verification results. Update it SILENTLY — never repeat the full update back in the chat reply.
 - Keep in chat only: casual exploration, temporary wording alternatives, rejected low-value ideas (unless the rejection rationale matters later), repetitive confirmations.
@@ -364,7 +364,14 @@ User has been asked for evidence during "Assess evidence and urgency" on a portf
       { "kind": "fact", "text": "40-50 job applications, 1 screener call", "step": "assess_evidence" },
       { "kind": "risk", "text": "Traffic channels are weak-fit for the target audience (direct/Pinterest, not senior hiring managers) — distribution may explain part of the low response independent of site design", "step": "assess_evidence" }
     ],
-    "todos": [{ "title": "Add lightweight analytics for project opens and contact clicks", "description": "No current tracking — needed to isolate positioning vs. distribution and to measure whether a redesign works.", "status": "todo" }]
+    "todos": [{ "title": "Add lightweight analytics for project opens and contact clicks", "description": "No current tracking — needed to isolate positioning vs. distribution and to measure whether a redesign works.", "status": "todo" }],
+    "evidenceBrief": {
+      "title": "Portfolio performance snapshot",
+      "source": "Portfolio analytics and user-reported application outcomes",
+      "summary": "Traffic exists and application response is weak, but missing on-site conversion tracking prevents attributing the result to positioning alone.",
+      "stats": [{ "label": "Visitors", "value": "226" }, { "label": "Applications", "value": "~40-50" }, { "label": "Screener calls", "value": "1" }],
+      "strength": "moderate"
+    }
   },
   "guidePanel": {
     "title": "Find the adoption barrier/root cause",
