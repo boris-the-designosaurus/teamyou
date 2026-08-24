@@ -191,7 +191,11 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       text,
       parsed.value,
       generate,
-      { latestAttachmentCount: latestAttachments.length },
+      {
+        latestAttachmentCount: latestAttachments.length,
+        workItemType,
+        specSnapshot: body.spec,
+      },
     );
 
   // ── One automatic retry: echo the bad output back and demand JSON only. This
@@ -220,7 +224,11 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       retryText,
       parsed.value,
       generate,
-      { latestAttachmentCount: latestAttachments.length },
+      {
+        latestAttachmentCount: latestAttachments.length,
+        workItemType,
+        specSnapshot: body.spec,
+      },
     );
 
   // ── Still bad — fail loudly with the raw output so prompt failures are visible. ──
@@ -249,7 +257,7 @@ export async function withPolicyRetry(
   rawText: string,
   turn: CoachTurnResponse,
   generate: (turns: ApiMessage[]) => Promise<string>,
-  policyContext: { latestAttachmentCount?: number } = {},
+  policyContext: import("./turnPolicy").TurnPolicyContext = {},
 ): Promise<RunCoachResult> {
   let candidateText = rawText;
   let candidate = turn;
