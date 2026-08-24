@@ -11,6 +11,16 @@ function promptAt(activeStep: Parameters<typeof buildSystemPrompt>[0]["activeSte
 }
 
 describe("coach flow boundaries", () => {
+  it("recommends one bounded choice only when the locked frame supports it", () => {
+    const prompt = promptAt("set_criteria");
+    expect(prompt).toContain("set `recommendedQuickReply` to that option's EXACT button label");
+    expect(prompt).toContain(
+      "Omit `recommendedQuickReply` when evidence is insufficient, the options are equally defensible, or the decision is purely personal preference",
+    );
+    expect(prompt).toContain('"recommendedQuickReply": "Positioning statement clarity"');
+    expect(prompt).toContain("the user still confirms or overrides it");
+  });
+
   it("keeps evidence questions out of Understand the request", () => {
     const prompt = promptAt("understand_request");
     expect(prompt).toContain(

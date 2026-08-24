@@ -250,11 +250,15 @@ export function ChatPanel(props: {
                       <button
                         key={qr}
                         type="button"
-                        className="quick-reply-btn"
+                        className={`quick-reply-btn${m.recommendedQuickReply === qr ? " recommended" : ""}`}
                         disabled={props.loading}
                         onClick={() => props.onSend(qr, [])}
+                        aria-label={m.recommendedQuickReply === qr ? `${qr}, recommended` : qr}
                       >
-                        {qr}
+                        <span>{qr}</span>
+                        {m.recommendedQuickReply === qr && (
+                          <span className="quick-reply-recommended">Recommended</span>
+                        )}
                       </button>
                     ))}
                   </div>

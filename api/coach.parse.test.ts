@@ -87,6 +87,34 @@ describe("parseCoachTurn", () => {
     }
   });
 
+  it("preserves a recommendation that exactly matches a quick reply", () => {
+    const r = parseCoachTurn(
+      JSON.stringify({
+        ...validTurn,
+        quickReplies: ["Positioning statement clarity", "Project teaser strength"],
+        recommendedQuickReply: "Positioning statement clarity",
+      }),
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.recommendedQuickReply).toBe("Positioning statement clarity");
+    }
+  });
+
+  it("drops a recommendation that is not one of the quick replies", () => {
+    const r = parseCoachTurn(
+      JSON.stringify({
+        ...validTurn,
+        quickReplies: ["Positioning statement clarity", "Project teaser strength"],
+        recommendedQuickReply: "Contract availability visibility",
+      }),
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.recommendedQuickReply).toBeUndefined();
+    }
+  });
+
   it("rejects an invalid activeStep", () => {
     const r = parseCoachTurn(JSON.stringify({ ...validTurn, activeStep: "nope" }));
     expect(r.ok).toBe(false);

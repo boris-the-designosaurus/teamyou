@@ -445,6 +445,19 @@ body {
   font-size: var(--font-size-200);
   font-family: inherit;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.quick-reply-recommended {
+  color: var(--text-accent-orange);
+  background: var(--bg-accent-orange-subtlest);
+  padding: 3px 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 600;
+  white-space: nowrap;
 }
 .quick-reply-btn:hover:not(:disabled) {
   background: var(--bg-surface);

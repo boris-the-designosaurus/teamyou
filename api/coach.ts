@@ -379,6 +379,17 @@ export function parseCoachTurn(text: string): ParseResult {
   }
   if (!Array.isArray(o.activityEvents)) o.activityEvents = [];
   if (!Array.isArray(o.quickReplies)) o.quickReplies = [];
+  // A recommendation is presentational guidance, not turn substance. Preserve
+  // it only when it names one of the actual string quick replies; otherwise
+  // drop it instead of failing an otherwise useful coach response.
+  if (
+    typeof o.recommendedQuickReply !== "string" ||
+    !(o.quickReplies as unknown[]).some(
+      (reply) => typeof reply === "string" && reply === o.recommendedQuickReply,
+    )
+  ) {
+    delete o.recommendedQuickReply;
+  }
 
   return { ok: true, value: o as unknown as CoachTurnResponse };
 }
