@@ -50,6 +50,15 @@ export function DirectionCards(props: {
                   </button>
                 </div>
                 {a.supportingLine && <p className="direction-card-sub">{a.supportingLine}</p>}
+                {a.ingredients && a.ingredients.length > 0 && (
+                  <div className="direction-card-ingredients" aria-label="Useful ingredients">
+                    {a.ingredients.map((ingredient) => (
+                      <span key={ingredient} className="direction-card-ingredient">
+                        {ingredient}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           );
