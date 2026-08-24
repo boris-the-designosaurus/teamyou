@@ -52,6 +52,19 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("requires shorthand barrier answers to be saved before a portfolio jump", () => {
+    const prompt = promptAt("define_problem");
+    expect(prompt).toContain(
+      "synthesize those words into one concise \`brief.problem\` before advancing",
+    );
+    expect(prompt).toContain(
+      "Hiring managers cannot quickly understand the design thinking behind the work or connect it to clear outcomes",
+    );
+    expect(prompt).toContain(
+      "never advance past Define the problem while omitting \`brief.problem\`",
+    );
+  });
+
   it("keeps user, moment, and task as sequential captures", () => {
     const prompt = promptAt("identify_users");
     expect(prompt).toContain(
