@@ -14,6 +14,8 @@ export type TurnPolicyCheck = {
 const QUESTION_LEAD = /^(what|whether|how|who|when|where|why|is|are|do|does|should|can|could|will|would)\b/i;
 const EARLY_EVIDENCE_QUESTION =
   /\b(traffic(?:\s+(?:quality|source|sources))?|acquisition|distribution|analytics|page\s*views?|bounce\s*rate|engagement\s*rate|conversion\s*(?:rate|tracking)|impressions?|enough\s+(?:of\s+)?(?:the\s+)?right\s+\w+(?:\s+\w+){0,3}\s+(?:see|seeing|visit|visiting|reach|reaching))\b/i;
+const PORTFOLIO_MESSAGE_QUESTION =
+  /\bportfolio\b[^?]{0,100}\b(?:communicat\w*|messag\w*|say|position\w*|present\w*|lead\s+with)\b/i;
 const SINGLE_PATTERN_GATE =
   /\bwhich\b[^?]{0,80}\b(?:should|do)\b[^?]{0,50}\b(?:develop(?:\s+further)?|choose|pursue|take\s+forward|move\s+forward)\b/i;
 const FLEXIBLE_PATTERN_SELECTION =
@@ -136,6 +138,19 @@ export function checkTurnPolicy(
     );
   }
 
+  // A portfolio's message is a later content-direction decision. When the
+  // business request only says "freelance or contract work," Understand the
+  // request first needs the kind of work/offer the site is meant to win.
+  if (
+    turn.activeStep === "understand_request" &&
+    replyQuestions > 0 &&
+    PORTFOLIO_MESSAGE_QUESTION.test(questionText)
+  ) {
+    reasons.push(
+      "the question jumps to portfolio messaging during Understand the request; ask what target work the site must help win first",
+    );
+  }
+
   if (turn.stepGate) {
     const isAsk = turn.stepGate.disposition === "ask";
     if (isAsk && !turn.stepGate.blocking) {
@@ -220,6 +235,8 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `Review and shortlist without a question while the user selects cards. Recommend one grounded option, ` +
     `then invite selecting one or more, combining ingredients, requesting more, or adding an example; never ` +
     `force a single direction or duplicate the cards as quick replies. ` +
+    `For an opportunity-seeking portfolio in Understand the request, ask what target work the site ` +
+    `must help win before asking what the portfolio should communicate, say, or lead with. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }
