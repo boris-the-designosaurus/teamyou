@@ -26,6 +26,10 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain("The latest user turn includes 2 screenshots");
     expect(prompt).toContain("ground one concise observation");
     expect(prompt).toContain(
+      "either in the reply or in the structured evidence/evidenceBrief",
+    );
+    expect(prompt).toContain("do not repeat its stats in prose merely to prove inspection");
+    expect(prompt).toContain(
       "distinguish current-state evidence from inspiration/reference",
     );
     expect(prompt).toContain("A reference can suggest a direction, but it cannot prove");
