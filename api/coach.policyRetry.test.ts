@@ -27,7 +27,7 @@ const stillInvalid: CoachTurnResponse = {
 
 const validFinalCorrection: CoachTurnResponse = {
   reply:
-    "The scope holds — a new homepage plus one detail page directly tests the content-order hypothesis without a full rewrite. What must be true for this redesign to count as successful — specific responses, a screener call, or something else measurable?",
+    "**The scope holds** — a new homepage plus one detail page directly tests the content-order hypothesis without a full rewrite. What must be true for this redesign to count as successful — specific responses, a screener call, or something else measurable?",
   activeStep: "define_outcome",
   workItemType: "design_project",
   workMode: "design_exploration",
