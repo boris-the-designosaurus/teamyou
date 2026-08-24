@@ -216,7 +216,7 @@ describe("checkTurnPolicy", () => {
     );
 
     expect(result.ok).toBe(false);
-    expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+    expect(result.reasons.join(" ")).toMatch(/must create or refresh a project-appropriate evidenceBrief/);
   });
 
   it("requires the evidence brief while the step stays active to ask about urgency", () => {
@@ -243,7 +243,7 @@ describe("checkTurnPolicy", () => {
     );
 
     expect(result.ok).toBe(false);
-    expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+    expect(result.reasons.join(" ")).toMatch(/must create or refresh a project-appropriate evidenceBrief/);
   });
 
   it("accepts an immediate evidence brief while asking the remaining urgency question", () => {
