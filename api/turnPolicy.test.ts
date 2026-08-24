@@ -875,5 +875,8 @@ describe("checkTurnPolicy", () => {
     expect(prompt).toContain("do not ask for confirmation");
     expect(prompt).toContain("user explicitly revised an earlier decision");
     expect(prompt).toContain("Do not remove captured specUpdates");
+    expect(prompt).toContain("translate the latest user answer—including terse quick-reply wording");
+    expect(prompt).toContain("brief.task never replace that record");
+    expect(prompt).toContain("Preserve any valid later-step captures while adding the missing problem");
   });
 });
