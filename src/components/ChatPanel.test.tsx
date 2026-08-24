@@ -37,6 +37,45 @@ describe("ChatPanel quick-reply recommendation", () => {
     consoleError.mockRestore();
   });
 
+  it("renders the full evidence brief in the coach turn where it was created", () => {
+    const message: Message = {
+      id: "coach-evidence",
+      role: "coach",
+      content: "**The evidence establishes underperformance.** What makes this urgent now?",
+      evidenceBrief: {
+        title: "Portfolio performance snapshot",
+        source: "portfolio-analytics.xlsx",
+        summary: "Traffic exists, but hiring response is weak.",
+        stats: [
+          { label: "Active users", value: "226" },
+          { label: "Applications", value: "40–50" },
+          { label: "Screener interviews", value: "1" },
+        ],
+        strength: "moderate",
+      },
+      evidenceSnapshot: [
+        {
+          id: "evidence-1",
+          kind: "fact",
+          text: "One screener interview from 40–50 applications.",
+          step: "assess_evidence",
+        },
+      ],
+      evidenceOpenItems: ["Urgency and timeline"],
+      createdAt: "2026-08-24T12:00:00.000Z",
+    };
+
+    const html = renderToStaticMarkup(
+      <ChatPanel messages={[message]} loading={false} error={null} onSend={vi.fn()} />,
+    );
+
+    expect(html).toContain("Portfolio performance snapshot");
+    expect(html).toContain("Source: portfolio-analytics.xlsx");
+    expect(html).toContain("One screener interview from 40–50 applications.");
+    expect(html).toContain("Urgency and timeline");
+    expect(html).toContain("Evidence strength:");
+  });
+
   it("renders short bullets and strategic bolding without flattening the layout", () => {
     const message: Message = {
       id: "coach-1",
