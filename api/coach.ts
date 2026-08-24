@@ -202,7 +202,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   };
 }
 
-type ApiMessage = {
+export type ApiMessage = {
   role: "user" | "assistant";
   content: string | Anthropic.ContentBlockParam[];
 };
@@ -215,7 +215,7 @@ type ApiMessage = {
  * parse, the original structurally-valid turn is kept rather than losing a
  * good turn over a style nit.
  */
-async function withPolicyRetry(
+export async function withPolicyRetry(
   previousStep: FlowStep,
   apiMessages: ApiMessage[],
   rawText: string,
@@ -280,6 +280,13 @@ async function withPolicyRetry(
     candidate.responseMode ?? "concise",
   );
   const finalPolicy = checkTurnPolicy(previousStep, candidate);
+  // The second correction is assigned at the end of the last loop iteration,
+  // so it has not yet passed through the early success return above. Accept it
+  // here when it now satisfies both contracts; otherwise a valid final retry
+  // becomes a blank-message 502 with its good JSON shown as "raw output."
+  if (finalStyle.ok && finalPolicy.ok) {
+    return { status: 200, json: candidate };
+  }
   return {
     status: 502,
     json: {

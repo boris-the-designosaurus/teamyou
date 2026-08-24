@@ -88,7 +88,7 @@ export async function callCoach(args: {
 
   if (!res.ok || "error" in data) {
     const err = data as { error: string; message?: string; raw?: string };
-    throw new CoachError(err.message ?? err.error ?? `Request failed (${res.status})`, {
+    throw new CoachError(err.message?.trim() || err.error || `Request failed (${res.status})`, {
       raw: err.raw,
       code: err.error,
     });
