@@ -138,6 +138,7 @@ describe("coach flow boundaries", () => {
       "MUST produce a project-appropriate `evidenceBrief` as soon as the user supplies real numbers/data",
     );
     expect(prompt).toContain("even when another question (such as urgency) keeps the step active");
+    expect(prompt).toContain("the report never substitutes for the durable evidence record");
     expect(prompt).toContain('"title": "Portfolio performance snapshot"');
     expect(prompt).toContain('"strength": "moderate"');
   });
