@@ -29,8 +29,8 @@ export function ProcessMap(props: { spec: Spec; type: WorkItemType; title: strin
 
         {steps.length === 0 && (
           <div className="map-note">
-            No steps captured yet. Move through the <b>Structure</b> step in the
-            Work tab and the flow will render here.
+            No steps captured yet. Map out the workflow in the Work tab and the
+            flow will render here.
           </div>
         )}
 

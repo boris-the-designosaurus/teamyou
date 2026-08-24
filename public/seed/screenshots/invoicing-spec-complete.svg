@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" font-family="Inter, system-ui, sans-serif">
+  <rect width="480" height="300" rx="12" fill="#ffffff"/>
+  <rect x="0.5" y="0.5" width="479" height="299" rx="11.5" fill="none" stroke="#e7e5e4"/>
+  <rect x="0" y="0" width="480" height="44" rx="12" fill="#fff6e6"/>
+  <rect x="0" y="32" width="480" height="12" fill="#fff6e6"/>
+  <circle cx="22" cy="22" r="5" fill="#fdb022"/>
+  <circle cx="40" cy="22" r="5" fill="#fec84b"/>
+  <circle cx="58" cy="22" r="5" fill="#ffe6b6"/>
+  <text x="82" y="26" font-size="13" font-weight="700" fill="#171412">TeamYou</text>
+  <text x="28" y="86" font-size="20" font-weight="800" fill="#171412">Spec complete</text>
+  <text x="28" y="108" font-size="12" fill="#59524d">Post-Appointment Invoicing Agent</text>
+  <rect x="28" y="128" width="330" height="10" rx="5" fill="#e7e5e4"/>
+  <rect x="28" y="150" width="424" height="10" rx="5" fill="#f5f5f4"/>
+  <rect x="28" y="172" width="392" height="10" rx="5" fill="#f5f5f4"/>
+  <rect x="28" y="206" width="120" height="34" rx="8" fill="#fff6e6" stroke="#fec84b"/>
+  <text x="88" y="228" font-size="12" font-weight="700" fill="#b54708" text-anchor="middle">Screenshot</text>
+  <rect x="160" y="206" width="120" height="34" rx="8" fill="#f5f5f4"/>
+  <rect x="28" y="262" width="424" height="10" rx="5" fill="#f5f5f4"/>
+</svg>

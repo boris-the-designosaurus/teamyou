@@ -1,30 +1,59 @@
 import type { ImageAttachment } from "./types";
 
 const MAX_EDGE = 1600; // long-edge cap — keeps screenshots within a sane token/payload size
-const SUPPORTED = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+// Formats the Coach (Anthropic vision) can process.
+const SENDABLE = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
 /**
- * Turn an image File/Blob into an ImageAttachment, downscaling to MAX_EDGE on
- * the long edge if needed. GIFs are passed through untouched (canvas would drop
- * animation, and they're rarely huge here).
+ * Turn an image File/Blob into an ImageAttachment.
+ *
+ * Every sendable attachment is re-encoded through a canvas to a canonical format
+ * so its data URL prefix ALWAYS matches its bytes — this is what the Coach API
+ * requires and where the "Could not process image" bug came from (a clipboard
+ * image whose declared type didn't match its data). GIFs pass through to keep
+ * animation. SVG / undecodable images stay attached locally but are not sent.
  */
 export async function fileToAttachment(file: File): Promise<ImageAttachment> {
-  const mediaType = SUPPORTED.includes(file.type) ? file.type : "image/png";
-
   const rawDataUrl = await readAsDataUrl(file);
+  const base = {
+    id: crypto.randomUUID(),
+    name: file.name,
+    bytes: file.size,
+  };
 
-  // Skip re-encoding for GIF (preserve animation) — just pass through.
-  if (mediaType === "image/gif") {
+  // SVG and non-images: keep for local display, never send.
+  if (file.type === "image/svg+xml" || !file.type.startsWith("image/")) {
     return {
-      id: crypto.randomUUID(),
+      ...base,
       dataUrl: rawDataUrl,
-      mediaType,
-      name: file.name,
+      mediaType: file.type || "application/octet-stream",
+      sendable: false,
     };
   }
 
-  const dataUrl = await downscale(rawDataUrl, mediaType);
-  return { id: crypto.randomUUID(), dataUrl, mediaType, name: file.name };
+  // GIF: preserve animation — canvas would flatten it. The Coach accepts gif.
+  if (file.type === "image/gif") {
+    return { ...base, dataUrl: rawDataUrl, mediaType: "image/gif", sendable: true };
+  }
+
+  // Everything else raster: re-encode (and downscale) so the prefix matches the
+  // bytes. png → png, jpeg → jpeg, webp → webp, anything odd → png.
+  const target =
+    file.type === "image/jpeg" || file.type === "image/webp"
+      ? file.type
+      : "image/png";
+  const encoded = await reencode(rawDataUrl, target);
+  if (!encoded) {
+    // Couldn't decode it — keep locally, don't risk a bad payload.
+    return { ...base, dataUrl: rawDataUrl, mediaType: file.type, sendable: false };
+  }
+  return {
+    ...base,
+    dataUrl: encoded,
+    mediaType: target,
+    bytes: Math.round((encoded.length - encoded.indexOf(",") - 1) * 0.75),
+    sendable: true,
+  };
 }
 
 function readAsDataUrl(file: Blob): Promise<string> {
@@ -36,35 +65,44 @@ function readAsDataUrl(file: Blob): Promise<string> {
   });
 }
 
-function downscale(dataUrl: string, mediaType: string): Promise<string> {
+/**
+ * Decode a data URL and re-encode it to `mediaType` via canvas (downscaling to
+ * MAX_EDGE). Returns a data URL whose prefix matches its bytes, or null if the
+ * image can't be decoded.
+ */
+function reencode(dataUrl: string, mediaType: string): Promise<string | null> {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const { width, height } = img;
-      const longEdge = Math.max(width, height);
-      if (longEdge <= MAX_EDGE) {
-        resolve(dataUrl); // already small enough
-        return;
-      }
-      const scale = MAX_EDGE / longEdge;
+      const longEdge = Math.max(img.width, img.height);
+      const scale = longEdge > MAX_EDGE ? MAX_EDGE / longEdge : 1;
       const canvas = document.createElement("canvas");
-      canvas.width = Math.round(width * scale);
-      canvas.height = Math.round(height * scale);
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
       const ctx = canvas.getContext("2d");
       if (!ctx) {
-        resolve(dataUrl);
+        resolve(null);
         return;
       }
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const quality = mediaType === "image/jpeg" ? 0.85 : undefined;
-      resolve(canvas.toDataURL(mediaType, quality));
+      try {
+        const quality = mediaType === "image/png" ? undefined : 0.85;
+        resolve(canvas.toDataURL(mediaType, quality));
+      } catch {
+        resolve(null);
+      }
     };
-    img.onerror = () => resolve(dataUrl);
+    img.onerror = () => resolve(null);
     img.src = dataUrl;
   });
 }
 
-/** Split a data URL into its base64 payload for sending to the API. */
+/** True for a data URL of a Coach-processable image type. */
+export function isSendableImageDataUrl(dataUrl: string): boolean {
+  return SENDABLE.some((t) => dataUrl.startsWith(`data:${t};base64,`));
+}
+
+/** Split a data URL into its base64 payload (no prefix). */
 export function dataUrlToBase64(dataUrl: string): string {
   const comma = dataUrl.indexOf(",");
   return comma === -1 ? dataUrl : dataUrl.slice(comma + 1);

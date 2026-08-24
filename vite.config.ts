@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv, type Plugin, type ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
+import svgr from "vite-plugin-svgr";
 
 /**
  * Dev-only middleware that mounts the same serverless handler used in
@@ -54,6 +55,26 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [react(), coachApiPlugin()],
+    plugins: [
+      // Single-color icons use a neutral #57534E / #1F1F1F — map it to
+      // currentColor so they inherit --icon-* tokens. Multi-color badges keep
+      // their fills untouched.
+      svgr({
+        svgrOptions: {
+          replaceAttrValues: {
+            "#57534E": "currentColor",
+            "#57534e": "currentColor",
+            "#59524D": "currentColor",
+            "#59524d": "currentColor",
+            "#1F1F1F": "currentColor",
+            "#1f1f1f": "currentColor",
+            "#616873": "currentColor",
+            black: "currentColor",
+          },
+        },
+      }),
+      react(),
+      coachApiPlugin(),
+    ],
   };
 });

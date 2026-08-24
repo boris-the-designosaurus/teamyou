@@ -1,74 +1,84 @@
-# TeamYou — v1
+# TeamYou
 
-A user chats with an AI **Coach**. Each turn, the Coach returns a conversational
-reply plus structured data. The app merges that structured data into a **Spec**
-and updates a **Guide** panel. The conversation becomes a reviewable spec:
-**Brief → Workflow → Rules → Review**.
+TeamYou is an AI coaching and decision-record workspace for product and design work. The Coach keeps the conversation moving one decision at a time, while the Guide preserves the detailed facts, assumptions, risks, decisions, unresolved needs, artifacts, and rationale.
 
-> Thesis: structure and enforcement ("spine and teeth"). The chat is the input
-> stream, not the product. The spec is the product.
+> Core principle: **The chat decides; the Guide remembers.**
 
-## What's built (v1 scope)
+## Product flow
 
-1. One modal, **Work** tab. User message → `/api/coach` → real Coach reply in chat.
-   The Coach enforces the Brief → Workflow → Rules → Review progression.
-2. **Guide panel** (right) that updates as the conversation captures intent —
-   active step + what's been filled in.
-3. Conversation **becomes a spec** — a Summary + Key Decisions view rendered from
-   merged spec state.
+The Guide follows four stages:
 
-Out of scope (types may exist, nothing renders): Today dashboard, streaks,
-activity-feed UI, process-map rendering, Review submissions/findings, Artifacts,
-multiple Projects, workflow branches, team features, notifications, analytics.
+1. **Frame the problem**
+   - Understand the request
+   - Define the problem
+   - Identify users and context
+   - Assess evidence and urgency
+   - Find the adoption barrier/root cause
+   - Set the scope
+   - Define the outcome
+2. **Explore directions**
+3. **Design the solution**
+4. **Specify and build**
+
+Normal coaching turns are intentionally concise. The Coach asks at most one decision-critical question, records non-blocking unknowns in the Guide, and advances when the current step has enough information. The Guide shows compact `Need` labels instead of duplicating conversational prompts.
+
+## Current capabilities
+
+- Multiple locally saved specs with automatic project-type and work-mode detection
+- Persistent facts, assumptions, evidence, risks, decisions, open questions, todos, and rationale
+- Pattern, wireframe, high-fidelity, build-handoff, working-build, and verified-result milestones
+- Screenshot attachments linked to specs or todos
+- Review workspace with checks, comments, threads, and artifact status
+- Build handoff and verification states
+- Deterministic coach-policy checks for step order, conversational drift, question limits, and response length
+- Today dashboard and activity history
+
+Saved specs use browser `localStorage`, so they survive refreshes on the same localhost origin. Image-heavy projects can exceed the browser storage limit; durable server-side storage is not implemented yet.
 
 ## Stack
 
-- React + TypeScript + Vite.
-- One serverless function at `api/coach.ts` holds the Anthropic API key and
-  proxies the call (model: `claude-sonnet-5`). In dev, a small Vite middleware
-  (`vite.config.ts`) mounts the same handler at `POST /api/coach`, so
-  `npm run dev` proves the full round-trip in one process. In production the
-  file in `api/` deploys as a serverless function (e.g. Vercel).
+- React + TypeScript + Vite
+- Vitest
+- Anthropic SDK through `api/coach.ts`
+- Vercel-compatible serverless API handler
 
-## Getting started
+## Run locally
 
 ```bash
 npm install
-cp .env.example .env      # add your ANTHROPIC_API_KEY
-npm run dev               # http://localhost:5173
+cp .env.example .env
+# Add ANTHROPIC_API_KEY to .env
+npm run dev
 ```
 
-## The three rules that make the contract safe
+Vite normally starts at [http://localhost:5173](http://localhost:5173). Use a fixed alternate port when needed:
 
-- **Rule 1** — `activeStep` lives at the top level of `CoachTurnResponse` only.
-  The Guide panel reads the step from there (`src/components/GuidePanel.tsx`).
-- **Rule 2** — The client is the ID authority. The Coach proposes items with no
-  `id`; `src/merge.ts` assigns stable IDs on merge and resolves
-  `linkedAcceptanceCriterionRef` → the real criterion `id`.
-- **Rule 3** — Explicit merge semantics (`src/merge.ts`): scalars overwrite,
-  arrays append, `activityEvents` append.
+```bash
+npm run dev -- --port 5174 --strictPort
+```
 
-`src/merge.ts` and the `CoachTurnResponse` type in `src/types.ts` are the two
-most safety-critical spots. They have unit tests:
+The API key is read server-side and is not bundled into the browser. `COACH_MODEL` can optionally override the default model.
+
+## Verify
 
 ```bash
 npm test
+npm run build
 ```
 
-If the Coach's output doesn't parse as valid JSON, the server fails **loudly**
-(HTTP 502 with the raw output), and the chat surfaces it — so prompt failures
-are visible early.
+## Important source files
 
-## Layout
+```text
+api/coach.ts              Coach request handling and policy retries
+api/coachPrompt.ts        Canonical coaching instructions
+api/replyStyle.ts         Concision and question-count checks
+api/turnPolicy.ts         Step and Guide/coach ownership checks
+src/types.ts              Flow, spec, artifact, and response contracts
+src/merge.ts              Deterministic spec merge behavior
+src/messageOrder.ts       Step-marker and coach-message ordering
+src/store.ts              Local saved-spec persistence and migration
+src/App.tsx               Application orchestration
+src/components/           Chat, Guide, review, handoff, and dashboard UI
+```
 
-```
-api/
-  coach.ts        # serverless handler + runCoach() core
-  coachPrompt.ts  # Coach system prompt (two-phase posture + JSON discipline)
-src/
-  types.ts        # data model + CoachTurnResponse contract
-  merge.ts        # Rule 3 merge + Rule 2 id assignment  (+ merge.test.ts)
-  coachClient.ts  # POST /api/coach
-  App.tsx         # orchestration: turn → merge → render
-  components/     # Modal, ChatPanel, GuidePanel, SpecView
-```
+`DESIGN.md` documents the product method and visual design system. Design tokens live in `tokens/design-tokens.json` and `src/tokens.css`.

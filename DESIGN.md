@@ -1,5 +1,51 @@
 # TeamYou — Design System
 
+Two canonical references live here: the **product method** below — *Sequenced Judgment*, how the Coach assists design — and the **visual design system** (tokens, color, type) further down. Prompt, UI, and product decisions should trace back to the method; visual decisions to the tokens.
+
+---
+
+## Sequenced Judgment — the design-assistance model
+
+TeamYou's Coach guides **one design decision at a time.** The failure mode of AI design help is option overload: five or six directions dumped before the designer has even named what the thing must do. That overwhelms judgment and kills momentum. TeamYou does the opposite — it slows the work into sequenced, single-threaded judgment that matches where the designer is.
+
+This is the **default method** behind every Coach turn. When in doubt — in the prompt, in the UI, in a new feature — reduce option overload and guide the next single decision.
+
+**The loop** (one step at a time, never fan out):
+
+1. **Define the job** — what the thing must *do*, past the surface artifact the designer named.
+2. **Name the user feeling** — what the person should feel and do at this moment; the job is only right if it serves that feeling.
+3. **Propose one strongest structure** — a single committed hypothesis for doing the job, with why it fits. Not a menu.
+4. **Evaluate it against the job** — what it delivers, what's missing. The job is the yardstick.
+5. **Iterate or advance** — adjust the same structure, or swap to the next *single* hypothesis, and re-evaluate.
+6. **Capture the decision and move to the next decision** — once it does the job, lock it and step to the single next call.
+
+**Principle:** sequenced single-threaded judgment, not parallel option-dumping. Define the job → name the feeling → test one structure → evaluate → next decision. TeamYou should feel like a senior partner working beside the designer — not a search engine returning results.
+
+### Worked case: the inline "ongoing project" notification
+
+A designer wants an inline notification for an ongoing project on their portfolio.
+
+**Option-dumping — what TeamYou avoids:**
+
+> "Here are six directions — a bubble, a banner, a toast, a ribbon, a badge, a status chip. Which do you want?"
+
+The designer now has to evaluate six patterns against a job nobody has named. Momentum dies.
+
+**Sequenced Judgment — what TeamYou does:**
+
+1. **Job** — not "show a notification." The real job: communicate that the project *isn't launched yet*, is *still active*, and has a *clear next action*.
+2. **Feeling** — "this is alive and moving," not "this looks broken or abandoned."
+3. **One structure** — a bubble notification with a short status line plus a single next-action link.
+4. **Evaluate** — covers "not finished" and "next action," but a plain bubble reads like an alert/error — risking "broken" instead of "alive."
+5. **Iterate** — the *same* structure, strengthened: bubble + CTA, dotted connector, footer, contact, close. Re-evaluate: now it carries activity *and* a next action.
+6. **Next decision — the icon**, tested one at a time: a project icon (too static) → a wrench (reads "construction") → two circular arrows (reads "syncing") → three arrows (reads "ongoing cycle"). Lock it.
+
+Each icon was a single hypothesis tested against the job before the next — never five icons offered at once. That sequence *is* the product.
+
+---
+
+## Visual design system
+
 Source of truth: **[`tokens/design-tokens.json`](tokens/design-tokens.json)** (W3C Design
 Tokens format, resolved values) and **[`src/tokens.css`](src/tokens.css)** (the same
 tokens as CSS custom properties, Light + Dark). Both are generated from the Figma
