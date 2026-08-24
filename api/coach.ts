@@ -245,6 +245,74 @@ export type ApiMessage = {
   content: string | Anthropic.ContentBlockParam[];
 };
 
+function repairCompletedPortfolioRequest(
+  previousStep: FlowStep,
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+  policyContext: import("./turnPolicy").TurnPolicyContext,
+): CoachTurnResponse | null {
+  if (
+    previousStep !== "understand_request" ||
+    turn.activeStep !== "understand_request" ||
+    policyContext.workItemType !== "design_project" ||
+    !policyReasons.some((reason) =>
+      reason.includes("request goal and context were captured"),
+    )
+  ) {
+    return null;
+  }
+
+  const snapshotBrief =
+    policyContext.specSnapshot &&
+    typeof policyContext.specSnapshot === "object" &&
+    "brief" in policyContext.specSnapshot &&
+    policyContext.specSnapshot.brief &&
+    typeof policyContext.specSnapshot.brief === "object"
+      ? (policyContext.specSnapshot.brief as Record<string, unknown>)
+      : {};
+  const goal = turn.specUpdates.brief?.goal ?? snapshotBrief.goal;
+  const productContext =
+    turn.specUpdates.brief?.productContext ?? snapshotBrief.productContext;
+  const portfolioContext = `${typeof goal === "string" ? goal : ""} ${
+    typeof productContext === "string" ? productContext : ""
+  }`;
+
+  if (!/portfolio/i.test(portfolioContext)) return null;
+
+  const nextPrompt =
+    "What is actually preventing the portfolio from helping you win that work?";
+
+  return {
+    ...turn,
+    reply:
+      "**The target work is already clear enough to proceed.** " + nextPrompt,
+    activeStep: "define_problem",
+    stepGate: {
+      linkedDecision: "The hiring barrier the portfolio must remove",
+      blocking: true,
+      disposition: "ask",
+    },
+    guidePanel: {
+      title: STEP_TITLES.define_problem,
+      captured: [],
+      need: "Hiring barrier",
+      nextPrompt,
+      priorSummary:
+        typeof goal === "string" ? `Target work: ${goal}` : undefined,
+    },
+    activityEvents: [
+      ...turn.activityEvents.filter((event) => event.type !== "step_changed"),
+      {
+        type: "step_changed",
+        importance: "milestone",
+        label: "Moved to Define the problem",
+      },
+    ],
+    quickReplies: [],
+    recommendedQuickReply: undefined,
+  };
+}
+
 /**
  * The decision-criticality gate's brevity contract, enforced as code: a
  * structurally-valid turn that violates the concise-reply rules (too long,
@@ -276,6 +344,27 @@ export async function withPolicyRetry(
     const policyCheck = checkTurnPolicy(previousStep, candidate, policyContext);
     if (styleCheck.ok && policyCheck.ok) {
       return { status: 200, json: candidate };
+    }
+
+    const repaired = repairCompletedPortfolioRequest(
+      previousStep,
+      candidate,
+      policyCheck.reasons,
+      policyContext,
+    );
+    if (repaired) {
+      const repairedStyle = checkReplyStyle(
+        repaired.reply,
+        repaired.responseMode ?? "concise",
+      );
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repaired,
+        policyContext,
+      );
+      if (repairedStyle.ok && repairedPolicy.ok) {
+        return { status: 200, json: repaired };
+      }
     }
 
     const correction = [
