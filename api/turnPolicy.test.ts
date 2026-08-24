@@ -110,7 +110,7 @@ describe("checkTurnPolicy", () => {
     expect(result.reasons.join(" ")).toMatch(/does not ground an observation/);
   });
 
-  it("requires an evidence brief when quantitative evidence completes the step", () => {
+  it("requires an evidence brief as soon as quantitative evidence is captured", () => {
     const result = checkTurnPolicy(
       "assess_evidence",
       turn({
@@ -136,6 +136,68 @@ describe("checkTurnPolicy", () => {
 
     expect(result.ok).toBe(false);
     expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+  });
+
+  it("requires the evidence brief while the step stays active to ask about urgency", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply: "Captured that. Is there urgency here, or is this exploratory?",
+        activeStep: "assess_evidence",
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "226 users and one screener interview from 40-50 applications.",
+              step: "assess_evidence",
+            },
+          ],
+        },
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Urgency/timeline",
+          nextPrompt: "Is there urgency here, or is this exploratory?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+  });
+
+  it("accepts an immediate evidence brief while asking the remaining urgency question", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply: "Captured that. Is there urgency here, or is this exploratory?",
+        activeStep: "assess_evidence",
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "226 users and one screener interview from 40-50 applications.",
+              step: "assess_evidence",
+            },
+          ],
+          evidenceBrief: {
+            title: "Portfolio performance snapshot",
+            summary: "Traffic exists, but hiring outcomes are weak and funnel visibility is missing.",
+            stats: [
+              { label: "Active users", value: "226" },
+              { label: "Screener interviews", value: "1" },
+            ],
+            strength: "moderate",
+          },
+        },
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Urgency/timeline",
+          nextPrompt: "Is there urgency here, or is this exploratory?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(true);
   });
 
   it("accepts a project-appropriate evidence brief with the quantitative transition", () => {
