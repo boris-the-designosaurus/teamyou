@@ -4,7 +4,7 @@ import { checkTurnPolicy, turnPolicyCorrectionPrompt } from "./turnPolicy";
 
 function turn(overrides: Partial<CoachTurnResponse> = {}): CoachTurnResponse {
   return {
-    reply: "The barrier is clear. Who is the primary visitor?",
+    reply: "**The barrier is clear**. Who is the primary visitor?",
     activeStep: "identify_users",
     specUpdates: {},
     guidePanel: {
@@ -20,6 +20,25 @@ function turn(overrides: Partial<CoachTurnResponse> = {}): CoachTurnResponse {
 describe("checkTurnPolicy", () => {
   it("accepts an immediate step advance with the question in chat", () => {
     expect(checkTurnPolicy("define_problem", turn()).ok).toBe(true);
+  });
+
+  it("rejects a forward transition with no strategic emphasis", () => {
+    const result = checkTurnPolicy(
+      "identify_users",
+      turn({
+        reply:
+          "That's enough to define users and context. What evidence do we have that this is the problem?",
+        activeStep: "assess_evidence",
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Evidence type",
+          nextPrompt: "What evidence do we have that this is the problem?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/must emphasize one short judgment/);
   });
 
   it("rejects an acknowledgement-only framing turn with no prompt to continue", () => {

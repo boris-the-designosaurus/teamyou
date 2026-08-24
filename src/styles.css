@@ -438,6 +438,9 @@ body {
 .bubble-content li + li {
   margin-top: 4px;
 }
+.coach .bubble-content strong {
+  font-weight: var(--weight-semibold);
+}
 /* Coach-offered quick replies ("Yes"/"No", 2-3 short choices) — styled like a
    clickable version of the user's own reply bubble so they read as an
    affordance to answer, not a status tag. */

@@ -11,13 +11,13 @@ function promptAt(activeStep: Parameters<typeof buildSystemPrompt>[0]["activeSte
 }
 
 describe("coach flow boundaries", () => {
-  it("allows short bullets and strategic bolding without turning chat into a report", () => {
+  it("allows short bullets and requires strategic emphasis without turning chat into a report", () => {
     const prompt = promptAt("define_problem");
     expect(prompt).toContain(
       "A short 2-4 item bullet list is allowed only when it materially improves the scanability",
     );
     expect(prompt).toContain(
-      "You may wrap ONE short clause per message in \\*\\*double asterisks\\*\\*",
+      "Use exactly ONE short \\*\\*double-asterisk\\*\\* span whenever a normal reply contains a judgment, recommendation, step transition, or proposed frame",
     );
   });
 
