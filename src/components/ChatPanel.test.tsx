@@ -31,6 +31,9 @@ describe("ChatPanel quick-reply recommendation", () => {
     expect(html).toContain("Positioning statement clarity, recommended");
     expect(html.match(/>Recommended</g)).toHaveLength(1);
     expect(html).not.toContain("Project teaser strength, recommended");
+    expect(html).toContain(
+      'placeholder="Choose an option above, or type your own response…"',
+    );
     consoleError.mockRestore();
   });
 
@@ -51,5 +54,6 @@ describe("ChatPanel quick-reply recommendation", () => {
     expect(html).toContain("<ul>");
     expect(html).toContain("<li><span>Clarify the offer</span></li>");
     expect(html).not.toContain("- Clarify the offer");
+    expect(html).toContain('placeholder="Describe it, or paste a screenshot…"');
   });
 });
