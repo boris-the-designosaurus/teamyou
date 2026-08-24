@@ -408,6 +408,17 @@ export function parseCoachTurn(text: string): ParseResult {
   const isPlainObject = (v: unknown) =>
     typeof v === "object" && v !== null && !Array.isArray(v);
   if (!isPlainObject(o.specUpdates)) o.specUpdates = {};
+  // Recover a useful brief when the model follows the semantic instruction but
+  // accidentally places evidenceBrief beside specUpdates. The prompt requires
+  // specUpdates.evidenceBrief; normalizing this small shape mistake preserves
+  // the evidence report instead of silently dropping it after a valid turn.
+  if (
+    isPlainObject(o.evidenceBrief) &&
+    !isPlainObject((o.specUpdates as Record<string, unknown>).evidenceBrief)
+  ) {
+    (o.specUpdates as Record<string, unknown>).evidenceBrief = o.evidenceBrief;
+    delete o.evidenceBrief;
+  }
   if (!isPlainObject(o.guidePanel)) {
     o.guidePanel = { title: STEP_TITLES[o.activeStep as FlowStep] };
   } else if (typeof (o.guidePanel as Record<string, unknown>).title !== "string") {
