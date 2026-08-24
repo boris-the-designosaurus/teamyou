@@ -250,6 +250,30 @@ describe("mergeSpec — Rule 3", () => {
     expect(spec.milestoneArtifacts[0].id).toBe("id_0");
   });
 
+  it("preserves reusable ingredients on pattern artifacts", () => {
+    const spec = mergeSpec(
+      emptySpec(),
+      {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Contextual offer",
+            status: "exploring",
+            supportingLine: "Introduces value at the moment of need.",
+            ingredients: ["Right-time trigger", "Task-specific value"],
+            step: "find_patterns",
+          },
+        ],
+      },
+      () => "pattern_1",
+    );
+
+    expect(spec.milestoneArtifacts[0].ingredients).toEqual([
+      "Right-time trigger",
+      "Task-specific value",
+    ]);
+  });
+
   it("array append: buildHandoff appends a new handoff with nested instruction ids", () => {
     const spec = mergeSpec(
       emptySpec(),

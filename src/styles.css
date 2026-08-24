@@ -1246,6 +1246,21 @@ body {
   color: var(--text-subtle);
   line-height: 16px;
 }
+.direction-card-ingredients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.direction-card-ingredient {
+  padding: 3px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-subtle);
+  background: var(--bg-surface-light);
+  font-size: var(--font-size-50);
+  line-height: 16px;
+}
 .direction-card-choose {
   display: inline-flex;
   align-items: center;

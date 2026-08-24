@@ -28,6 +28,24 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain('"flowRevision": { "reopenedStep": "find_patterns"');
     expect(prompt).toContain("existing Joey Shiner directions preserved");
     expect(prompt).toContain("Never ask them to justify the same choice again");
+    expect(prompt).toContain("Action before clarification");
+    expect(prompt).toContain("You're right — I was too narrow");
+    expect(prompt).toContain("Never mention how many times they asked");
+    expect(prompt).toContain(
+      "a request to SEE a few reversible alternatives is not scope expansion",
+    );
+  });
+
+  it("treats pattern exploration as a flexible multi-select workspace", () => {
+    const prompt = promptAt("find_patterns");
+    expect(prompt).toContain("Pattern exploration is a workspace, not a single-answer gate");
+    expect(prompt).toContain("proactively add 3-5 structurally distinct");
+    expect(prompt).toContain("Recommend the strongest pattern with ONE grounded reason");
+    expect(prompt).toContain(
+      "Select one or more patterns to generate wireframes, combine useful ingredients, request more, or add your own example in chat.",
+    );
+    expect(prompt).toContain('"ingredients": ["Direct offer", "Availability", "Builder positioning"]');
+    expect(prompt).toContain("Pattern cards replace quick replies for this choice");
   });
 
   it("keeps evidence questions out of Understand the request", () => {

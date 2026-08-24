@@ -14,6 +14,10 @@ export type TurnPolicyCheck = {
 const QUESTION_LEAD = /^(what|whether|how|who|when|where|why|is|are|do|does|should|can|could|will|would)\b/i;
 const EARLY_EVIDENCE_QUESTION =
   /\b(traffic(?:\s+(?:quality|source|sources))?|acquisition|distribution|analytics|page\s*views?|bounce\s*rate|engagement\s*rate|conversion\s*(?:rate|tracking)|impressions?|enough\s+(?:of\s+)?(?:the\s+)?right\s+\w+(?:\s+\w+){0,3}\s+(?:see|seeing|visit|visiting|reach|reaching))\b/i;
+const SINGLE_PATTERN_GATE =
+  /\bwhich\b[^?]{0,80}\b(?:should|do)\b[^?]{0,50}\b(?:develop(?:\s+further)?|choose|pursue|take\s+forward|move\s+forward)\b/i;
+const FLEXIBLE_PATTERN_SELECTION =
+  /\b(?:select|choose)\s+(?:one\s+or\s+more|any|multiple|several)\b/i;
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -105,6 +109,13 @@ export function checkTurnPolicy(
   const replyQuestions = countQuestions(turn.reply);
   const stayedOnStep = turn.activeStep === previousStep;
   const questionText = `${turn.reply}\n${nextPrompt}`;
+  const newPatterns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "pattern_shortlist",
+  );
+  const performedPatternExploration =
+    (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
+    newPatterns.length > 0 &&
+    replyQuestions === 0;
 
   const exitSignal = capturedStepExit(previousStep, turn);
   if (stayedOnStep && exitSignal) {
@@ -135,7 +146,7 @@ export function checkTurnPolicy(
         `stepGate disposition is "${turn.stepGate.disposition}" but blocking is true`,
       );
     }
-    if (!isAsk && stayedOnStep) {
+    if (!isAsk && stayedOnStep && !performedPatternExploration) {
       reasons.push(
         `the turn says the current step is nonblocking (${turn.stepGate.disposition}) but did not advance`,
       );
@@ -166,6 +177,29 @@ export function checkTurnPolicy(
     reasons.push("guidePanel.nextPrompt is present without a compact guidePanel.need label");
   }
 
+  if (
+    (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
+    SINGLE_PATTERN_GATE.test(turn.reply)
+  ) {
+    reasons.push(
+      "pattern exploration cannot force a single direction; let the user select one or more, combine ingredients, request more, or add an example",
+    );
+  }
+
+  if (newPatterns.length >= 2) {
+    if (!/\b(?:recommend|strongest fit|best fit)\b/i.test(turn.reply)) {
+      reasons.push("a multi-pattern set must include one grounded recommendation");
+    }
+    if (!FLEXIBLE_PATTERN_SELECTION.test(turn.reply) || !/\bcombine\b/i.test(turn.reply)) {
+      reasons.push(
+        "a multi-pattern set must invite selecting one or more patterns and combining useful ingredients",
+      );
+    }
+    if ((turn.quickReplies ?? []).length > 0) {
+      reasons.push("pattern cards are the choices and must not be duplicated as quick replies");
+    }
+  }
+
   return { ok: reasons.length === 0, reasons };
 }
 
@@ -180,8 +214,12 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `step (or its immediate next step after completing the reopened work). Make guidePanel.title exactly ` +
     `match the returned activeStep. ` +
     `When stepGate is nonblocking (anything except disposition "ask"), do not ask for confirmation ` +
-    `and do not stay on the same step: capture the judgment, advance to the immediate next step, and ` +
+    `and normally do not stay on the same step: capture the judgment, advance to the immediate next step, and ` +
     `ask only the next step's genuinely blocking question. ` +
+    `Pattern exploration is the exception: after adding a useful set, it may stay on Find patterns or ` +
+    `Review and shortlist without a question while the user selects cards. Recommend one grounded option, ` +
+    `then invite selecting one or more, combining ingredients, requesting more, or adding an example; never ` +
+    `force a single direction or duplicate the cards as quick replies. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }
