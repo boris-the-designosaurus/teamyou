@@ -51,7 +51,7 @@ describe("coach flow boundaries", () => {
   it("keeps evidence questions out of Understand the request", () => {
     const prompt = promptAt("understand_request");
     expect(prompt).toContain(
-      "Do not ask for analytics, evidence, target users, workflow timing, root cause, scope, or success measures here.",
+      "Do not ask for analytics, evidence, target users, workflow timing, root cause, scope, success measures, or proposed page messaging here.",
     );
     expect(prompt).toContain(
       'Never ask an evidence question while activeStep is "understand_request" or "define_problem".',
@@ -65,6 +65,23 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain('"title": "Define the problem"');
     expect(prompt).toContain('"workItemType": "design_project"');
     expect(prompt).toContain("Use `case_study` ONLY");
+  });
+
+  it("asks for target work before portfolio messaging on an ambiguous request", () => {
+    const prompt = promptAt("understand_request");
+    expect(prompt).toContain(
+      "For an opportunity-seeking portfolio, the first missing context is the specific kind of work the site must help win.",
+    );
+    expect(prompt).toContain(
+      'User: "My portfolio isn\'t generating freelance or contract work, and I want to improve it."',
+    );
+    expect(prompt).toContain(
+      '"reply": "What kind of freelance or contract work do you want the portfolio to help you win?"',
+    );
+    expect(prompt).toContain('"need": "Target work"');
+    expect(prompt).toContain(
+      "Do NOT ask what the portfolio should communicate, what its key message should be, or what it should lead with on this turn.",
+    );
   });
 
   it("keeps the active Guide title aligned when evidence advances to root cause", () => {

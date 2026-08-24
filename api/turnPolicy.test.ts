@@ -314,6 +314,61 @@ describe("checkTurnPolicy", () => {
     expect(result.reasons.join(" ")).not.toMatch(/traffic\/evidence/);
   });
 
+  it("rejects asking for portfolio messaging before the target work is known", () => {
+    const result = checkTurnPolicy(
+      "understand_request",
+      turn({
+        reply:
+          "Got it — I've captured the goal. What does your portfolio need to communicate about you for the right clients to reach out?",
+        activeStep: "understand_request",
+        stepGate: {
+          linkedDecision: "Portfolio key message",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {
+          brief: { goal: "Generate freelance or contract work through the portfolio" },
+        },
+        guidePanel: {
+          title: "Understand the request",
+          need: "Portfolio key message",
+          nextPrompt:
+            "What does your portfolio need to communicate about you for the right clients to reach out?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/ask what target work/);
+  });
+
+  it("accepts asking what work an ambiguous portfolio request must help win", () => {
+    const result = checkTurnPolicy(
+      "understand_request",
+      turn({
+        reply:
+          "What kind of freelance or contract work do you want the portfolio to help you win?",
+        activeStep: "understand_request",
+        stepGate: {
+          linkedDecision: "Target work the portfolio must help win",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {
+          brief: { goal: "Generate freelance or contract work through the portfolio" },
+        },
+        guidePanel: {
+          title: "Understand the request",
+          need: "Target work",
+          nextPrompt:
+            "What kind of freelance or contract work do you want the portfolio to help you win?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("requires an ask disposition to be blocking", () => {
     const result = checkTurnPolicy(
       "define_problem",
