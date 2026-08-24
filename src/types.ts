@@ -702,6 +702,15 @@ export type StepGate = {
   disposition: StepGateDisposition;
 };
 
+// A deliberate, user-authorized revision may reopen an earlier flow step.
+// "Locked" means traceable/current, not irreversible: existing work stays in
+// the record while the affected decision and downstream steps are revisited.
+export type FlowRevision = {
+  reopenedStep: FlowStep; // earliest step materially affected by the change
+  reason: string;
+  preservesExistingWork: true;
+};
+
 export type CoachTurnResponse = {
   reply: string; // shown in chat
   activeStep: FlowStep; // single source of truth for the step
@@ -716,6 +725,10 @@ export type CoachTurnResponse = {
   // Exact label of one quick reply when the locked frame supports a defensible
   // recommendation. Omit when evidence is insufficient or choices are equal.
   recommendedQuickReply?: string;
+  // Required when an explicit user revision moves activeStep backward. The
+  // server rejects unannotated regressions so ordinary turns still follow the
+  // stable flow in order.
+  flowRevision?: FlowRevision;
   // The gate evaluation behind this turn's question (or lack of one). Optional
   // for backward compatibility with older persisted turns, but the prompt
   // requires it on every turn going forward.
