@@ -245,6 +245,40 @@ export type ApiMessage = {
   content: string | Anthropic.ContentBlockParam[];
 };
 
+function repairAdvancedTurnQuestionGate(
+  previousStep: FlowStep,
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+): CoachTurnResponse | null {
+  const advanced =
+    FLOW_STEPS.indexOf(turn.activeStep) > FLOW_STEPS.indexOf(previousStep);
+  const need = turn.guidePanel.need?.trim();
+  const nextPrompt = turn.guidePanel.nextPrompt?.trim();
+
+  if (
+    !advanced ||
+    !need ||
+    !nextPrompt ||
+    !turn.stepGate ||
+    turn.stepGate.disposition === "ask" ||
+    !policyReasons.some((reason) =>
+      reason.includes("nonblocking") &&
+      reason.includes("still asks for confirmation or more information"),
+    )
+  ) {
+    return null;
+  }
+
+  return {
+    ...turn,
+    stepGate: {
+      linkedDecision: need,
+      blocking: true,
+      disposition: "ask",
+    },
+  };
+}
+
 function repairCompletedPortfolioRequest(
   previousStep: FlowStep,
   turn: CoachTurnResponse,
@@ -344,6 +378,22 @@ export async function withPolicyRetry(
     const policyCheck = checkTurnPolicy(previousStep, candidate, policyContext);
     if (styleCheck.ok && policyCheck.ok) {
       return { status: 200, json: candidate };
+    }
+
+    const repairedQuestionGate = repairAdvancedTurnQuestionGate(
+      previousStep,
+      candidate,
+      policyCheck.reasons,
+    );
+    if (repairedQuestionGate && styleCheck.ok) {
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repairedQuestionGate,
+        policyContext,
+      );
+      if (repairedPolicy.ok) {
+        return { status: 200, json: repairedQuestionGate };
+      }
     }
 
     const repaired = repairCompletedPortfolioRequest(
