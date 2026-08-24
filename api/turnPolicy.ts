@@ -56,6 +56,12 @@ function snapshotBriefValue(
   return (brief as Record<string, unknown>)[key];
 }
 
+function snapshotHasEvidenceBrief(snapshot: unknown): boolean {
+  if (!snapshot || typeof snapshot !== "object") return false;
+  const evidenceBrief = (snapshot as { evidenceBrief?: unknown }).evidenceBrief;
+  return !!evidenceBrief && typeof evidenceBrief === "object";
+}
+
 function capturedBriefValue(
   turn: CoachTurnResponse,
   context: TurnPolicyContext,
@@ -174,6 +180,22 @@ export function checkTurnPolicy(
   const replyQuestions = countQuestions(turn.reply);
   const stayedOnStep = turn.activeStep === previousStep;
   const questionText = `${turn.reply}\n${nextPrompt}`;
+
+  const completesQuantitativeEvidenceStep =
+    previousStep === "assess_evidence" &&
+    turn.activeStep === "find_root_cause" &&
+    (turn.specUpdates.evidence ?? []).some(
+      (item) => item.kind === "fact" && /\d/.test(item.text),
+    );
+  if (
+    completesQuantitativeEvidenceStep &&
+    !turn.specUpdates.evidenceBrief &&
+    !snapshotHasEvidenceBrief(context.specSnapshot)
+  ) {
+    reasons.push(
+      "quantitative evidence completed Assess evidence and urgency, so the turn must create a project-appropriate evidenceBrief before advancing",
+    );
+  }
 
   const inferablePortfolioJudgment =
     previousStep === "identify_users" &&
@@ -362,7 +384,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `quickReplies empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
     `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
     `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
-    `the user's supported barrier with an unrelated theory. ` +
+    `the user's supported barrier with an unrelated theory. When quantitative evidence completes Assess ` +
+    `evidence and urgency, create a project-appropriate specUpdates.evidenceBrief before advancing; do not ` +
+    `leave the report to optional model behavior. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }
