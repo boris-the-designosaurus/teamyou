@@ -1196,72 +1196,224 @@ body {
 .guide-evidence-thumb + .flow-substep-caret {
   margin-left: 0;
 }
-.guide-evidence-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: var(--space-s);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
-  background: var(--bg-surface);
-}
-.guide-evidence-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-s);
-}
-.guide-evidence-card-title {
-  font-size: var(--font-size-100);
-  line-height: 18px;
-  font-weight: var(--weight-bold);
+.guide-evidence-preview {
+  align-self: flex-start;
+  width: 210px;
+  max-width: 100%;
   color: var(--text-bold);
 }
-.guide-evidence-strength {
-  flex: none;
-  font-size: 11px;
-  line-height: 16px;
-  color: var(--text-subtle);
-  text-transform: capitalize;
+.guide-evidence-preview-page {
+  width: 100%;
+  min-height: 112px;
+  padding: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-framed-2);
 }
-.guide-evidence-source {
-  font-size: 11px;
-  line-height: 16px;
-  color: var(--text-subtle);
+.guide-evidence-preview-title {
+  overflow: hidden;
+  font-size: 8px;
+  line-height: 10px;
+  font-weight: var(--weight-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.guide-evidence-card p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--text-body);
+.guide-evidence-preview-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 8px 0;
 }
-.guide-evidence-stats {
+.guide-evidence-preview-lines span {
+  display: block;
+  width: 86%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border-subtle);
+}
+.guide-evidence-preview-lines span:last-child {
+  width: 62%;
+}
+.guide-evidence-preview-stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
-.guide-evidence-stat {
+.guide-evidence-preview-stats span {
   min-width: 0;
-  padding: 6px;
-  border-radius: var(--radius-s);
-  background: var(--bg-gray-subtler, var(--bg-subtle));
+  padding: 5px;
+  border-radius: 4px;
+  background: var(--bg-gray-subtler, var(--bg-surface-light));
 }
-.guide-evidence-stat strong,
-.guide-evidence-stat span {
+.guide-evidence-preview-stats b,
+.guide-evidence-preview-stats i {
   display: block;
-}
-.guide-evidence-stat strong {
-  font-size: var(--font-size-100);
-  line-height: 18px;
-  color: var(--text-bold);
-}
-.guide-evidence-stat span {
   overflow: hidden;
-  font-size: 11px;
-  line-height: 15px;
-  color: var(--text-subtle);
+  font-style: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.guide-evidence-preview-stats b {
+  font-size: 10px;
+  line-height: 12px;
+}
+.guide-evidence-preview-stats i {
+  font-size: 6px;
+  line-height: 8px;
+  color: var(--text-subtle);
+}
+.guide-evidence-preview-name {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 17px;
+  font-style: italic;
+}
+.guide-evidence-preview ul {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 19px;
+}
+.guide-evidence-preview li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.guide-evidence-preview li strong {
+  font-weight: var(--weight-regular);
+}
+
+/* Full evidence artifact shown at the point where the Coach creates it. */
+.evidence-report {
+  width: 100%;
+  margin-bottom: var(--space-l);
+  padding: 28px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-framed-2);
+  color: var(--text-bold);
+  white-space: normal;
+}
+.evidence-report-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-m);
+}
+.evidence-report-head h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+.evidence-report-source {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--text-subtle);
+}
+.evidence-report-summary {
+  margin: 26px 0;
+  font-size: var(--font-size-200);
+  line-height: 24px;
+}
+.evidence-report-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.evidence-report-stat {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+}
+.evidence-report-stat span,
+.evidence-report-stat strong {
+  display: block;
+}
+.evidence-report-stat span {
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--text-subtle);
+}
+.evidence-report-stat strong {
+  margin-top: 6px;
+  font-size: 28px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+}
+.evidence-report-funnel {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  min-height: 170px;
+  margin: 28px 0;
+}
+.evidence-report-funnel-step {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.evidence-report-funnel-step > strong {
+  font-size: 11px;
+  line-height: 15px;
+}
+.evidence-report-funnel-step > span:last-child {
+  overflow: hidden;
+  width: 100%;
+  font-size: 10px;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.evidence-report-funnel-bar {
+  display: block;
+  width: 100%;
+  max-width: 74px;
+  border-radius: 3px 3px 0 0;
+  background: var(--brand);
+}
+.evidence-report-section {
+  margin-top: 24px;
+}
+.evidence-report-section h4 {
+  margin: 0 0 5px;
+  font-size: var(--font-size-100);
+  line-height: 20px;
+}
+.evidence-report-section p,
+.evidence-report-section ul {
+  margin: 0;
+  font-size: 13px;
+  line-height: 19px;
+}
+.evidence-report-section ul {
+  padding-left: 20px;
+}
+.evidence-report-strength {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 26px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.evidence-report-strength strong {
+  color: var(--brand);
+  font-weight: var(--weight-semibold);
+  text-transform: capitalize;
 }
 
 /* ── Milestone card (Guide-rail capture of a selected pattern / wireframe /
