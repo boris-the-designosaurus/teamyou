@@ -444,9 +444,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
     `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
     `the user's supported barrier with an unrelated theory. When quantitative evidence is captured during Assess ` +
-    `evidence and urgency, create a project-appropriate specUpdates.evidenceBrief immediately, even if another ` +
-    `question keeps the step active; do not ` +
-    `leave the report to optional model behavior. ` +
+    `evidence and urgency, capture the numbers as a fact in specUpdates.evidence AND create or refresh a ` +
+    `project-appropriate specUpdates.evidenceBrief immediately, even if another question keeps the step ` +
+    `active; do not leave either the evidence record or report to optional model behavior. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }
