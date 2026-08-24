@@ -316,6 +316,7 @@ export function App() {
         role: "coach",
         content: turn.reply,
         quickReplies: turn.quickReplies && turn.quickReplies.length > 0 ? turn.quickReplies : undefined,
+        recommendedQuickReply: turn.recommendedQuickReply,
         milestoneArtifactIds:
           newMilestoneArtifactIds.length > 0 ? newMilestoneArtifactIds : undefined,
         createdAt: nowISO(),
