@@ -30,8 +30,11 @@ export function EvidenceBriefCard({
   openItems?: string[];
 }) {
   const known = evidence.filter((item) => item.kind === "fact").map((item) => item.text);
+  const implications = evidence
+    .filter((item) => item.kind === "interpretation")
+    .map((item) => item.text);
   const assumed = evidence
-    .filter((item) => item.kind === "assumption" || item.kind === "interpretation")
+    .filter((item) => item.kind === "assumption")
     .map((item) => item.text);
   const risks = evidence.filter((item) => item.kind === "risk").map((item) => item.text);
   const maxFunnel = Math.max(...(brief.funnel ?? []).map((item) => item.value), 1);
@@ -77,10 +80,7 @@ export function EvidenceBriefCard({
         </div>
       )}
 
-      <section className="evidence-report-section">
-        <h4>What this means</h4>
-        <p>{brief.summary}</p>
-      </section>
+      <EvidenceList title="What this means" items={implications} />
       <EvidenceList title="Known" items={known} />
       <EvidenceList title="Assumed" items={assumed} />
       <EvidenceList title="Risks" items={risks} />
