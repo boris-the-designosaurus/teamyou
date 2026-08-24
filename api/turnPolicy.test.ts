@@ -94,6 +94,99 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("rejects turning pattern exploration into a forced single choice", () => {
+    const result = checkTurnPolicy(
+      "find_patterns",
+      turn({
+        reply:
+          "Which structure should we develop further: Joey Shiner positioning-first or the case-study-led contrast?",
+        activeStep: "find_patterns",
+        stepGate: {
+          linkedDecision: "Single structure to develop",
+          blocking: true,
+          disposition: "ask",
+        },
+        guidePanel: {
+          title: "Find relevant patterns",
+          need: "Chosen structure",
+          nextPrompt:
+            "Which structure should we develop further: Joey Shiner positioning-first or the case-study-led contrast?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/cannot force a single direction/);
+  });
+
+  it("accepts a recommended multi-pattern set that can be combined", () => {
+    const result = checkTurnPolicy(
+      "find_patterns",
+      turn({
+        reply:
+          "I recommend **Personal studio** because it makes the contract offer clear fastest. Select one or more patterns to generate wireframes, combine useful ingredients, request more, or add your own example in chat.",
+        activeStep: "find_patterns",
+        stepGate: {
+          linkedDecision: "Portfolio structures to compare",
+          blocking: false,
+          disposition: "proceed",
+        },
+        specUpdates: {
+          milestoneArtifacts: [
+            {
+              kind: "pattern_shortlist",
+              title: "Personal studio",
+              status: "exploring",
+              supportingLine: "Direct offer and personality-led entry.",
+              ingredients: ["Direct offer", "Availability"],
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Proof first",
+              status: "exploring",
+              supportingLine: "Leads with outcome evidence.",
+              ingredients: ["Outcome teaser", "Project depth"],
+              step: "find_patterns",
+            },
+          ],
+        },
+        guidePanel: {
+          title: "Find relevant patterns",
+          need: "",
+        },
+        quickReplies: [],
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects duplicating a multi-pattern card set as quick replies", () => {
+    const base = turn({
+      reply:
+        "I recommend Personal studio because the offer is clearest. Select one or more patterns and combine useful ingredients.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Portfolio structures to compare",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: [
+          { kind: "pattern_shortlist", title: "Personal studio", status: "exploring", step: "find_patterns" },
+          { kind: "pattern_shortlist", title: "Proof first", status: "exploring", step: "find_patterns" },
+        ],
+      },
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: ["Personal studio", "Proof first"],
+    });
+
+    const result = checkTurnPolicy("find_patterns", base);
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/must not be duplicated as quick replies/);
+  });
+
   it("rejects a backward move that does not preserve existing work", () => {
     const result = checkTurnPolicy(
       "choose_direction",
