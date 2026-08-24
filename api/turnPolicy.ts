@@ -181,19 +181,18 @@ export function checkTurnPolicy(
   const stayedOnStep = turn.activeStep === previousStep;
   const questionText = `${turn.reply}\n${nextPrompt}`;
 
-  const completesQuantitativeEvidenceStep =
+  const capturesQuantitativeEvidence =
     previousStep === "assess_evidence" &&
-    turn.activeStep === "find_root_cause" &&
     (turn.specUpdates.evidence ?? []).some(
       (item) => item.kind === "fact" && /\d/.test(item.text),
     );
   if (
-    completesQuantitativeEvidenceStep &&
+    capturesQuantitativeEvidence &&
     !turn.specUpdates.evidenceBrief &&
     !snapshotHasEvidenceBrief(context.specSnapshot)
   ) {
     reasons.push(
-      "quantitative evidence completed Assess evidence and urgency, so the turn must create a project-appropriate evidenceBrief before advancing",
+      "quantitative evidence was captured during Assess evidence and urgency, so the turn must create a project-appropriate evidenceBrief immediately",
     );
   }
 
@@ -384,8 +383,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `quickReplies empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
     `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
     `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
-    `the user's supported barrier with an unrelated theory. When quantitative evidence completes Assess ` +
-    `evidence and urgency, create a project-appropriate specUpdates.evidenceBrief before advancing; do not ` +
+    `the user's supported barrier with an unrelated theory. When quantitative evidence is captured during Assess ` +
+    `evidence and urgency, create a project-appropriate specUpdates.evidenceBrief immediately, even if another ` +
+    `question keeps the step active; do not ` +
     `leave the report to optional model behavior. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
