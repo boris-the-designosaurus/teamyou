@@ -28,7 +28,13 @@ const STEP_TITLES: Record<FlowStep, string> = FLOW_STEP_LABEL;
 // The client sends the full data URL; the media type is parsed FROM it so it
 // always matches the bytes (an older { mediaType, data } shape is still accepted
 // for backward compatibility).
-type ImageInput = { dataUrl?: string; mediaType?: string; data?: string };
+type ImageInput = {
+  id?: string;
+  name?: string;
+  dataUrl?: string;
+  mediaType?: string;
+  data?: string;
+};
 
 export type CoachRequestBody = {
   messages: {
@@ -97,12 +103,18 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   const workItemType: WorkItemType = body.workItemType ?? "feature_spec";
   const workMode: WorkMode = body.workMode ?? "fast_spec";
   const activeStep: FlowStep = body.activeStep ?? "understand_request";
+  const latestUserMessage = [...messages].reverse().find((m) => m.role === "user");
+  const latestAttachments = (latestUserMessage?.images ?? []).map((image, index) => ({
+    id: image.id ?? `latest-${index + 1}`,
+    name: image.name,
+  }));
 
   const system = buildSystemPrompt({
     workItemType,
     workMode,
     activeStep,
     specSnapshot: body.spec ?? {},
+    latestAttachments,
     nudge: body.nudge,
   });
 
@@ -172,7 +184,15 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   }
 
   let parsed = parseCoachTurn(text);
-  if (parsed.ok) return withPolicyRetry(activeStep, apiMessages, text, parsed.value, generate);
+  if (parsed.ok)
+    return withPolicyRetry(
+      activeStep,
+      apiMessages,
+      text,
+      parsed.value,
+      generate,
+      { latestAttachmentCount: latestAttachments.length },
+    );
 
   // ── One automatic retry: echo the bad output back and demand JSON only. This
   //    reliably recovers turns where the model answered in prose (e.g. a meta or
@@ -193,7 +213,15 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   }
 
   parsed = parseCoachTurn(retryText);
-  if (parsed.ok) return withPolicyRetry(activeStep, apiMessages, retryText, parsed.value, generate);
+  if (parsed.ok)
+    return withPolicyRetry(
+      activeStep,
+      apiMessages,
+      retryText,
+      parsed.value,
+      generate,
+      { latestAttachmentCount: latestAttachments.length },
+    );
 
   // ── Still bad — fail loudly with the raw output so prompt failures are visible. ──
   return {
@@ -221,6 +249,7 @@ export async function withPolicyRetry(
   rawText: string,
   turn: CoachTurnResponse,
   generate: (turns: ApiMessage[]) => Promise<string>,
+  policyContext: { latestAttachmentCount?: number } = {},
 ): Promise<RunCoachResult> {
   let candidateText = rawText;
   let candidate = turn;
@@ -234,7 +263,7 @@ export async function withPolicyRetry(
       candidate.reply,
       candidate.responseMode ?? "concise",
     );
-    const policyCheck = checkTurnPolicy(previousStep, candidate);
+    const policyCheck = checkTurnPolicy(previousStep, candidate, policyContext);
     if (styleCheck.ok && policyCheck.ok) {
       return { status: 200, json: candidate };
     }
@@ -279,7 +308,7 @@ export async function withPolicyRetry(
     candidate.reply,
     candidate.responseMode ?? "concise",
   );
-  const finalPolicy = checkTurnPolicy(previousStep, candidate);
+  const finalPolicy = checkTurnPolicy(previousStep, candidate, policyContext);
   // The second correction is assigned at the end of the last loop iteration,
   // so it has not yet passed through the early success return above. Accept it
   // here when it now satisfies both contracts; otherwise a valid final retry
