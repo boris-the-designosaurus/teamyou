@@ -11,6 +11,27 @@ function promptAt(activeStep: Parameters<typeof buildSystemPrompt>[0]["activeSte
 }
 
 describe("coach flow boundaries", () => {
+  it("requires screenshot-aware judgment without treating references as proof", () => {
+    const prompt = buildSystemPrompt({
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      activeStep: "define_problem",
+      specSnapshot: {},
+      latestAttachments: [
+        { id: "current", name: "current-portfolio.png" },
+        { id: "reference", name: "joey-shiner.png" },
+      ],
+    });
+
+    expect(prompt).toContain("The latest user turn includes 2 screenshots");
+    expect(prompt).toContain("ground one concise observation");
+    expect(prompt).toContain(
+      "distinguish current-state evidence from inspiration/reference",
+    );
+    expect(prompt).toContain("A reference can suggest a direction, but it cannot prove");
+    expect(prompt).toContain("Screenshots remain chat context by default");
+  });
+
   it("allows short bullets and requires strategic emphasis without turning chat into a report", () => {
     const prompt = promptAt("define_problem");
     expect(prompt).toContain(
