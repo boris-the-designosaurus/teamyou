@@ -52,6 +52,16 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("does not re-ask target priority when primary and secondary work are explicit", () => {
+    const prompt = promptAt("understand_request");
+    expect(prompt).toContain(
+      "full-time first and freelance second",
+    );
+    expect(prompt).toContain(
+      "capture that priority and do not ask them to choose it again",
+    );
+  });
+
   it("requires shorthand barrier answers to be saved before a portfolio jump", () => {
     const prompt = promptAt("define_problem");
     expect(prompt).toContain(
