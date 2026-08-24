@@ -70,6 +70,12 @@ describe("checkTurnPolicy", () => {
               step: "assess_evidence",
             },
           ],
+          evidenceBrief: {
+            title: "Portfolio performance snapshot",
+            summary: "Traffic exists, but on-site funnel visibility is missing.",
+            stats: [{ label: "Active users", value: "226" }],
+            strength: "moderate",
+          },
         },
         guidePanel: {
           title: "Find the adoption barrier/root cause",
@@ -102,6 +108,70 @@ describe("checkTurnPolicy", () => {
 
     expect(result.ok).toBe(false);
     expect(result.reasons.join(" ")).toMatch(/does not ground an observation/);
+  });
+
+  it("requires an evidence brief when quantitative evidence completes the step", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply:
+          "The evidence is directionally useful. **Moving to root cause.** What do visitors see first?",
+        activeStep: "find_root_cause",
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "226 users and one screener interview from 40-50 applications.",
+              step: "assess_evidence",
+            },
+          ],
+        },
+        guidePanel: {
+          title: "Find the adoption barrier/root cause",
+          need: "Homepage first impression",
+          nextPrompt: "What do visitors see first?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/must create a project-appropriate evidenceBrief/);
+  });
+
+  it("accepts a project-appropriate evidence brief with the quantitative transition", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply:
+          "The evidence is directionally useful. **Moving to root cause.** What do visitors see first?",
+        activeStep: "find_root_cause",
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "226 users and one screener interview from 40-50 applications.",
+              step: "assess_evidence",
+            },
+          ],
+          evidenceBrief: {
+            title: "Portfolio performance snapshot",
+            summary: "Traffic exists, but hiring outcomes are weak and funnel visibility is missing.",
+            stats: [
+              { label: "Active users", value: "226" },
+              { label: "Screener interviews", value: "1" },
+            ],
+            strength: "moderate",
+          },
+        },
+        guidePanel: {
+          title: "Find the adoption barrier/root cause",
+          need: "Homepage first impression",
+          nextPrompt: "What do visitors see first?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(true);
   });
 
   it("accepts an immediate step advance with the question in chat", () => {
