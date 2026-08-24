@@ -29,13 +29,16 @@ export function countWords(text: string): number {
   return trimmed.split(/\s+/).length;
 }
 
-/** Counts sentences by splitting on runs of ./!/? (or end of string) — a
- * proxy for "how many sentences", same tolerance-for-imprecision as the
- * word/question counters above (e.g. "Mr." over-counts slightly). */
+/** Counts sentences by splitting on runs of ./!/? (or end of string).
+ * Decimal points are protected first so values such as 58.3% remain inside
+ * one sentence instead of becoming a phantom extra sentence. */
 export function countSentences(text: string): number {
   const trimmed = text.trim();
   if (!trimmed) return 0;
-  const matches = trimmed.match(/[^.!?]+(?:[.!?]+|$)/g);
+  const normalized = trimmed.replace(/\d+(?:\.\d+)+/g, (value) =>
+    value.replace(/\./g, "∯"),
+  );
+  const matches = normalized.match(/[^.!?]+(?:[.!?]+|$)/g);
   return matches ? matches.filter((s) => s.trim().length > 0).length : 0;
 }
 
