@@ -20,6 +20,7 @@ import {
   updateBuildHandoff,
   updateWorkingBuild,
 } from "./merge";
+import { selectQuickReply } from "./quickReplies";
 import { callCoach, CoachError } from "./coachClient";
 import {
   loadStore,
@@ -240,7 +241,11 @@ export function App() {
     }
   }
 
-  async function sendMessage(text: string, attachments: ImageAttachment[] = []) {
+  async function sendMessage(
+    text: string,
+    attachments: ImageAttachment[] = [],
+    quickReplyMessageId?: string,
+  ) {
     const trimmed = text.trim();
     if ((!trimmed && attachments.length === 0) || loading) return;
 
@@ -266,14 +271,18 @@ export function App() {
       createdAt: nowISO(),
     };
 
+    const priorMessages = quickReplyMessageId
+      ? selectQuickReply(workItem.messages, quickReplyMessageId, trimmed)
+      : workItem.messages;
+
     // The Brief begins when the conversation starts — log it once, at the top.
     const startMarkers: Message[] =
-      workItem.messages.length === 0 ? [stepStartedMsg("understand_request")] : [];
+      priorMessages.length === 0 ? [stepStartedMsg("understand_request")] : [];
 
     const withUser: WorkItem = {
       ...workItem,
       spec: linkedSpec,
-      messages: [...workItem.messages, ...startMarkers, userMsg],
+      messages: [...priorMessages, ...startMarkers, userMsg],
       updatedAt: nowISO(),
     };
     setWorkItem(withUser);
