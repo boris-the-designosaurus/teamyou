@@ -77,11 +77,7 @@ export function ChatPanel(props: {
   messages: Message[];
   loading: boolean;
   error: { message: string; raw?: string } | null;
-  onSend: (
-    text: string,
-    attachments: ImageAttachment[],
-    quickReplyMessageId?: string,
-  ) => void;
+  onSend: (text: string, attachments: ImageAttachment[]) => void;
   milestoneArtifacts?: MilestoneArtifact[];
   onChooseArtifact?: (artifactId: string) => void;
   // Guide "Need" → chat locate (product boundary: the coach's question lives
@@ -297,40 +293,25 @@ export function ChatPanel(props: {
                   />
                 )}
               {m.role === "coach" &&
+                idx === props.messages.length - 1 &&
                 m.quickReplies &&
-                m.quickReplies.length > 0 &&
-                (idx === props.messages.length - 1 || m.selectedQuickReply) && (
-                  <div
-                    className={`quick-replies${m.selectedQuickReply ? " answered" : ""}`}
-                    role="radiogroup"
-                    aria-label="Choose one answer"
-                  >
-                    {m.quickReplies.map((qr, optionIndex) => {
-                      const selected = m.selectedQuickReply === qr;
-                      const recommended = m.recommendedQuickReply === qr;
-                      const optionLabel = String.fromCharCode(65 + optionIndex);
-                      return (
-                        <button
-                          key={qr}
-                          type="button"
-                          className={`quick-reply-btn${recommended ? " recommended" : ""}${selected ? " selected" : ""}`}
-                          disabled={props.loading || !!m.selectedQuickReply}
-                          onClick={() => props.onSend(qr, [], m.id)}
-                          role="radio"
-                          aria-checked={selected}
-                          aria-label={`Option ${optionLabel}: ${qr}${recommended ? ", recommended" : ""}${selected ? ", selected" : ""}`}
-                        >
-                          <span className="quick-reply-letter" aria-hidden>
-                            {optionLabel}
-                          </span>
-                          <span className="quick-reply-label">{qr}</span>
-                          {recommended && (
-                            <span className="quick-reply-recommended">Recommended</span>
-                          )}
-                          {selected && <span className="quick-reply-selected">Selected</span>}
-                        </button>
-                      );
-                    })}
+                m.quickReplies.length > 0 && (
+                  <div className="quick-replies">
+                    {m.quickReplies.map((qr) => (
+                      <button
+                        key={qr}
+                        type="button"
+                        className={`quick-reply-btn${m.recommendedQuickReply === qr ? " recommended" : ""}`}
+                        disabled={props.loading}
+                        onClick={() => props.onSend(qr, [])}
+                        aria-label={m.recommendedQuickReply === qr ? `${qr}, recommended` : qr}
+                      >
+                        <span>{qr}</span>
+                        {m.recommendedQuickReply === qr && (
+                          <span className="quick-reply-recommended">Recommended</span>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 )}
             </div>
