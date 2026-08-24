@@ -31,6 +31,17 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("keeps user, moment, and task as sequential captures", () => {
+    const prompt = promptAt("identify_users");
+    expect(prompt).toContain(
+      "When user and moment are both unknown, ask for them together in one natural free-text question",
+    );
+    expect(prompt).toContain(
+      "For workflow/product problems, task is what the user is doing; for portfolios and other decision surfaces, task is what the visitor is trying to judge or decide",
+    );
+    expect(prompt).toContain("Keep `quickReplies` empty throughout this step");
+  });
+
   it("recommends one bounded choice only when the locked frame supports it", () => {
     const prompt = promptAt("set_criteria");
     expect(prompt).toContain("set `recommendedQuickReply` to that option's EXACT button label");
