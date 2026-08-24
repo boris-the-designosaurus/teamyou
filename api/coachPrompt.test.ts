@@ -28,6 +28,12 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain('"flowRevision": { "reopenedStep": "find_patterns"');
     expect(prompt).toContain("existing Joey Shiner directions preserved");
     expect(prompt).toContain("Never ask them to justify the same choice again");
+    expect(prompt).toContain("Action before clarification");
+    expect(prompt).toContain("You're right — I was too narrow");
+    expect(prompt).toContain("Never mention how many times they asked");
+    expect(prompt).toContain(
+      "a request to SEE a few reversible alternatives is not scope expansion",
+    );
   });
 
   it("keeps evidence questions out of Understand the request", () => {
