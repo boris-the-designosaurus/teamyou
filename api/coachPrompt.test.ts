@@ -21,6 +21,16 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("requires every framing turn to give the user a prompt to continue", () => {
+    const prompt = promptAt("define_problem");
+    expect(prompt).toContain(
+      "Never end a framing turn with only an acknowledgment, summary, or \"there's enough to proceed\"",
+    );
+    expect(prompt).toContain(
+      "the Coach must provide the prompt that lets the user continue",
+    );
+  });
+
   it("recommends one bounded choice only when the locked frame supports it", () => {
     const prompt = promptAt("set_criteria");
     expect(prompt).toContain("set `recommendedQuickReply` to that option's EXACT button label");
