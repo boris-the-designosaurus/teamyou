@@ -22,6 +22,30 @@ describe("checkTurnPolicy", () => {
     expect(checkTurnPolicy("define_problem", turn()).ok).toBe(true);
   });
 
+  it("rejects an acknowledgement-only framing turn with no prompt to continue", () => {
+    const result = checkTurnPolicy(
+      "define_problem",
+      turn({
+        reply:
+          "Got it — that's a real barrier, not just a missing feature. I'll lock it as visitors being unable to see your thought process or a reason to hire you for ongoing work.",
+        activeStep: "define_problem",
+        stepGate: {
+          linkedDecision: "Portfolio trust barrier",
+          blocking: true,
+          disposition: "ask",
+        },
+        guidePanel: {
+          title: "Define the problem",
+          captured: ["Visitors cannot see the thought process or reason to hire for ongoing work"],
+          need: "",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/without a prompt to continue/);
+  });
+
   it("rejects a question that exists only in the Guide", () => {
     const result = checkTurnPolicy(
       "define_problem",

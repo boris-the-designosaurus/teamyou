@@ -119,6 +119,19 @@ export function checkTurnPolicy(
     newPatterns.length > 0 &&
     replyQuestions === 0;
 
+  // Framing is a guided conversation, so an acknowledgement-only turn is a
+  // dead end even when the Guide happens to show the step as complete. The
+  // Coach must ask the current step's blocking question or, after advancing,
+  // the first high-leverage question for the immediate next step.
+  const framingTurn =
+    FLOW_STEPS.indexOf(previousStep) <= FLOW_STEPS.indexOf("define_outcome") ||
+    FLOW_STEPS.indexOf(turn.activeStep) <= FLOW_STEPS.indexOf("define_outcome");
+  if (framingTurn && replyQuestions === 0) {
+    reasons.push(
+      "the framing turn leaves the user without a prompt to continue; ask one consequential question for the returned activeStep",
+    );
+  }
+
   const exitSignal = capturedStepExit(previousStep, turn);
   if (stayedOnStep && exitSignal) {
     reasons.push(`${exitSignal}, so the turn must advance to the immediate next step`);
@@ -244,7 +257,8 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `match the returned activeStep. ` +
     `When stepGate is nonblocking (anything except disposition "ask"), do not ask for confirmation ` +
     `and normally do not stay on the same step: capture the judgment, advance to the immediate next step, and ` +
-    `ask only the next step's genuinely blocking question. ` +
+    `ask only the next step's genuinely blocking question. Every framing turn must leave the user with that ` +
+    `one prompt to continue; never return an acknowledgement-only framing turn. ` +
     `Pattern exploration is the exception: after adding a useful set, it may stay on Find patterns or ` +
     `Review and shortlist without a question while the user selects cards. Recommend one grounded option, ` +
     `then invite selecting one or more, combining ingredients, requesting more, or adding an example; never ` +
