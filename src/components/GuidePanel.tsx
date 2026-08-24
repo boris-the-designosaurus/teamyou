@@ -28,7 +28,7 @@ import { MilestoneCard } from "./MilestoneCard";
 import { BuildHandoffList } from "./BuildHandoffCard";
 import { WorkingBuildCard } from "./WorkingBuildCard";
 import { VerificationCard } from "./VerificationCard";
-import type { BuildHandoff } from "../types";
+import type { BuildHandoff, EvidenceBrief } from "../types";
 import {
   ProgressPriorityIcon,
   ProgressCompletedIcon,
@@ -397,6 +397,59 @@ function TitleWithTooltip({
   );
 }
 
+function EvidenceBriefThumbnail({
+  brief,
+  onOpen,
+}: {
+  brief: EvidenceBrief;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="guide-evidence-thumb"
+      title={brief.title}
+      aria-label={`Open evidence report: ${brief.title}`}
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpen();
+      }}
+    >
+      <span className="guide-evidence-thumb-title" />
+      <span className="guide-evidence-thumb-stats">
+        {(brief.stats ?? []).slice(0, 3).map((stat) => (
+          <span key={`${stat.label}-${stat.value}`} />
+        ))}
+      </span>
+    </button>
+  );
+}
+
+function EvidenceBriefCard({ brief }: { brief: EvidenceBrief }) {
+  return (
+    <article className="guide-evidence-card" aria-label={brief.title}>
+      <div className="guide-evidence-card-head">
+        <div className="guide-evidence-card-title">{brief.title}</div>
+        {brief.strength && (
+          <span className="guide-evidence-strength">{brief.strength} evidence</span>
+        )}
+      </div>
+      {brief.source && <div className="guide-evidence-source">{brief.source}</div>}
+      <p>{brief.summary}</p>
+      {brief.stats && brief.stats.length > 0 && (
+        <div className="guide-evidence-stats">
+          {brief.stats.map((stat) => (
+            <div key={`${stat.label}-${stat.value}`} className="guide-evidence-stat">
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </article>
+  );
+}
+
 function stepIcon(state: "done" | "active" | "todo") {
   if (state === "done") return <ProgressCompletedIcon />;
   if (state === "active") return <ProgressPriorityIcon />;
@@ -435,6 +488,7 @@ function SubstepRow(props: {
   const isActive = state === "active";
   const isDone = state === "done";
   const [expanded, setExpanded] = useState(false);
+  const evidenceBrief = step === "assess_evidence" ? spec.evidenceBrief : undefined;
 
   const captured = isDone ? stepCapturedItems(spec, step) : [];
   const summary = isDone ? stepSummaryLine(spec, step) : null;
@@ -445,6 +499,7 @@ function SubstepRow(props: {
 
   const stepContent = (
     <>
+      {evidenceBrief && <EvidenceBriefCard brief={evidenceBrief} />}
       <MilestoneChips spec={spec} step={step} onOpenReview={props.onOpenReview} />
       {step === "prepare_handoff" && spec.buildHandoffs.length > 0 && props.onSaveHandoff && props.onSendHandoff && (
         <BuildHandoffList
@@ -495,6 +550,9 @@ function SubstepRow(props: {
           onToggle={isDone ? () => setExpanded((v) => !v) : undefined}
           expanded={isDone ? expanded : undefined}
         />
+        {isDone && evidenceBrief && !expanded && (
+          <EvidenceBriefThumbnail brief={evidenceBrief} onOpen={() => setExpanded(true)} />
+        )}
         {isDone && (
           <span className={`flow-substep-caret${expanded ? " open" : ""}`}>
             <ChevronDownIcon />

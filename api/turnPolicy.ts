@@ -14,6 +14,7 @@ export type TurnPolicyCheck = {
 
 export type TurnPolicyContext = {
   latestAttachmentCount?: number;
+  latestUserText?: string;
   workItemType?: WorkItemType;
   specSnapshot?: unknown;
 };
@@ -212,18 +213,40 @@ export function checkTurnPolicy(
   const stayedOnStep = turn.activeStep === previousStep;
   const questionText = `${turn.reply}\n${nextPrompt}`;
 
-  const capturesQuantitativeEvidence =
+  const quantitativeEvidenceRecords = (turn.specUpdates.evidence ?? []).filter(
+    (item) => item.kind === "fact" && /\d/.test(item.text),
+  );
+  const latestUserSuppliedNumbers =
+    previousStep === "assess_evidence" && /\d/.test(context.latestUserText ?? "");
+  const replyReadNumbersFromScreenshot =
     previousStep === "assess_evidence" &&
-    (turn.specUpdates.evidence ?? []).some(
-      (item) => item.kind === "fact" && /\d/.test(item.text),
-    );
+    (context.latestAttachmentCount ?? 0) > 0 &&
+    /\d/.test(turn.reply) &&
+    groundsLatestScreenshot(turn.reply);
+  const quantitativeEvidenceTurn =
+    previousStep === "assess_evidence" &&
+    (latestUserSuppliedNumbers ||
+      replyReadNumbersFromScreenshot ||
+      quantitativeEvidenceRecords.length > 0);
+
   if (
-    capturesQuantitativeEvidence &&
-    !turn.specUpdates.evidenceBrief &&
-    !snapshotHasEvidenceBrief(context.specSnapshot)
+    quantitativeEvidenceTurn &&
+    quantitativeEvidenceRecords.length === 0
   ) {
     reasons.push(
-      "quantitative evidence was captured during Assess evidence and urgency, so the turn must create a project-appropriate evidenceBrief immediately",
+      "the latest Assess evidence turn supplied quantitative evidence, so the turn must capture it as a numeric fact in specUpdates.evidence",
+    );
+  }
+  if (
+    quantitativeEvidenceTurn &&
+    !turn.specUpdates.evidenceBrief &&
+    !(quantitativeEvidenceRecords.length > 0 &&
+      !latestUserSuppliedNumbers &&
+      !replyReadNumbersFromScreenshot &&
+      snapshotHasEvidenceBrief(context.specSnapshot))
+  ) {
+    reasons.push(
+      "the latest Assess evidence turn supplied quantitative evidence, so the turn must create or refresh a project-appropriate evidenceBrief immediately",
     );
   }
 
@@ -421,9 +444,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
     `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
     `the user's supported barrier with an unrelated theory. When quantitative evidence is captured during Assess ` +
-    `evidence and urgency, create a project-appropriate specUpdates.evidenceBrief immediately, even if another ` +
-    `question keeps the step active; do not ` +
-    `leave the report to optional model behavior. ` +
+    `evidence and urgency, capture the numbers as a fact in specUpdates.evidence AND create or refresh a ` +
+    `project-appropriate specUpdates.evidenceBrief immediately, even if another question keeps the step ` +
+    `active; do not leave either the evidence record or report to optional model behavior. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }

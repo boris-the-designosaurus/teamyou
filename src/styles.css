@@ -1142,6 +1142,128 @@ body {
   gap: 8px;
 }
 
+/* Evidence reports stay represented by one quiet thumbnail after the step
+   collapses. Opening it reveals the scannable report without keeping the
+   completed substep expanded. */
+.guide-evidence-thumb {
+  width: 42px;
+  height: 30px;
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-surface);
+  cursor: pointer;
+}
+.guide-evidence-thumb:hover,
+.guide-evidence-thumb:focus-visible {
+  border-color: var(--brand);
+}
+.guide-evidence-thumb:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.guide-evidence-thumb-title {
+  display: block;
+  width: 64%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--text-subtle);
+}
+.guide-evidence-thumb-stats {
+  display: flex;
+  align-items: end;
+  gap: 3px;
+  height: 12px;
+}
+.guide-evidence-thumb-stats span {
+  display: block;
+  width: 7px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+.guide-evidence-thumb-stats span:nth-child(2) {
+  height: 12px;
+}
+.guide-evidence-thumb-stats span:nth-child(3) {
+  height: 6px;
+}
+.guide-evidence-thumb + .flow-substep-caret {
+  margin-left: 0;
+}
+.guide-evidence-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-s);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+}
+.guide-evidence-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-s);
+}
+.guide-evidence-card-title {
+  font-size: var(--font-size-100);
+  line-height: 18px;
+  font-weight: var(--weight-bold);
+  color: var(--text-bold);
+}
+.guide-evidence-strength {
+  flex: none;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--text-subtle);
+  text-transform: capitalize;
+}
+.guide-evidence-source {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--text-subtle);
+}
+.guide-evidence-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--text-body);
+}
+.guide-evidence-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.guide-evidence-stat {
+  min-width: 0;
+  padding: 6px;
+  border-radius: var(--radius-s);
+  background: var(--bg-gray-subtler, var(--bg-subtle));
+}
+.guide-evidence-stat strong,
+.guide-evidence-stat span {
+  display: block;
+}
+.guide-evidence-stat strong {
+  font-size: var(--font-size-100);
+  line-height: 18px;
+  color: var(--text-bold);
+}
+.guide-evidence-stat span {
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--text-subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ── Milestone card (Guide-rail capture of a selected pattern / wireframe /
    hi-fi design / build handoff / working build / verified result) ── */
 .milestone-card {

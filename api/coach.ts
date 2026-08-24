@@ -193,6 +193,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       generate,
       {
         latestAttachmentCount: latestAttachments.length,
+        latestUserText: latestUserMessage?.content ?? "",
         workItemType,
         specSnapshot: body.spec,
       },
@@ -226,6 +227,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       generate,
       {
         latestAttachmentCount: latestAttachments.length,
+        latestUserText: latestUserMessage?.content ?? "",
         workItemType,
         specSnapshot: body.spec,
       },
