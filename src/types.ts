@@ -191,15 +191,12 @@ export type Message = {
   role: "user" | "coach" | "system";
   content: string;
   attachments?: ImageAttachment[]; // screenshots the user posted (vision input)
-  // Short suggested replies the Coach offered on THIS message (rendered as a
-  // stacked single-choice set; the chosen row remains visible in history).
+  // Short suggested replies the Coach offered on THIS message (rendered as
+  // pill buttons under it). Cleared once the user has replied to any turn.
   quickReplies?: string[];
   // Exact label of the one quick reply the Coach recommends. Kept separate
   // from the labels so older persisted string-only quick replies still load.
   recommendedQuickReply?: string;
-  // The option the user chose from this Coach message. Persisted so the
-  // decision remains obvious in chat history after the next turn arrives.
-  selectedQuickReply?: string;
   // Milestone artifacts (pattern/wireframe/treatment shortlist) introduced by
   // THIS turn — rendered as a "Choose" card grid under the message.
   milestoneArtifactIds?: string[];
