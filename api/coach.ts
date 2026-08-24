@@ -11,14 +11,24 @@ import Anthropic from "@anthropic-ai/sdk";
 import { buildSystemPrompt } from "./coachPrompt";
 import type {
   CoachTurnResponse,
-  SpecStep,
+  FlowStep,
   WorkItemType,
+  WorkMode,
 } from "../src/types";
+import { FLOW_STEPS, FLOW_STEP_LABEL } from "../src/types";
+import { checkReplyStyle, styleCorrectionPrompt } from "./replyStyle";
+import { checkTurnPolicy, turnPolicyCorrectionPrompt } from "./turnPolicy";
 
 const DEFAULT_MODEL = "claude-sonnet-5";
-const VALID_STEPS: SpecStep[] = ["brief", "workflow", "rules", "review"];
+const VALID_STEPS: FlowStep[] = FLOW_STEPS;
+// Display labels for the active step — used to synthesize a minimal guidePanel
+// when the model omits one (so a missing container never fails the whole turn).
+const STEP_TITLES: Record<FlowStep, string> = FLOW_STEP_LABEL;
 
-type ImageInput = { mediaType: string; data: string };
+// The client sends the full data URL; the media type is parsed FROM it so it
+// always matches the bytes (an older { mediaType, data } shape is still accepted
+// for backward compatibility).
+type ImageInput = { dataUrl?: string; mediaType?: string; data?: string };
 
 export type CoachRequestBody = {
   messages: {
@@ -27,11 +37,39 @@ export type CoachRequestBody = {
     images?: ImageInput[];
   }[];
   workItemType?: WorkItemType;
-  activeStep?: SpecStep;
+  workMode?: WorkMode;
+  activeStep?: FlowStep;
   spec?: unknown;
+  // A one-turn, code-injected instruction (e.g. the same-step-ask streak
+  // gate) — not part of the persisted transcript.
+  nudge?: string;
 };
 
 const SUPPORTED_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+
+// Parse an image input into a validated { mediaType, data } base64 source, or
+// null if it isn't a supported base64 data URL (blob:, svg, path, etc.).
+function toImageSource(
+  img: ImageInput,
+): { mediaType: string; data: string } | null {
+  const url = img.dataUrl ?? "";
+  const m = url.match(/^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i);
+  if (m) {
+    const mediaType = m[1].toLowerCase();
+    return SUPPORTED_MEDIA.includes(mediaType) ? { mediaType, data: m[2] } : null;
+  }
+  // Legacy shape: { mediaType, data }. Only if base64 (never a blob/path).
+  if (
+    img.mediaType &&
+    img.data &&
+    SUPPORTED_MEDIA.includes(img.mediaType) &&
+    !img.data.startsWith("blob:") &&
+    !img.data.startsWith("data:")
+  ) {
+    return { mediaType: img.mediaType, data: img.data };
+  }
+  return null;
+}
 
 export type RunCoachResult = {
   status: number;
@@ -57,12 +95,15 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   }
 
   const workItemType: WorkItemType = body.workItemType ?? "feature_spec";
-  const activeStep: SpecStep = body.activeStep ?? "brief";
+  const workMode: WorkMode = body.workMode ?? "fast_spec";
+  const activeStep: FlowStep = body.activeStep ?? "understand_request";
 
   const system = buildSystemPrompt({
     workItemType,
+    workMode,
     activeStep,
     specSnapshot: body.spec ?? {},
+    nudge: body.nudge,
   });
 
   // Map our roles → Anthropic roles. coach → assistant; user turns may carry
@@ -78,24 +119,24 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
 
       // Only user turns carry images. A plain text turn stays a string.
       const images = role === "user" ? (m.images ?? []) : [];
-      const validImages = images.filter((img) =>
-        SUPPORTED_MEDIA.includes(img.mediaType),
-      );
+      const sources = images
+        .map(toImageSource)
+        .filter((s): s is { mediaType: string; data: string } => s !== null);
 
-      if (validImages.length === 0) {
+      if (sources.length === 0) {
         return { role, content: m.content };
       }
 
-      const blocks: Anthropic.ContentBlockParam[] = validImages.map((img) => ({
+      const blocks: Anthropic.ContentBlockParam[] = sources.map((s) => ({
         type: "image",
         source: {
           type: "base64",
-          media_type: img.mediaType as
+          media_type: s.mediaType as
             | "image/png"
             | "image/jpeg"
             | "image/gif"
             | "image/webp",
-          data: img.data,
+          data: s.data,
         },
       }));
       if (m.content && m.content.trim().length > 0) {
@@ -106,11 +147,6 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
 
   const client = new Anthropic({ apiKey });
   const model = process.env.COACH_MODEL ?? DEFAULT_MODEL;
-
-  type ApiMessage = {
-    role: "user" | "assistant";
-    content: string | Anthropic.ContentBlockParam[];
-  };
 
   async function generate(turns: ApiMessage[]): Promise<string> {
     const response = await client.messages.create({
@@ -136,7 +172,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   }
 
   let parsed = parseCoachTurn(text);
-  if (parsed.ok) return { status: 200, json: parsed.value };
+  if (parsed.ok) return withPolicyRetry(activeStep, apiMessages, text, parsed.value, generate);
 
   // ── One automatic retry: echo the bad output back and demand JSON only. This
   //    reliably recovers turns where the model answered in prose (e.g. a meta or
@@ -157,12 +193,100 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   }
 
   parsed = parseCoachTurn(retryText);
-  if (parsed.ok) return { status: 200, json: parsed.value };
+  if (parsed.ok) return withPolicyRetry(activeStep, apiMessages, retryText, parsed.value, generate);
 
   // ── Still bad — fail loudly with the raw output so prompt failures are visible. ──
   return {
     status: 502,
     json: { error: "coach_invalid_json", message: parsed.message, raw: retryText },
+  };
+}
+
+type ApiMessage = {
+  role: "user" | "assistant";
+  content: string | Anthropic.ContentBlockParam[];
+};
+
+/**
+ * The decision-criticality gate's brevity contract, enforced as code: a
+ * structurally-valid turn that violates the concise-reply rules (too long,
+ * more than one question, headings/lists/tables) gets ONE regenerate retry —
+ * never a client-side truncation/rewrite, per spec. If the retry doesn't
+ * parse, the original structurally-valid turn is kept rather than losing a
+ * good turn over a style nit.
+ */
+async function withPolicyRetry(
+  previousStep: FlowStep,
+  apiMessages: ApiMessage[],
+  rawText: string,
+  turn: CoachTurnResponse,
+  generate: (turns: ApiMessage[]) => Promise<string>,
+): Promise<RunCoachResult> {
+  let candidateText = rawText;
+  let candidate = turn;
+
+  // A retry is not automatically trustworthy. Re-check the regenerated turn
+  // and allow one stronger correction if the model simply relabels the same
+  // drift as "blocking" again. Never return a known policy violation as a
+  // successful coach turn.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const styleCheck = checkReplyStyle(
+      candidate.reply,
+      candidate.responseMode ?? "concise",
+    );
+    const policyCheck = checkTurnPolicy(previousStep, candidate);
+    if (styleCheck.ok && policyCheck.ok) {
+      return { status: 200, json: candidate };
+    }
+
+    const correction = [
+      styleCheck.ok ? "" : styleCorrectionPrompt(styleCheck),
+      policyCheck.ok ? "" : turnPolicyCorrectionPrompt(policyCheck),
+      attempt === 0
+        ? ""
+        : "This is the final correction attempt. Do not relabel the same later-step question as blocking. Advance when the captured fields complete the current step.",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    let retryText: string;
+    try {
+      retryText = await generate([
+        ...apiMessages,
+        { role: "assistant", content: candidateText },
+        { role: "user", content: correction },
+      ]);
+    } catch (err) {
+      return upstreamError(err);
+    }
+
+    const retryParsed = parseCoachTurn(retryText);
+    if (!retryParsed.ok) {
+      return {
+        status: 502,
+        json: {
+          error: "coach_invalid_json",
+          message: retryParsed.message,
+          raw: retryText,
+        },
+      };
+    }
+    candidateText = retryText;
+    candidate = retryParsed.value;
+  }
+
+  const finalStyle = checkReplyStyle(
+    candidate.reply,
+    candidate.responseMode ?? "concise",
+  );
+  const finalPolicy = checkTurnPolicy(previousStep, candidate);
+  return {
+    status: 502,
+    json: {
+      error: "coach_policy_violation",
+      message: [...finalStyle.reasons, ...finalPolicy.reasons].join("; "),
+      raw: candidateText,
+    },
   };
 }
 
@@ -184,21 +308,40 @@ export function parseCoachTurn(text: string): ParseResult {
   // Strip accidental markdown fences if the model added them despite instructions.
   const cleaned = stripFences(text);
 
+  // Try, in order: the cleaned text; the same with stray control characters
+  // inside string literals escaped (models sometimes emit a raw newline in
+  // "reply", which JSON.parse rejects as a "bad control character"); then the
+  // first balanced {...} object (in case prose wraps the JSON), also with the
+  // control-char repair. This recovers a well-shaped-but-slightly-malformed turn
+  // instead of failing the whole message with a hard 502.
+  const extracted = extractBalancedObject(cleaned);
+  const candidates = [cleaned];
+  if (extracted !== null && extracted !== cleaned) candidates.push(extracted);
+
   let obj: unknown;
-  try {
-    obj = JSON.parse(cleaned);
-  } catch {
-    // Tolerant fallback: the model may have wrapped the JSON in prose. Pull the
-    // first balanced {...} object out and try that before giving up.
-    const extracted = extractBalancedObject(cleaned);
-    if (extracted === null) {
-      return { ok: false, message: "No JSON object found in the model output." };
+  let parsed = false;
+  let lastError = "";
+  for (const candidate of candidates) {
+    for (const variant of [candidate, escapeControlCharsInStrings(candidate)]) {
+      try {
+        obj = JSON.parse(variant);
+        parsed = true;
+        break;
+      } catch (err) {
+        lastError = (err as Error).message;
+      }
     }
-    try {
-      obj = JSON.parse(extracted);
-    } catch (err) {
-      return { ok: false, message: `Not valid JSON: ${(err as Error).message}` };
-    }
+    if (parsed) break;
+  }
+
+  if (!parsed) {
+    return {
+      ok: false,
+      message:
+        extracted === null
+          ? "No JSON object found in the model output."
+          : `Not valid JSON: ${lastError}`,
+    };
   }
 
   if (typeof obj !== "object" || obj === null) {
@@ -206,23 +349,31 @@ export function parseCoachTurn(text: string): ParseResult {
   }
   const o = obj as Record<string, unknown>;
 
+  // Hard requirements — the SUBSTANCE of a turn. Only these can fail a turn.
   if (typeof o.reply !== "string") {
     return { ok: false, message: "Missing/invalid 'reply' (string)." };
   }
-  if (typeof o.activeStep !== "string" || !VALID_STEPS.includes(o.activeStep as SpecStep)) {
+  if (typeof o.activeStep !== "string" || !VALID_STEPS.includes(o.activeStep as FlowStep)) {
     return { ok: false, message: "Missing/invalid 'activeStep'." };
   }
-  if (typeof o.specUpdates !== "object" || o.specUpdates === null) {
-    return { ok: false, message: "Missing/invalid 'specUpdates' (object)." };
-  }
-  if (typeof o.guidePanel !== "object" || o.guidePanel === null) {
-    return { ok: false, message: "Missing/invalid 'guidePanel' (object)." };
-  }
-  if (!Array.isArray(o.activityEvents)) {
-    return { ok: false, message: "Missing/invalid 'activityEvents' (array)." };
-  }
 
-  return { ok: true, value: obj as CoachTurnResponse };
+  // Presentational / delta containers — DEFAULT them instead of failing the whole
+  // turn. A model that omits guidePanel or activityEvents shouldn't cost the user
+  // their reply and captured spec updates; the Guide falls back to spec-derived
+  // content when hints are absent.
+  const isPlainObject = (v: unknown) =>
+    typeof v === "object" && v !== null && !Array.isArray(v);
+  if (!isPlainObject(o.specUpdates)) o.specUpdates = {};
+  if (!isPlainObject(o.guidePanel)) {
+    o.guidePanel = { title: STEP_TITLES[o.activeStep as FlowStep] };
+  } else if (typeof (o.guidePanel as Record<string, unknown>).title !== "string") {
+    (o.guidePanel as Record<string, unknown>).title =
+      STEP_TITLES[o.activeStep as FlowStep];
+  }
+  if (!Array.isArray(o.activityEvents)) o.activityEvents = [];
+  if (!Array.isArray(o.quickReplies)) o.quickReplies = [];
+
+  return { ok: true, value: o as unknown as CoachTurnResponse };
 }
 
 /**
@@ -254,6 +405,61 @@ export function extractBalancedObject(text: string): string | null {
     }
   }
   return null;
+}
+
+/**
+ * Escape raw control characters that appear INSIDE JSON string literals. Models
+ * occasionally emit a literal newline/tab inside a value (e.g. a multi-line
+ * "reply"), which is invalid JSON — JSON.parse rejects it as a "bad control
+ * character in string literal". This walks the text tracking string state and
+ * escapes only in-string control chars, leaving structural whitespace between
+ * tokens untouched.
+ */
+export function escapeControlCharsInStrings(text: string): string {
+  let out = "";
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) {
+        out += ch;
+        escaped = false;
+        continue;
+      }
+      if (ch === "\\") {
+        out += ch;
+        escaped = true;
+        continue;
+      }
+      if (ch === '"') {
+        out += ch;
+        inString = false;
+        continue;
+      }
+      const code = ch.charCodeAt(0);
+      if (code < 0x20) {
+        out +=
+          ch === "\n"
+            ? "\\n"
+            : ch === "\r"
+              ? "\\r"
+              : ch === "\t"
+                ? "\\t"
+                : ch === "\b"
+                  ? "\\b"
+                  : ch === "\f"
+                    ? "\\f"
+                    : "\\u" + code.toString(16).padStart(4, "0");
+        continue;
+      }
+      out += ch;
+    } else {
+      out += ch;
+      if (ch === '"') inString = true;
+    }
+  }
+  return out;
 }
 
 function stripFences(text: string): string {

@@ -1,11 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { extractBalancedObject, parseCoachTurn } from "./coach";
+import {
+  escapeControlCharsInStrings,
+  extractBalancedObject,
+  parseCoachTurn,
+} from "./coach";
 
 const validTurn = {
   reply: "ok",
-  activeStep: "brief",
+  activeStep: "understand_request",
   specUpdates: {},
-  guidePanel: { title: "Brief", summary: "s" },
+  guidePanel: { title: "Understand the request", summary: "s" },
   activityEvents: [],
 };
 
@@ -55,14 +59,91 @@ describe("parseCoachTurn", () => {
     expect(r.ok).toBe(false);
   });
 
-  it("rejects an object missing a required top-level key", () => {
+  it("rejects an object missing 'reply' (a hard-required field)", () => {
     const { reply: _reply, ...missing } = validTurn;
     const r = parseCoachTurn(JSON.stringify(missing));
     expect(r.ok).toBe(false);
   });
 
+  it("defaults a missing guidePanel instead of failing the turn", () => {
+    const { guidePanel: _g, ...missing } = validTurn;
+    const r = parseCoachTurn(JSON.stringify(missing));
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.guidePanel).toBeTypeOf("object");
+      expect(r.value.guidePanel.title).toBe("Understand the request"); // from activeStep
+      expect(r.value.reply).toBe("ok"); // substance preserved
+    }
+  });
+
+  it("defaults missing specUpdates, activityEvents, and quickReplies containers", () => {
+    const { specUpdates: _s, activityEvents: _a, ...missing } = validTurn;
+    const r = parseCoachTurn(JSON.stringify(missing));
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.specUpdates).toEqual({});
+      expect(r.value.activityEvents).toEqual([]);
+      expect(r.value.quickReplies).toEqual([]);
+    }
+  });
+
   it("rejects an invalid activeStep", () => {
     const r = parseCoachTurn(JSON.stringify({ ...validTurn, activeStep: "nope" }));
     expect(r.ok).toBe(false);
+  });
+
+  it("accepts and preserves stepGate/responseMode when present", () => {
+    const withGate = {
+      ...validTurn,
+      responseMode: "concise",
+      stepGate: { linkedDecision: "root cause", blocking: false, disposition: "risk" },
+    };
+    const r = parseCoachTurn(JSON.stringify(withGate));
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.responseMode).toBe("concise");
+      expect(r.value.stepGate?.disposition).toBe("risk");
+    }
+  });
+
+  it("still parses a turn missing stepGate/responseMode (backward compatibility with older turns)", () => {
+    const r = parseCoachTurn(JSON.stringify(validTurn));
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.stepGate).toBeUndefined();
+      expect(r.value.responseMode).toBeUndefined();
+    }
+  });
+
+  it("recovers a raw newline inside a string value (bad control character)", () => {
+    // What the model actually emitted: a LITERAL newline inside "reply".
+    const bad =
+      '{"reply":"line one\nline two","activeStep":"understand_request","specUpdates":{},"guidePanel":{"title":"Understand the request"},"activityEvents":[]}';
+    const r = parseCoachTurn(bad);
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value.reply).toBe("line one\nline two");
+  });
+
+  it("recovers raw control chars in a prose-wrapped object", () => {
+    const bad =
+      'Here you go:\n{"reply":"a\tb\nc","activeStep":"understand_request","specUpdates":{},"guidePanel":{"title":"Understand the request"},"activityEvents":[]}';
+    const r = parseCoachTurn(bad);
+    expect(r.ok).toBe(true);
+  });
+});
+
+describe("escapeControlCharsInStrings", () => {
+  it("escapes control chars only inside string literals", () => {
+    const input = '{\n  "a": "x\ny"\n}';
+    const out = escapeControlCharsInStrings(input);
+    // The newline inside "x\ny" becomes \n; the structural newlines stay raw.
+    expect(out).toBe('{\n  "a": "x\\ny"\n}');
+    expect(JSON.parse(out)).toEqual({ a: "x\ny" });
+  });
+
+  it("leaves already-escaped sequences and quotes intact", () => {
+    const input = '{"a":"she said \\"hi\\"\tok"}';
+    const out = escapeControlCharsInStrings(input);
+    expect(JSON.parse(out)).toEqual({ a: 'she said "hi"\tok' });
   });
 });
