@@ -28,6 +28,7 @@ import { MilestoneCard } from "./MilestoneCard";
 import { BuildHandoffList } from "./BuildHandoffCard";
 import { WorkingBuildCard } from "./WorkingBuildCard";
 import { VerificationCard } from "./VerificationCard";
+import { EvidenceBriefGuidePreview } from "./EvidenceBriefCard";
 import type { BuildHandoff, EvidenceBrief } from "../types";
 import {
   ProgressPriorityIcon,
@@ -425,31 +426,6 @@ function EvidenceBriefThumbnail({
   );
 }
 
-function EvidenceBriefCard({ brief }: { brief: EvidenceBrief }) {
-  return (
-    <article className="guide-evidence-card" aria-label={brief.title}>
-      <div className="guide-evidence-card-head">
-        <div className="guide-evidence-card-title">{brief.title}</div>
-        {brief.strength && (
-          <span className="guide-evidence-strength">{brief.strength} evidence</span>
-        )}
-      </div>
-      {brief.source && <div className="guide-evidence-source">{brief.source}</div>}
-      <p>{brief.summary}</p>
-      {brief.stats && brief.stats.length > 0 && (
-        <div className="guide-evidence-stats">
-          {brief.stats.map((stat) => (
-            <div key={`${stat.label}-${stat.value}`} className="guide-evidence-stat">
-              <strong>{stat.value}</strong>
-              <span>{stat.label}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </article>
-  );
-}
-
 function stepIcon(state: "done" | "active" | "todo") {
   if (state === "done") return <ProgressCompletedIcon />;
   if (state === "active") return <ProgressPriorityIcon />;
@@ -499,7 +475,7 @@ function SubstepRow(props: {
 
   const stepContent = (
     <>
-      {evidenceBrief && <EvidenceBriefCard brief={evidenceBrief} />}
+      {evidenceBrief && <EvidenceBriefGuidePreview brief={evidenceBrief} />}
       <MilestoneChips spec={spec} step={step} onOpenReview={props.onOpenReview} />
       {step === "prepare_handoff" && spec.buildHandoffs.length > 0 && props.onSaveHandoff && props.onSendHandoff && (
         <BuildHandoffList

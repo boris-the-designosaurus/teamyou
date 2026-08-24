@@ -3,6 +3,7 @@ import type { ImageAttachment, Message, MilestoneArtifact } from "../types";
 import { fileToAttachment } from "../image";
 import coffeeCup from "../../images/coffeecup.svg";
 import { DirectionCards } from "./DirectionCards";
+import { EvidenceBriefCard } from "./EvidenceBriefCard";
 import {
   ComposerAttachIcon,
   ComposerMicIcon,
@@ -275,6 +276,13 @@ export function ChatPanel(props: {
                     </figure>
                   ))}
                 </div>
+              )}
+              {m.role === "coach" && m.evidenceBrief && (
+                <EvidenceBriefCard
+                  brief={m.evidenceBrief}
+                  evidence={m.evidenceSnapshot}
+                  openItems={m.evidenceOpenItems}
+                />
               )}
               {m.content && (
                 <div className="bubble-content">{renderContent(m.content)}</div>

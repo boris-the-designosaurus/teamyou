@@ -287,6 +287,18 @@ export function App() {
         recommendedQuickReply: turn.recommendedQuickReply,
         milestoneArtifactIds:
           newMilestoneArtifactIds.length > 0 ? newMilestoneArtifactIds : undefined,
+        evidenceBrief: turn.specUpdates.evidenceBrief,
+        evidenceSnapshot: turn.specUpdates.evidenceBrief
+          ? mergedSpec.evidence.filter((item) => item.step === "assess_evidence")
+          : undefined,
+        evidenceOpenItems: turn.specUpdates.evidenceBrief
+          ? mergedSpec.openQuestions
+              .filter(
+                (item) =>
+                  item.step === "assess_evidence" && item.status === "open",
+              )
+              .map((item) => item.text)
+          : undefined,
         createdAt: nowISO(),
       };
 

@@ -37,7 +37,7 @@ describe("Guide evidence capture", () => {
     );
 
     expect(html).toContain("Open evidence report: Portfolio performance snapshot");
-    expect(html).toContain("GA4 screenshot and application outcomes");
+    expect(html).toContain("Portfolio performance snapshot preview");
     expect(html).toContain("226");
     expect(html).toContain("40–50");
   });
