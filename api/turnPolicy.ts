@@ -46,6 +46,14 @@ function capturedStepExit(previousStep: FlowStep, turn: CoachTurnResponse): stri
   if (previousStep === "define_problem" && hasText(brief.problem)) {
     return "a credible problem barrier was captured";
   }
+  if (
+    previousStep === "identify_users" &&
+    hasText(brief.user) &&
+    hasText(brief.moment) &&
+    hasText(brief.task)
+  ) {
+    return "the user, moment, and task were captured";
+  }
   if (previousStep === "find_root_cause" && hasText(brief.rootCause)) {
     return "a root-cause hypothesis was captured";
   }
@@ -226,6 +234,12 @@ export function checkTurnPolicy(
     }
   }
 
+  if (turn.activeStep === "identify_users" && (turn.quickReplies ?? []).length > 0) {
+    reasons.push(
+      "Identify users and context must collect user + moment, then task, as free text; do not turn roles and moments into quick-reply alternatives",
+    );
+  }
+
   if (
     (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
     SINGLE_PATTERN_GATE.test(turn.reply)
@@ -275,6 +289,8 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `For an opportunity-seeking portfolio in Understand the request, ask what target work the site ` +
     `must help win before asking what the portfolio should communicate, say, or lead with. Scaffold ` +
     `Target work with two concrete choices plus "Not sure yet," and do not recommend one without evidence. ` +
+    `In Identify users and context, capture user + moment together, then task separately; keep quickReplies ` +
+    `empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }

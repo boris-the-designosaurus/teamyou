@@ -9,6 +9,7 @@ import {
   reviewCategoryState,
   isVagueFinding,
   stepSummaryLine,
+  stepCapturedItems,
   stageSummaryLine,
 } from "./merge";
 import { emptySpec, type ReviewFinding, type SpecUpdates } from "./types";
@@ -671,6 +672,23 @@ describe("stepSummaryLine (Guide default view — a five-second summary, not the
   it("uses the outcome fields for define_outcome, preferring userOutcome first", () => {
     const spec = { ...emptySpec(), outcome: { userOutcome: "Understands pricing in one glance" } };
     expect(stepSummaryLine(spec, "define_outcome")).toBe("Understands pricing in one glance");
+  });
+});
+
+describe("stepCapturedItems", () => {
+  it("labels the identify-users task generically across work types", () => {
+    const spec = {
+      ...emptySpec(),
+      brief: {
+        user: "A founder or Head of Product",
+        moment: "When evaluating contract help",
+        task: "Judge fit and decide whether to reach out",
+      },
+    };
+
+    expect(stepCapturedItems(spec, "identify_users")).toContain(
+      "Task: Judge fit and decide whether to reach out",
+    );
   });
 });
 

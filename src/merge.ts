@@ -656,7 +656,7 @@ export function stepCapturedItems(spec: Spec, step: FlowStep): string[] {
     case "identify_users":
       if (b.user) items.push(`User: ${b.user}`);
       if (b.moment) items.push(`Moment: ${b.moment}`);
-      if (b.task) items.push(`Manual task: ${b.task}`);
+      if (b.task) items.push(`Task: ${b.task}`);
       break;
     case "assess_evidence":
       spec.evidence
