@@ -43,6 +43,32 @@ function groundsLatestScreenshot(reply: string): boolean {
   );
 }
 
+function turnGroundsLatestScreenshot(turn: CoachTurnResponse): boolean {
+  if (groundsLatestScreenshot(turn.reply)) return true;
+
+  const evidenceText = (turn.specUpdates.evidence ?? [])
+    .map((item) => item.text)
+    .join(" ");
+  const evidenceBrief = turn.specUpdates.evidenceBrief;
+  const evidenceBriefText = evidenceBrief
+    ? [
+        evidenceBrief.source ?? "",
+        evidenceBrief.summary,
+        ...(evidenceBrief.stats ?? []).map(
+          (stat) => `${stat.label} ${stat.value}`,
+        ),
+      ].join(" ")
+    : "";
+  const structuredEvidenceText = `${evidenceText} ${evidenceBriefText}`;
+
+  return (
+    SCREENSHOT_GROUNDING.test(evidenceText) ||
+    (DATA_ARTIFACT.test(structuredEvidenceText) &&
+      ((evidenceBrief?.stats?.length ?? 0) > 0 ||
+        (turn.specUpdates.evidence ?? []).some((item) => item.kind === "fact")))
+  );
+}
+
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -193,7 +219,7 @@ export function checkTurnPolicy(
 
   if (
     (context.latestAttachmentCount ?? 0) > 0 &&
-    !groundsLatestScreenshot(turn.reply)
+    !turnGroundsLatestScreenshot(turn)
   ) {
     reasons.push(
       "the latest user turn included screenshots, but the reply does not ground an observation in what they show",
@@ -441,8 +467,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `moment already imply the visitor's judgment, synthesize one recommended judgment into brief.task and ` +
     `advance instead of asking the designer to choose among overlapping evaluation dimensions. Keep ` +
     `quickReplies empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
-    `When the latest user turn includes screenshots, explicitly ground one concise observation in what ` +
-    `they visibly show; distinguish current-state evidence from inspiration/reference, and do not replace ` +
+    `When the latest user turn includes screenshots, ground one concise observation either in the reply ` +
+    `or in the visible structured evidence/evidenceBrief; do not repeat report stats in prose merely to prove ` +
+    `inspection. Distinguish current-state evidence from inspiration/reference, and do not replace ` +
     `the user's supported barrier with an unrelated theory. When quantitative evidence is captured during Assess ` +
     `evidence and urgency, capture the numbers as a fact in specUpdates.evidence AND create or refresh a ` +
     `project-appropriate specUpdates.evidenceBrief immediately, even if another question keeps the step ` +
