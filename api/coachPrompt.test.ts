@@ -36,6 +36,18 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("treats pattern exploration as a flexible multi-select workspace", () => {
+    const prompt = promptAt("find_patterns");
+    expect(prompt).toContain("Pattern exploration is a workspace, not a single-answer gate");
+    expect(prompt).toContain("proactively add 3-5 structurally distinct");
+    expect(prompt).toContain("Recommend the strongest pattern with ONE grounded reason");
+    expect(prompt).toContain(
+      "Select one or more patterns to generate wireframes, combine useful ingredients, request more, or add your own example in chat.",
+    );
+    expect(prompt).toContain('"ingredients": ["Direct offer", "Availability", "Builder positioning"]');
+    expect(prompt).toContain("Pattern cards replace quick replies for this choice");
+  });
+
   it("keeps evidence questions out of Understand the request", () => {
     const prompt = promptAt("understand_request");
     expect(prompt).toContain(
