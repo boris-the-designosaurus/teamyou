@@ -110,6 +110,37 @@ describe("checkTurnPolicy", () => {
     expect(result.reasons.join(" ")).toMatch(/does not ground an observation/);
   });
 
+  it("rejects the exact evidence turn when the model omits both the record and report", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply:
+          "The screenshot confirms real traffic (226 users), while 40–50 applications produced one screener interview. **Moving to root cause.** What does the homepage show first?",
+        activeStep: "find_root_cause",
+        specUpdates: {},
+        guidePanel: {
+          title: "Find the adoption barrier/root cause",
+          need: "Homepage first impression",
+          nextPrompt: "What does the homepage show first?",
+        },
+      }),
+      {
+        latestAttachmentCount: 1,
+        latestUserText:
+          "I applied to roughly 40–50 roles and received only one screener interview.",
+        workItemType: "design_project",
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(
+      /capture it as a numeric fact in specUpdates\.evidence/,
+    );
+    expect(result.reasons.join(" ")).toMatch(
+      /create or refresh a project-appropriate evidenceBrief/,
+    );
+  });
+
   it("requires an evidence brief as soon as quantitative evidence is captured", () => {
     const result = checkTurnPolicy(
       "assess_evidence",
