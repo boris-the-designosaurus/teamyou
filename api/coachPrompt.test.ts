@@ -119,11 +119,12 @@ describe("coach flow boundaries", () => {
     );
   });
 
-  it("requires a project-appropriate report when quantitative evidence completes", () => {
+  it("requires a project-appropriate report as soon as quantitative evidence is supplied", () => {
     const prompt = promptAt("assess_evidence");
     expect(prompt).toContain(
-      "MUST produce a project-appropriate `evidenceBrief` when the user supplies real numbers/data and the step completes",
+      "MUST produce a project-appropriate `evidenceBrief` as soon as the user supplies real numbers/data",
     );
+    expect(prompt).toContain("even when another question (such as urgency) keeps the step active");
     expect(prompt).toContain('"title": "Portfolio performance snapshot"');
     expect(prompt).toContain('"strength": "moderate"');
   });
