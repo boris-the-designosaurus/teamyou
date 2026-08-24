@@ -192,6 +192,20 @@ export function checkTurnPolicy(
     reasons.push("guidePanel.nextPrompt is present without a compact guidePanel.need label");
   }
 
+  if (turn.activeStep === "understand_request" && /^target work$/i.test(need)) {
+    const replies = turn.quickReplies ?? [];
+    if (replies.length < 2 || replies.length > 3 || !replies.some((reply) => /not sure/i.test(reply))) {
+      reasons.push(
+        'a Target work question must provide two concrete starting points plus a "Not sure yet" option',
+      );
+    }
+    if (turn.recommendedQuickReply) {
+      reasons.push(
+        "Target work cannot show a recommendation before the spec contains evidence that distinguishes the options",
+      );
+    }
+  }
+
   if (
     (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
     SINGLE_PATTERN_GATE.test(turn.reply)
@@ -236,7 +250,8 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `then invite selecting one or more, combining ingredients, requesting more, or adding an example; never ` +
     `force a single direction or duplicate the cards as quick replies. ` +
     `For an opportunity-seeking portfolio in Understand the request, ask what target work the site ` +
-    `must help win before asking what the portfolio should communicate, say, or lead with. ` +
+    `must help win before asking what the portfolio should communicate, say, or lead with. Scaffold ` +
+    `Target work with two concrete choices plus "Not sure yet," and do not recommend one without evidence. ` +
     `Do not remove captured specUpdates merely to satisfy this correction.`
   );
 }

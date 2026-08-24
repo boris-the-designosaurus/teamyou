@@ -76,9 +76,15 @@ describe("coach flow boundaries", () => {
       'User: "My portfolio isn\'t generating freelance or contract work, and I want to improve it."',
     );
     expect(prompt).toContain(
-      '"reply": "What kind of freelance or contract work do you want the portfolio to help you win?"',
+      '"reply": "You don\'t need a polished offer yet. Which is closest to the work you want more of?"',
     );
     expect(prompt).toContain('"need": "Target work"');
+    expect(prompt).toContain(
+      '"quickReplies": ["Ongoing design support", "Feature/workflow projects", "Not sure yet"]',
+    );
+    expect(prompt).toContain(
+      "Do not set `recommendedQuickReply` here: the spec has no basis for favoring an engagement shape.",
+    );
     expect(prompt).toContain(
       "Do NOT ask what the portfolio should communicate, what its key message should be, or what it should lead with on this turn.",
     );

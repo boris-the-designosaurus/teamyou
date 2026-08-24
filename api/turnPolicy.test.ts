@@ -347,6 +347,33 @@ describe("checkTurnPolicy", () => {
       "understand_request",
       turn({
         reply:
+          "You don't need a polished offer yet. Which is closest to the work you want more of?",
+        activeStep: "understand_request",
+        stepGate: {
+          linkedDecision: "Target work the portfolio must help win",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {
+          brief: { goal: "Generate freelance or contract work through the portfolio" },
+        },
+        guidePanel: {
+          title: "Understand the request",
+          need: "Target work",
+          nextPrompt: "Which is closest to the work you want more of?",
+        },
+        quickReplies: ["Ongoing design support", "Feature/workflow projects", "Not sure yet"],
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects a hard-to-answer Target work question with no scaffolding", () => {
+    const result = checkTurnPolicy(
+      "understand_request",
+      turn({
+        reply:
           "What kind of freelance or contract work do you want the portfolio to help you win?",
         activeStep: "understand_request",
         stepGate: {
@@ -363,10 +390,37 @@ describe("checkTurnPolicy", () => {
           nextPrompt:
             "What kind of freelance or contract work do you want the portfolio to help you win?",
         },
+        quickReplies: [],
       }),
     );
 
-    expect(result.ok).toBe(true);
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/two concrete starting points/);
+  });
+
+  it("rejects recommending a Target work option before evidence exists", () => {
+    const result = checkTurnPolicy(
+      "understand_request",
+      turn({
+        reply: "Which is closest to the work you want more of?",
+        activeStep: "understand_request",
+        stepGate: {
+          linkedDecision: "Target work the portfolio must help win",
+          blocking: true,
+          disposition: "ask",
+        },
+        guidePanel: {
+          title: "Understand the request",
+          need: "Target work",
+          nextPrompt: "Which is closest to the work you want more of?",
+        },
+        quickReplies: ["Ongoing design support", "Feature/workflow projects", "Not sure yet"],
+        recommendedQuickReply: "Feature/workflow projects",
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/cannot show a recommendation/);
   });
 
   it("requires an ask disposition to be blocking", () => {
