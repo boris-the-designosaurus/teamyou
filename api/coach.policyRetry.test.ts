@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { withPolicyRetry } from "./coach";
 import type { CoachTurnResponse } from "../src/types";
 
@@ -95,5 +95,67 @@ describe("withPolicyRetry", () => {
 
     expect(result.status).toBe(200);
     expect(result.json).toEqual(validFinalCorrection);
+  });
+
+  it("repairs a repeated target-work question after the portfolio goal is complete", async () => {
+    const repeatedTargetQuestion: CoachTurnResponse = {
+      reply:
+        "**Target work first**: is this portfolio primarily for full-time B2B/SaaS roles, freelance work, or not sure which to lead with?",
+      activeStep: "understand_request",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "The target work the portfolio must help win",
+        blocking: true,
+        disposition: "ask",
+      },
+      specUpdates: {
+        brief: {
+          goal:
+            "Get hired for B2B/SaaS product design work, primarily full-time with openness to freelance.",
+          productContext:
+            "The portfolio currently does not tell a strong story or produce hiring interest.",
+        },
+      },
+      guidePanel: {
+        title: "Understand the request",
+        need: "Target work priority",
+        nextPrompt:
+          "Is this portfolio primarily for full-time roles, freelance work, or not sure?",
+      },
+      activityEvents: [],
+      quickReplies: [
+        "Full-time B2B/SaaS roles",
+        "Freelance/contract SaaS work",
+        "Not sure yet",
+      ],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic repair should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "understand_request",
+      [],
+      JSON.stringify(repeatedTargetQuestion),
+      repeatedTargetQuestion,
+      generate,
+      { workItemType: "design_project" },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "define_problem",
+      guidePanel: {
+        title: "Define the problem",
+        need: "Hiring barrier",
+      },
+      quickReplies: [],
+    });
+    expect("reply" in result.json ? result.json.reply : "").toContain(
+      "target work is already clear enough",
+    );
+    expect(generate).not.toHaveBeenCalled();
   });
 });
