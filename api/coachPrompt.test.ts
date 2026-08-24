@@ -119,6 +119,15 @@ describe("coach flow boundaries", () => {
     );
   });
 
+  it("requires a project-appropriate report when quantitative evidence completes", () => {
+    const prompt = promptAt("assess_evidence");
+    expect(prompt).toContain(
+      "MUST produce a project-appropriate `evidenceBrief` when the user supplies real numbers/data and the step completes",
+    );
+    expect(prompt).toContain('"title": "Portfolio performance snapshot"');
+    expect(prompt).toContain('"strength": "moderate"');
+  });
+
   it("teaches the portfolio redesign case to advance to Define the problem", () => {
     const prompt = promptAt("understand_request");
     expect(prompt).toContain('"activeStep": "define_problem"');
