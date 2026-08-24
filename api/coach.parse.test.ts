@@ -134,6 +134,26 @@ describe("parseCoachTurn", () => {
     }
   });
 
+  it("preserves an explicit flow revision for policy validation", () => {
+    const r = parseCoachTurn(
+      JSON.stringify({
+        ...validTurn,
+        activeStep: "review_shortlist",
+        guidePanel: { title: "Review and shortlist" },
+        flowRevision: {
+          reopenedStep: "find_patterns",
+          reason: "The user chose to broaden the reference set.",
+          preservesExistingWork: true,
+        },
+      }),
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.flowRevision?.reopenedStep).toBe("find_patterns");
+      expect(r.value.flowRevision?.preservesExistingWork).toBe(true);
+    }
+  });
+
   it("still parses a turn missing stepGate/responseMode (backward compatibility with older turns)", () => {
     const r = parseCoachTurn(JSON.stringify(validTurn));
     expect(r.ok).toBe(true);
