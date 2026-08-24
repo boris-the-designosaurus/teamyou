@@ -430,6 +430,58 @@ describe("checkTurnPolicy", () => {
     ).toBe(false);
   });
 
+  it("rejects a portfolio jump that infers the audience but omits the problem record", () => {
+    const result = checkTurnPolicy(
+      "define_problem",
+      turn({
+        reply:
+          "**I can infer the visitor's judgment.** Do you have performance data?",
+        activeStep: "assess_evidence",
+        specUpdates: {
+          brief: {
+            user: "Hiring managers",
+            moment: "Reviewing after an application",
+            task: "Judge end-to-end ownership",
+          },
+        },
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Portfolio performance data",
+          nextPrompt: "Do you have performance data?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/without capturing required data for: define_problem/);
+  });
+
+  it("allows a concise multi-step advance when every crossed step is captured", () => {
+    const result = checkTurnPolicy(
+      "define_problem",
+      turn({
+        reply:
+          "**The barrier and hiring judgment are clear.** Do you have performance data?",
+        activeStep: "assess_evidence",
+        specUpdates: {
+          brief: {
+            problem: "Visitors cannot quickly understand the designer's process, contribution, and impact.",
+            user: "Hiring managers",
+            moment: "Reviewing after an application",
+            task: "Judge whether the designer can own ambiguous work end-to-end",
+          },
+        },
+        guidePanel: {
+          title: "Assess evidence and urgency",
+          need: "Portfolio performance data",
+          nextPrompt: "Do you have performance data?",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("allows a user-authorized revision to reopen an earlier step while preserving work", () => {
     const result = checkTurnPolicy(
       "choose_direction",
