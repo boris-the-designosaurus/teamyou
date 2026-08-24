@@ -30,6 +30,17 @@ const FLEXIBLE_PATTERN_SELECTION =
 const STRATEGIC_EMPHASIS = /\*\*[^*\n]+\*\*/;
 const SCREENSHOT_GROUNDING =
   /\b(screenshot|image|reference|comparison|current (?:page|screen|site|portfolio)|shown|visible|looking at|based on what (?:is|you've) shown)\b/i;
+const DATA_ARTIFACT =
+  /\b(?:ga4|google analytics|analytics dashboard|dashboard|chart|graph|spreadsheet|report)\b/i;
+const DATA_ARTIFACT_OBSERVATION =
+  /\b(?:shows?|confirms?|indicates?|records?|reports?|reveals?|lists?|contains?)\b/i;
+
+function groundsLatestScreenshot(reply: string): boolean {
+  return (
+    SCREENSHOT_GROUNDING.test(reply) ||
+    (DATA_ARTIFACT.test(reply) && DATA_ARTIFACT_OBSERVATION.test(reply))
+  );
+}
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -144,7 +155,7 @@ export function checkTurnPolicy(
 
   if (
     (context.latestAttachmentCount ?? 0) > 0 &&
-    !SCREENSHOT_GROUNDING.test(turn.reply)
+    !groundsLatestScreenshot(turn.reply)
   ) {
     reasons.push(
       "the latest user turn included screenshots, but the reply does not ground an observation in what they show",

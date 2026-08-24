@@ -87,6 +87,26 @@ describe("parseCoachTurn", () => {
     }
   });
 
+  it("moves a misplaced top-level evidence brief into specUpdates", () => {
+    const evidenceBrief = {
+      title: "Portfolio performance snapshot",
+      summary: "Traffic exists, but no on-site funnel is tracked.",
+      strength: "moderate",
+    };
+    const r = parseCoachTurn(
+      JSON.stringify({
+        ...validTurn,
+        evidenceBrief,
+      }),
+    );
+
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.specUpdates.evidenceBrief).toEqual(evidenceBrief);
+      expect((r.value as unknown as Record<string, unknown>).evidenceBrief).toBeUndefined();
+    }
+  });
+
   it("preserves a recommendation that exactly matches a quick reply", () => {
     const r = parseCoachTurn(
       JSON.stringify({

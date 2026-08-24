@@ -55,6 +55,55 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts a concrete observation grounded in an attached analytics dashboard", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply:
+          "The GA4 dashboard confirms real traffic (226 users) but no funnel visibility past pageview — that gap is now a todo, and distribution quality is a parallel risk, not a blocker.\n\n**Moving to root cause.** What do visitors actually see first when they land on the portfolio — what's above the fold?",
+        activeStep: "find_root_cause",
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "GA4 reports 226 active users and no conversion tracking.",
+              step: "assess_evidence",
+            },
+          ],
+        },
+        guidePanel: {
+          title: "Find the adoption barrier/root cause",
+          need: "Homepage first impression",
+          nextPrompt:
+            "What do visitors actually see first when they land on the portfolio — what's above the fold?",
+        },
+      }),
+      { latestAttachmentCount: 1 },
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("does not treat a generic mention of data as screenshot grounding", () => {
+    const result = checkTurnPolicy(
+      "assess_evidence",
+      turn({
+        reply:
+          "**Moving to root cause.** The data matters. What do visitors see first?",
+        activeStep: "find_root_cause",
+        guidePanel: {
+          title: "Find the adoption barrier/root cause",
+          need: "Homepage first impression",
+          nextPrompt: "What do visitors see first?",
+        },
+      }),
+      { latestAttachmentCount: 1 },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/does not ground an observation/);
+  });
+
   it("accepts an immediate step advance with the question in chat", () => {
     expect(checkTurnPolicy("define_problem", turn()).ok).toBe(true);
   });
