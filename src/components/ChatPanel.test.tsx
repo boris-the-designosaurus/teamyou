@@ -33,4 +33,23 @@ describe("ChatPanel quick-reply recommendation", () => {
     expect(html).not.toContain("Project teaser strength, recommended");
     consoleError.mockRestore();
   });
+
+  it("renders short bullets and strategic bolding without flattening the layout", () => {
+    const message: Message = {
+      id: "coach-1",
+      role: "coach",
+      content:
+        "**The frame is ready.**\n\nA successful direction should:\n- Clarify the offer\n- Show credible proof\n- Make contact easy",
+      createdAt: "2026-08-23T12:00:00.000Z",
+    };
+
+    const html = renderToStaticMarkup(
+      <ChatPanel messages={[message]} loading={false} error={null} onSend={vi.fn()} />,
+    );
+
+    expect(html).toContain("<strong>The frame is ready.</strong>");
+    expect(html).toContain("<ul>");
+    expect(html).toContain("<li><span>Clarify the offer</span></li>");
+    expect(html).not.toContain("- Clarify the offer");
+  });
 });

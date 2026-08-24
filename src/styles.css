@@ -425,6 +425,19 @@ body {
   align-self: flex-start;
   color: var(--text);
 }
+.bubble-content p {
+  margin: 0 0 12px;
+}
+.bubble-content p:last-child {
+  margin-bottom: 0;
+}
+.bubble-content ul {
+  margin: 8px 0 12px;
+  padding-left: 22px;
+}
+.bubble-content li + li {
+  margin-top: 4px;
+}
 /* Coach-offered quick replies ("Yes"/"No", 2-3 short choices) — styled like a
    clickable version of the user's own reply bubble so they read as an
    affordance to answer, not a status tag. */

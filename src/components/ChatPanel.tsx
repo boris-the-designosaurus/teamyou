@@ -10,9 +10,9 @@ import {
   RocketIcon,
 } from "../icons";
 
-/** Renders coach reply text, honoring the one/two \*\*bold\*\* emphasis spans
- * the prompt is allowed to use for the key judgment phrase per message. */
-function renderContent(text: string) {
+/** Inline emphasis stays deliberately small: the Coach may bold one strategic
+ * phrase, not style the whole response. */
+function renderInline(text: string) {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") ? (
       <strong key={i}>{part.slice(2, -2)}</strong>
@@ -20,6 +20,57 @@ function renderContent(text: string) {
       <span key={i}>{part}</span>
     ),
   );
+}
+
+/** Preserve the quiet conversational layout while rendering intentional
+ * paragraph breaks and short markdown-style bullet lists semantically. */
+function renderContent(text: string) {
+  const lines = text.split("\n");
+  const blocks: React.ReactNode[] = [];
+  let paragraph: string[] = [];
+  let bullets: string[] = [];
+
+  function flushParagraph() {
+    if (paragraph.length === 0) return;
+    blocks.push(
+      <p key={`p-${blocks.length}`}>
+        {paragraph.map((line, index) => (
+          <span key={index}>
+            {index > 0 && <br />}
+            {renderInline(line)}
+          </span>
+        ))}
+      </p>,
+    );
+    paragraph = [];
+  }
+
+  function flushBullets() {
+    if (bullets.length === 0) return;
+    blocks.push(
+      <ul key={`ul-${blocks.length}`}>
+        {bullets.map((bullet, index) => (
+          <li key={index}>{renderInline(bullet)}</li>
+        ))}
+      </ul>,
+    );
+    bullets = [];
+  }
+
+  for (const line of lines) {
+    const bullet = line.match(/^\s*[-*•]\s+(.+)$/);
+    if (bullet) {
+      flushParagraph();
+      bullets.push(bullet[1]);
+    } else {
+      flushBullets();
+      if (line.trim()) paragraph.push(line);
+      else flushParagraph();
+    }
+  }
+  flushParagraph();
+  flushBullets();
+  return blocks;
 }
 
 export function ChatPanel(props: {
