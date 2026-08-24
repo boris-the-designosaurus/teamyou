@@ -5,6 +5,7 @@ import {
   countSentences,
   countWords,
   hasHeadingListOrTable,
+  hasBlamingProcessLanguage,
   CONCISE_MAX_SENTENCES,
   CONCISE_MAX_WORDS,
 } from "./replyStyle";
@@ -47,6 +48,19 @@ describe("countWords / countQuestions / hasHeadingListOrTable", () => {
     expect(countSentences("One sentence.")).toBe(1);
     expect(countSentences("Captured both steps in the Guide. Should the funnel also be in scope?")).toBe(2);
     expect(countSentences("One. Two! Three?")).toBe(3);
+  });
+
+  it("detects scolding or internal process language", () => {
+    expect(
+      hasBlamingProcessLanguage(
+        "You've asked twice to broaden — that's an explicit override.",
+      ),
+    ).toBe(true);
+    expect(
+      hasBlamingProcessLanguage(
+        "You're right — I was too narrow. I'll add three contrasting structures now.",
+      ),
+    ).toBe(false);
   });
 });
 
@@ -97,6 +111,16 @@ describe("checkReplyStyle — concise mode (normal coaching turns)", () => {
     const check = checkReplyStyle(reply, "concise");
     expect(check.ok).toBe(true);
     expect(check.sentenceCount).toBe(3);
+  });
+
+  it("rejects the scolding process language from the reference-broadening regression", () => {
+    const check = checkReplyStyle(
+      "You've asked twice to broaden — that's an explicit override, so I'll add contrasting references while keeping Joey Shiner as an anchor. What kind of contrast do you want?",
+      "concise",
+    );
+    expect(check.ok).toBe(false);
+    expect(check.hasBlamingProcessLanguage).toBe(true);
+    expect(check.reasons.join(" ")).toMatch(/responding collaboratively/);
   });
 });
 
