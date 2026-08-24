@@ -46,14 +46,14 @@ export function countQuestions(text: string): number {
   return matches ? matches.length : 0;
 }
 
-/** True if the reply uses markdown headings, 3+ list-style lines, or a table
- * — normal coaching turns talk in prose; that structure belongs in the Guide
- * or in a deliberately "detailed" turn. */
+/** True if the reply uses markdown headings, an overlong list, or a table.
+ * Concise coaching may use 2-4 short bullets when that is more scannable than
+ * prose, but larger list structures belong in the Guide/detailed output. */
 export function hasHeadingListOrTable(text: string): boolean {
   const lines = text.split("\n");
   if (lines.some((l) => /^#{1,6}\s/.test(l.trim()))) return true;
   const bulletLines = lines.filter((l) => /^\s*([-*•]|\d+[.)])\s+/.test(l));
-  if (bulletLines.length >= 3) return true;
+  if (bulletLines.length > 4) return true;
   const tableLines = lines.filter((l) => /^\s*\|.*\|\s*$/.test(l));
   if (tableLines.length >= 2) return true;
   return false;
@@ -111,7 +111,7 @@ export function checkReplyStyle(
     reasons.push(`the reply asks ${questionCount} questions — only one is allowed per normal turn`);
   }
   if (headingListTable) {
-    reasons.push("the reply uses a heading, list, or table — not allowed in a normal coaching turn");
+    reasons.push("the reply uses a heading, table, or list longer than four items — not allowed in a normal coaching turn");
   }
   if (blamingProcessLanguage) {
     reasons.push(
@@ -139,7 +139,8 @@ export function styleCorrectionPrompt(check: ReplyStyleCheck): string {
     `1-3 short sentences (never over ${CONCISE_MAX_SENTENCES}), aiming for ` +
     `${CONCISE_TARGET_MIN_WORDS}-${CONCISE_TARGET_MAX_WORDS} words and never over ${CONCISE_MAX_WORDS}, ` +
     `ONE observation/challenge/recommendation, at most ONE question placed at the end, and no ` +
-    `headings/lists/tables. If you just wrote something to the Guide this turn, use at most one brief ` +
+    `headings/tables or lists longer than four items. Use 2-4 short bullets only when they make ` +
+    `choices, criteria, or a comparison materially easier to scan. If you just wrote something to the Guide this turn, use at most one brief ` +
     `acknowledgment (e.g. "Got it." / "Captured that.") — do not repeat or paraphrase it back, and do not ` +
     `narrate your reasoning. Never mention how many times the user asked, call their choice an "explicit ` +
     `override," or expose other internal governance language; briefly own a miss and act. If this genuinely ` +
