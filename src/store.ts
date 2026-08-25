@@ -64,11 +64,11 @@ const PORTFOLIO_DIRECTION_PROJECT = /\b(?:portfolio|hired|product design job)\b/
 
 /**
  * One-time recovery for the active portfolio project used while validating the
- * pattern workspace. It deliberately preserves the full decision record and
- * merely clears the pattern selection so Choose a direction must be completed
- * again. Returning the same object means no eligible project was open.
+ * pattern workspace. It removes the stale pattern artifacts and their inline
+ * card references, then reopens Find relevant patterns with one clear action
+ * that asks the Coach to retrieve a genuinely fresh sourced set.
  */
-export function reopenCurrentPortfolioDirection(
+export function clearCurrentPortfolioPatterns(
   store: Store,
   messageId: string = crypto.randomUUID(),
   timestamp = new Date().toISOString(),
@@ -90,25 +90,32 @@ export function reopenCurrentPortfolioDirection(
     .map((artifact) => artifact.id);
   if (patternIds.length === 0) return store;
 
+  const patternIdSet = new Set(patternIds);
   const item: WorkItem = {
     ...current.item,
-    currentStep: "choose_direction",
+    currentStep: "find_patterns",
     spec: {
       ...current.item.spec,
-      milestoneArtifacts: current.item.spec.milestoneArtifacts.map((artifact) =>
-        artifact.kind === "pattern_shortlist"
-          ? { ...artifact, status: "exploring" as const }
-          : artifact,
+      milestoneArtifacts: current.item.spec.milestoneArtifacts.filter(
+        (artifact) => artifact.kind !== "pattern_shortlist",
       ),
     },
     messages: [
-      ...current.item.messages,
+      ...current.item.messages.map((message) => {
+        if (!message.milestoneArtifactIds) return message;
+        const remaining = message.milestoneArtifactIds.filter((id) => !patternIdSet.has(id));
+        return {
+          ...message,
+          milestoneArtifactIds: remaining.length > 0 ? remaining : undefined,
+        };
+      }),
       {
         id: messageId,
         role: "coach",
         content:
-          "Choose a direction has been reopened so you can review the updated pattern thumbnails. Select one or more patterns below, then generate the direction again.",
-        milestoneArtifactIds: patternIds,
+          "The previous pattern examples and thumbnails have been cleared. Generate a fresh, sourced pattern set now?",
+        quickReplies: ["Generate fresh patterns"],
+        recommendedQuickReply: "Generate fresh patterns",
         createdAt: timestamp,
       },
     ],
@@ -122,11 +129,11 @@ export function reopenCurrentPortfolioDirection(
       [currentId]: {
         item,
         guide: {
-          title: "Choose a direction",
+          title: "Find relevant patterns",
           captured: [],
-          need: "Direction selection",
-          nextPrompt: "Which pattern or combination should move forward?",
-          priorSummary: "Criteria and pattern options are preserved.",
+          need: "Fresh sourced pattern set",
+          nextPrompt: "Generate a fresh set of visual pattern references?",
+          priorSummary: "Criteria are preserved; the stale pattern set was removed.",
         },
       },
     },
