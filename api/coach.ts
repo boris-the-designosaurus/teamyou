@@ -374,6 +374,7 @@ export async function withPolicyRetry(
     const styleCheck = checkReplyStyle(
       candidate.reply,
       candidate.responseMode ?? "concise",
+      { activeStep: candidate.activeStep },
     );
     const policyCheck = checkTurnPolicy(previousStep, candidate, policyContext);
     if (styleCheck.ok && policyCheck.ok) {
@@ -406,6 +407,7 @@ export async function withPolicyRetry(
       const repairedStyle = checkReplyStyle(
         repaired.reply,
         repaired.responseMode ?? "concise",
+        { activeStep: repaired.activeStep },
       );
       const repairedPolicy = checkTurnPolicy(
         previousStep,
@@ -456,6 +458,7 @@ export async function withPolicyRetry(
   const finalStyle = checkReplyStyle(
     candidate.reply,
     candidate.responseMode ?? "concise",
+    { activeStep: candidate.activeStep },
   );
   const finalPolicy = checkTurnPolicy(previousStep, candidate, policyContext);
   // The second correction is assigned at the end of the last loop iteration,
