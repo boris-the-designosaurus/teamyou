@@ -54,6 +54,7 @@ describe("pattern thumbnail proxy", () => {
     expect(result.status).toBe(200);
     expect(String(fetchMock.mock.calls[1][0])).toContain("api.microlink.io");
     expect(String(fetchMock.mock.calls[1][0])).toContain("waitForTimeout=1500");
+    expect(String(fetchMock.mock.calls[1][0])).toContain("screenshot.type=jpeg");
   });
 
   it("fails visibly only after both thumbnail providers fail", async () => {

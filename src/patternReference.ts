@@ -26,6 +26,12 @@ export function pagePreviewUrl(
 }
 
 export function initialPatternImage(artifact: MilestoneArtifact): string | undefined {
+  // Pattern evidence must reflect the cited designer-owned page. Older saved
+  // artifacts can contain generated wireframes in thumbnailUrl; never let
+  // those stale illustrations override a live source capture.
+  if (artifact.kind === "pattern_shortlist" && isPublicHttpUrl(artifact.sourceUrl)) {
+    return pagePreviewUrl(artifact.sourceUrl);
+  }
   return artifact.thumbnailUrl ?? pagePreviewUrl(artifact.sourceUrl);
 }
 

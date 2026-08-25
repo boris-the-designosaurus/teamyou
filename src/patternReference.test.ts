@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  initialPatternImage,
   isPublicHttpUrl,
   pagePreviewUrl,
   patternSourceLabel,
@@ -15,6 +16,23 @@ describe("pattern reference previews", () => {
   it("can force a fresh screenshot instead of using the cached copy", () => {
     const preview = pagePreviewUrl("https://example.com/product", { force: true });
     expect(preview).toContain("force=true");
+  });
+
+  it("prefers a live source capture over a stale saved pattern thumbnail", () => {
+    const image = initialPatternImage({
+      id: "p1",
+      kind: "pattern_shortlist",
+      title: "Outcome-first",
+      status: "exploring",
+      sourceUrl: "https://designer.example/work",
+      thumbnailUrl: "data:image/svg+xml;base64,old-wireframe",
+      createdAt: "2026-08-25T00:00:00.000Z",
+      step: "find_patterns",
+    });
+
+    expect(image).toContain("/api/pattern-thumbnail?");
+    expect(image).toContain("designer.example");
+    expect(image).not.toContain("old-wireframe");
   });
 
   it("rejects non-http links", () => {

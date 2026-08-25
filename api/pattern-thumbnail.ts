@@ -1,6 +1,9 @@
 const MICROLINK_ENDPOINT = "https://api.microlink.io";
 const THUM_ENDPOINT = "https://image.thum.io/get";
-const MAX_IMAGE_BYTES = 2_500_000;
+// Full-page portfolio captures frequently exceed 2.5 MB even after cropping.
+// Keep a bounded limit, but do not discard valid designer screenshots merely
+// because the page contains high-resolution project imagery.
+const MAX_IMAGE_BYTES = 8_000_000;
 
 export type PatternThumbnailResult = {
   status: number;
@@ -70,6 +73,8 @@ export async function fetchPatternThumbnail(
     embed: "screenshot.url",
     "viewport.width": "960",
     "viewport.height": "600",
+    "screenshot.type": "jpeg",
+    "screenshot.quality": "82",
     waitUntil: "networkidle2",
     waitForTimeout: "1500",
   });
