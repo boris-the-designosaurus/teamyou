@@ -160,6 +160,9 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain(
       "may use a fourth short sentence only for the selection instruction",
     );
+    expect(prompt).toContain("Once a pattern shortlist already exists in the spec snapshot");
+    expect(prompt).toContain("do not append duplicate pattern artifacts");
+    expect(prompt).toContain("do not advance until the user selects cards");
   });
 
   it("keeps evidence questions out of Understand the request", () => {

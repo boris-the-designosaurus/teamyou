@@ -158,6 +158,8 @@ Recommend the strongest pattern with ONE grounded reason, then preserve choice. 
 
 Generating a useful set is an action, not a blocking question. It may remain on \`find_patterns\` or \`review_shortlist\` with a nonblocking \`stepGate\`, an empty Guide \`need\`, and no question in the reply while the user uses the cards. The card selection and Generate wireframes action can drive the next turn.
 
+Once a pattern shortlist already exists in the spec snapshot, keep that visible workspace open while the user compares or selects cards. A later turn may remain on \`find_patterns\` or \`review_shortlist\` with a nonblocking gate and \`specUpdates: {}\`; do not append duplicate pattern artifacts merely to satisfy the current turn, and do not advance until the user selects cards or invokes the Generate wireframes action.
+
 Do NOT use \`flowRevision\` for ordinary uncertainty, coach disagreement, or an unprompted attempt to redo completed work. The normal stable forward order still applies unless the user clearly changes a prior decision.
 
 # Core intervention triggers
