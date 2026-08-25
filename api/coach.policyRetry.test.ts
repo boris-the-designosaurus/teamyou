@@ -79,6 +79,55 @@ const validFinalCorrection: CoachTurnResponse = {
 };
 
 describe("withPolicyRetry", () => {
+  it("repairs a same-step treatment choice mislabeled as nonblocking", async () => {
+    const treatmentChoice: CoachTurnResponse = {
+      reply:
+        "Both variations hold the outcome-first sequencing while testing tone. **Variation A leads faster with a stated metric**, which best fits the comprehension barrier. Pick A, B, or ask for a different angle to keep refining.",
+      activeStep: "refine_treatments",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Which treatment to carry into the next refinement pass",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {},
+      guidePanel: {
+        title: "Explore and refine treatments",
+        captured: ["Variation A: metric-led open", "Variation B: narrative-led open"],
+        need: "",
+      },
+      activityEvents: [],
+      quickReplies: ["Variation A", "Variation B", "See another angle"],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic gate repair should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "refine_treatments",
+      [],
+      JSON.stringify(treatmentChoice),
+      treatmentChoice,
+      generate,
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "refine_treatments",
+      stepGate: { blocking: true, disposition: "ask" },
+      guidePanel: {
+        need: "Preferred variation",
+      },
+      quickReplies: ["Variation A", "Variation B", "See another angle"],
+    });
+    expect("reply" in result.json ? result.json.reply : "").toContain(
+      "Which should we carry forward",
+    );
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it("deterministically returns drawable wireframes when the model discusses the selection", async () => {
     const discussionOnly: CoachTurnResponse = {
       reply:
