@@ -18,6 +18,9 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain("it is NEVER the card's sourceUrl");
     expect(prompt).toContain("The client screenshots \`sourceUrl\` as the thumbnail");
     expect(prompt).toContain("never reuse one article or screenshot for several inferred patterns");
+    expect(prompt).toContain("source only individual designers' own live portfolio homepages or case-study pages");
+    expect(prompt).toContain("Joey Shiner is the archetype");
+    expect(prompt).toContain("Never use UXfolio, TailorCV, Productic");
     expect(prompt).toContain('"sourceTitle"?');
   });
 
