@@ -74,6 +74,12 @@ function PatternThumbnail({
     setFailed(false);
   }, [artifact, imageUrlOverride]);
 
+  useEffect(() => {
+    if (!imageUrl || failed) return;
+    const timer = window.setTimeout(() => setFailed(true), 15_000);
+    return () => window.clearTimeout(timer);
+  }, [imageUrl, failed]);
+
   if (!imageUrl || failed) {
     return artifact.kind === "pattern_shortlist"
       ? <PatternVisualFallback artifact={artifact} />
