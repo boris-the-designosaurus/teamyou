@@ -11,6 +11,54 @@ import {
 
 const CHOSEN_STATUSES = new Set(["selected", "ready_for_review", "approved_for_build"]);
 
+function inferredWireframeSpec(artifact: MilestoneArtifact) {
+  const text = `${artifact.title} ${artifact.supportingLine ?? ""}`;
+  const portfolio = /portfolio|homepage|hero|project|case study|metric-led|narrative-led/i.test(text);
+  const modal = /modal|dialog|offer|commitment|trial|upgrade/i.test(text);
+  return {
+    surface: modal ? "modal" as const : portfolio ? "page" as const : "panel" as const,
+    eyebrow: portfolio ? "Selected work" : "Recommended next step",
+    headline: artifact.title.replace(/^Variation\s+[A-Z]\s*[—-]\s*/i, ""),
+    body: artifact.supportingLine,
+    primaryAction: portfolio ? "View project" : "Continue",
+    secondaryAction: modal ? "Not now" : undefined,
+    blocks: artifact.ingredients?.slice(0, 3),
+  };
+}
+
+/** Render a real low-fidelity comparison from structured Coach output. */
+function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
+  const spec = artifact.wireframeSpec ?? inferredWireframeSpec(artifact);
+  const blocks = spec.blocks?.length ? spec.blocks.slice(0, 3) : ["Primary content", "Supporting proof"];
+
+  return (
+    <div
+      className={`wireframe-visual wireframe-visual-${spec.surface}`}
+      role="img"
+      aria-label={`Wireframe for ${artifact.title}`}
+    >
+      {spec.surface === "page" && (
+        <div className="wireframe-browserbar">
+          <span>Portfolio</span><i /><i /><i />
+        </div>
+      )}
+      <div className="wireframe-surface">
+        {spec.surface === "modal" && <span className="wireframe-close" aria-hidden>×</span>}
+        {spec.eyebrow && <div className="wireframe-eyebrow">{spec.eyebrow}</div>}
+        <div className="wireframe-headline">{spec.headline}</div>
+        {spec.body && <div className="wireframe-copy">{spec.body}</div>}
+        <div className="wireframe-blocks">
+          {blocks.map((block) => <div key={block}>{block}</div>)}
+        </div>
+        <div className="wireframe-actions">
+          {spec.primaryAction && <span className="primary">{spec.primaryAction}</span>}
+          {spec.secondaryAction && <span>{spec.secondaryAction}</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PatternThumbnail({
   artifact,
   imageUrlOverride,
@@ -30,6 +78,10 @@ function PatternThumbnail({
     setFailed(false);
     setLoaded(false);
   }, [artifact, imageUrlOverride]);
+
+  if (artifact.kind === "wireframe") {
+    return <WireframeVisual artifact={artifact} />;
+  }
 
   if (!imageUrl || failed) {
     return (
@@ -174,6 +226,7 @@ export function DirectionCards(props: {
   if (!artifacts.length) return null;
 
   const isShortlist = artifacts[0].kind === "pattern_shortlist";
+  const isWireframeSet = artifacts[0].kind === "wireframe";
   const chosen = artifacts.filter((a) => CHOSEN_STATUSES.has(a.status));
   const refreshThumbnail = async (artifact: MilestoneArtifact) => {
     const freshUrl = pagePreviewUrl(artifact.sourceUrl, { force: true });
@@ -204,7 +257,8 @@ export function DirectionCards(props: {
       <div className="direction-cards">
         {artifacts.map((a) => {
           const isChosen = CHOSEN_STATUSES.has(a.status);
-          const canPreview = a.kind === "pattern_shortlist" || !!initialPatternImage(a);
+          const canPreview =
+            a.kind === "pattern_shortlist" || a.kind === "wireframe" || !!initialPatternImage(a);
           const canRefresh = isPublicHttpUrl(a.sourceUrl);
           const refreshedImage = refreshedImages[a.id];
           const refreshing = refreshingIds[a.id] ?? false;
@@ -273,7 +327,7 @@ export function DirectionCards(props: {
           );
         })}
       </div>
-      {isShortlist && onContinue && (
+      {(isShortlist || isWireframeSet) && onContinue && (
         <div className="direction-cards-actionbar">
           <span className="direction-cards-count">{chosen.length} selected</span>
           <button
@@ -282,7 +336,7 @@ export function DirectionCards(props: {
             disabled={chosen.length === 0}
             onClick={() => onContinue(chosen)}
           >
-            Generate wireframes
+            {isShortlist ? "Generate wireframes" : "Develop selected direction"}
           </button>
         </div>
       )}
