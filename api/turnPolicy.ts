@@ -6,6 +6,7 @@ import {
   type FlowStep,
   type WorkItemType,
 } from "../src/types";
+import { verifiedPortfolioSourcePrompt } from "./portfolioPatternSources";
 
 export type TurnPolicyCheck = {
   ok: boolean;
@@ -563,10 +564,15 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
   ) {
     return (
       `The user explicitly requested a fresh comparative pattern set, but you returned fewer than three cards. ` +
-      `Use web search now and re-send the SAME turn with 3-5 distinct pattern_shortlist artifacts in ` +
+      `Re-send the SAME turn with 3-5 distinct pattern_shortlist artifacts in ` +
       `specUpdates.milestoneArtifacts. For a portfolio redesign, every card must use a different individual ` +
       `designer's own live portfolio homepage or case-study sourceUrl, with sourceTitle, supportingLine, and ` +
-      `2-4 reusable ingredients. Recommend one with a grounded reason while preserving multi-select choice.`
+      `2-4 reusable ingredients. Search may be used for discovery, but it is not a gate: if calls are exhausted, ` +
+      `failed, or insufficient, fill the set from the verified catalog below. Do not refuse, ask permission, or ` +
+      `return fewer than three cards. Recommend one with a grounded reason; invite selecting one or more and ` +
+      `combining useful ingredients; keep quickReplies empty; set guidePanel.need to "" and omit nextPrompt; ` +
+      `keep the pattern workspace nonblocking.\n\nVerified designer-owned portfolio sources:\n` +
+      verifiedPortfolioSourcePrompt()
     );
   }
   if (
