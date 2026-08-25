@@ -267,7 +267,13 @@ export function ChatPanel(props: {
                 <div className="bubble-attachments">
                   {m.attachments.map((a) => (
                     <figure key={a.id} className="bubble-attachment">
-                      <img src={a.dataUrl} alt={a.name ?? "screenshot"} />
+                      {a.dataUrl ? (
+                        <img src={a.dataUrl} alt={a.name ?? "screenshot"} />
+                      ) : (
+                        <div className="bubble-attachment-missing">
+                          {a.name ?? "Screenshot"}
+                        </div>
+                      )}
                       {a.linkedTo && (
                         <figcaption className="bubble-attachment-link">
                           Attached to {a.linkedTo}
