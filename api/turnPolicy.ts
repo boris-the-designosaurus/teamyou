@@ -30,6 +30,8 @@ const SINGLE_PATTERN_GATE =
   /\bwhich\b[^?]{0,80}\b(?:should|do)\b[^?]{0,50}\b(?:develop(?:\s+further)?|choose|pursue|take\s+forward|move\s+forward)\b/i;
 const FLEXIBLE_PATTERN_SELECTION =
   /\b(?:select|choose)\s+(?:one\s+or\s+more|any|multiple|several)\b/i;
+const GROUNDED_PATTERN_RECOMMENDATION =
+  /\b(?:recommend(?:ed|ing|ation)?|strongest fit|best fit|i(?:'d|’d| would) (?:(?:start|lead|go) with|start there)|my (?:pick|choice) is)\b/i;
 const STRATEGIC_EMPHASIS = /\*\*[^*\n]+\*\*/;
 const SCREENSHOT_GROUNDING =
   /\b(screenshot|image|reference|comparison|current (?:page|screen|site|portfolio)|shown|visible|looking at|based on what (?:is|you've) shown)\b/i;
@@ -537,9 +539,7 @@ export function checkTurnPolicy(
 
   if (newPatterns.length >= 2) {
     if (
-      !/\b(?:recommend(?:ed|ing|ation)?|strongest fit|best fit|i(?:'d|’d| would) (?:start|lead|go) with|my (?:pick|choice) is)\b/i.test(
-        turn.reply,
-      )
+      !GROUNDED_PATTERN_RECOMMENDATION.test(turn.reply)
     ) {
       reasons.push("a multi-pattern set must include one grounded recommendation");
     }

@@ -701,6 +701,42 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts a natural I'd start there recommendation", () => {
+    const result = checkTurnPolicy(
+      "find_patterns",
+      turn({
+        reply:
+          "Simon Pan's homepage states a measurable result in each project headline — a direct fix for the scroll-before-proof problem, so I'd start there. Select one or more patterns to combine, ask for different angles, or add your own example.",
+        activeStep: "find_patterns",
+        stepGate: {
+          linkedDecision: "Which structural patterns to compare",
+          blocking: false,
+          disposition: "proceed",
+        },
+        specUpdates: {
+          milestoneArtifacts: [
+            {
+              kind: "pattern_shortlist",
+              title: "Outcome-headline first",
+              status: "exploring",
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Personal studio positioning",
+              status: "exploring",
+              step: "find_patterns",
+            },
+          ],
+        },
+        guidePanel: { title: "Find relevant patterns", need: "" },
+        quickReplies: [],
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("keeps an existing pattern-card workspace open on a nonblocking turn", () => {
     const candidate = turn({
       reply:
