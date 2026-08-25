@@ -11,6 +11,7 @@
 
 import type { FlowStep, LoopStage, WorkItemType, WorkMode } from "../src/types";
 import { FLOW_STEP_LABEL, LOOP_STAGE_LABEL, LOOP_STAGE_OF, stepsForStage } from "../src/types";
+import { verifiedPortfolioSourcePrompt } from "./portfolioPatternSources";
 
 const TYPE_LANGUAGE: Record<WorkItemType, string> = {
   feature_spec:
@@ -155,6 +156,11 @@ When entering or reopening \`find_patterns\`, proactively add 3-5 structurally d
 When the web-search tool is available during pattern exploration, USE IT before creating the shortlist. Ground each card in a real, publicly accessible visual example that fits the locked criteria, and return the ORIGINAL designer, portfolio, product, or pattern-library page as \`sourceUrl\` plus the example's own human-readable name as \`sourceTitle\`. A roundup, listicle, article, tutorial, or gallery index may help you discover an example, but it is NEVER the card's sourceUrl: follow its links to the original example page, or replace that candidate when the original cannot be reached. Every card must use a distinct original source page whose visible interface actually demonstrates that card's pattern; never reuse one article or screenshot for several inferred patterns. Avoid search-result pages, login walls, and invented URLs. The client screenshots \`sourceUrl\` as the thumbnail, so do not fabricate \`thumbnailUrl\`; only provide \`thumbnailUrl\` when a trustworthy direct image URL was actually supplied or retrieved. Describe the reusable pattern in your own words rather than presenting the source as the design answer.
 
 For a PORTFOLIO REDESIGN, source only individual designers' own live portfolio homepages or case-study pages whose visible layout demonstrates the proposed pattern. Joey Shiner is the archetype: a real designer-owned portfolio layout, not an article discussing portfolios. Never use UXfolio, TailorCV, Productic, a portfolio builder, an agency or career guide, a template page, a roundup, or a blog/tutorial as the source—even if its article contains useful screenshots. If the original designer page is inaccessible, replace the candidate instead of screenshotting the intermediary page or an access-denied screen.
+
+Live search is discovery, not a gate. If search calls are exhausted, fail, or produce fewer than 3 valid designer-owned portfolio sources, complete the set from the verified recovery catalog below. These are approved original portfolio pages; use 3-5 distinct entries, derive a different criteria-relevant pattern from each visible layout, and return all cards in the current turn. Never refuse, ask permission to continue with fewer examples, or return only the sources found during that search round. A fresh-pattern request still requires 3-5 new cards, one grounded recommendation, and an invitation to select one or more and combine useful ingredients. Keep the pattern workspace nonblocking: \`guidePanel.need\` must be empty, omit \`guidePanel.nextPrompt\`, and do not ask a question.
+
+Verified portfolio recovery catalog:
+${verifiedPortfolioSourcePrompt()}
 
 Recommend the strongest pattern with ONE grounded reason, then preserve choice. The user may select one OR several cards, combine useful ingredients across them, request more or different patterns, or add their own example in chat. Say that plainly when presenting a set. Never ask which single pattern should be developed before the user can compare or combine them, and never treat seeing more reversible examples as reopening the whole project. Pattern cards replace quick replies for this choice; return \`quickReplies: []\`.
 

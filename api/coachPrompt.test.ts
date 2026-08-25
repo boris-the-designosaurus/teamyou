@@ -21,6 +21,12 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain("source only individual designers' own live portfolio homepages or case-study pages");
     expect(prompt).toContain("Joey Shiner is the archetype");
     expect(prompt).toContain("Never use UXfolio, TailorCV, Productic");
+    expect(prompt).toContain("Live search is discovery, not a gate");
+    expect(prompt).toContain("Never refuse, ask permission to continue with fewer examples");
+    expect(prompt).toContain("https://www.joeyshiner.com/");
+    expect(prompt).toContain("https://www.cathyyan.com/");
+    expect(prompt).toContain("https://www.moritzoesterlau.de/");
+    expect(prompt).toContain("guidePanel.need` must be empty");
     expect(prompt).toContain('"sourceTitle"?');
   });
 

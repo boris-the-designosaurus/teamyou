@@ -952,6 +952,18 @@ describe("checkTurnPolicy", () => {
     expect(turnPolicyCorrectionPrompt(result)).toContain(
       "3-5 distinct pattern_shortlist artifacts",
     );
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "Search may be used for discovery, but it is not a gate",
+    );
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "Do not refuse, ask permission, or return fewer than three cards",
+    );
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "https://www.joeyshiner.com/",
+    );
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "set guidePanel.need to \"\" and omit nextPrompt",
+    );
   });
 
   it("accepts I'd start with as a grounded pattern recommendation", () => {
