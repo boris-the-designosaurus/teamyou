@@ -271,7 +271,13 @@ export function App() {
     setWorkItem(withUser);
     setLoading(true);
 
-    const askStreakNudge = buildAskStreakNudge(sameStepAskStreakRef.current, withUser.currentStep);
+    const freshPatternNudge = requestsFreshPatternSearch(trimmed)
+      ? "The user explicitly requested a fresh pattern search. Use web search and return 3-5 NEW, structurally distinct pattern_shortlist artifacts now; do not return a single recommendation or reuse the cleared shortlist."
+      : undefined;
+    const askStreakNudge = [
+      buildAskStreakNudge(sameStepAskStreakRef.current, withUser.currentStep),
+      freshPatternNudge,
+    ].filter(Boolean).join("\n") || undefined;
 
     try {
       const turn = await callCoach({
