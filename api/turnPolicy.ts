@@ -17,6 +17,7 @@ export type TurnPolicyContext = {
   latestUserText?: string;
   workItemType?: WorkItemType;
   specSnapshot?: unknown;
+  patternWebSearchEnabled?: boolean;
 };
 
 const QUESTION_LEAD = /^(what|whether|how|who|when|where|why|is|are|do|does|should|can|could|will|would)\b/i;
@@ -297,6 +298,23 @@ export function checkTurnPolicy(
     (artifact) => artifact.kind === "pattern_shortlist",
   );
   if (
+    context.patternWebSearchEnabled &&
+    newPatterns.length >= 2 &&
+    newPatterns.some((artifact) => {
+      if (!hasText(artifact.sourceUrl)) return true;
+      try {
+        const url = new URL(artifact.sourceUrl);
+        return url.protocol !== "http:" && url.protocol !== "https:";
+      } catch {
+        return true;
+      }
+    })
+  ) {
+    reasons.push(
+      "retrieved pattern cards must each include a real public sourceUrl so their reference thumbnails can display",
+    );
+  }
+  if (
     previousStep === "set_criteria" &&
     turn.activeStep === "find_patterns" &&
     newPatterns.length < 2
@@ -447,6 +465,19 @@ export function checkTurnPolicy(
 }
 
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
+  if (
+    check.reasons.some((reason) =>
+      reason.includes("sourceUrl so their reference thumbnails can display"),
+    )
+  ) {
+    return (
+      `Your pattern cards are missing retrievable visual references. Use web search now, then re-send the SAME ` +
+      `substantive turn as JSON with a real public http(s) sourceUrl and sourceTitle on EVERY ` +
+      `pattern_shortlist artifact. Use exact source pages whose visible interface demonstrates the pattern; ` +
+      `do not invent URLs or return search-result pages. Keep the existing titles, supportingLine, ingredients, ` +
+      `recommendation, selection invitation, and all other valid specUpdates.`
+    );
+  }
   if (
     check.reasons.some((reason) =>
       reason.includes("pattern cards cannot display in chat"),

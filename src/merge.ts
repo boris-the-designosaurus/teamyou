@@ -42,6 +42,17 @@ export type MakeId = () => string;
 
 export const defaultMakeId: MakeId = () => crypto.randomUUID();
 
+/** Keep model-proposed reference links safe for anchors and preview services. */
+export function normalizePublicUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Merge a CoachTurnResponse's specUpdates into the current Spec, returning a
  * new Spec (pure — does not mutate the input). `makeId` assigns stable client
@@ -260,6 +271,8 @@ export function mergeSpec(
         title: a.title,
         status: a.status,
         thumbnailUrl: a.thumbnailUrl,
+        sourceUrl: normalizePublicUrl(a.sourceUrl),
+        sourceTitle: a.sourceTitle,
         supportingLine: a.supportingLine,
         ingredients: a.ingredients ? [...a.ingredients] : undefined,
         createdAt: now,

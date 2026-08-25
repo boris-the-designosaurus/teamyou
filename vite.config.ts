@@ -53,6 +53,9 @@ export default defineConfig(({ mode }) => {
   if (env.COACH_MODEL && !process.env.COACH_MODEL) {
     process.env.COACH_MODEL = env.COACH_MODEL;
   }
+  if (env.PATTERN_WEB_SEARCH && !process.env.PATTERN_WEB_SEARCH) {
+    process.env.PATTERN_WEB_SEARCH = env.PATTERN_WEB_SEARCH;
+  }
 
   return {
     plugins: [

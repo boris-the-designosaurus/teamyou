@@ -12,6 +12,8 @@ describe("DirectionCards pattern workspace", () => {
         title: "Contextual offer",
         status: "selected",
         supportingLine: "Introduces value at the moment of need.",
+        sourceUrl: "https://www.example.com/patterns/contextual-offer",
+        sourceTitle: "Example pattern library",
         ingredients: ["Right-time trigger", "Task-specific value", "Upgrade CTA"],
         createdAt: "2026-08-23T12:00:00.000Z",
         step: "find_patterns",
@@ -35,5 +37,8 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain("Task-specific value");
     expect(html).toContain("1 selected");
     expect(html).toContain("Generate wireframes");
+    expect(html).toContain("api.microlink.io");
+    expect(html).toContain("Reference: Example pattern library");
+    expect(html).toContain('href="https://www.example.com/patterns/contextual-offer"');
   });
 });
