@@ -11,6 +11,51 @@ import {
 
 const CHOSEN_STATUSES = new Set(["selected", "ready_for_review", "approved_for_build"]);
 
+function fallbackVariant(title: string): number {
+  return Array.from(title).reduce((total, char) => total + char.charCodeAt(0), 0) % 5;
+}
+
+/**
+ * A source-less pattern should still be visually comparable. This deliberately
+ * looks like a tiny structural wireframe (not a fake screenshot of a real
+ * product) and varies by title so a set never collapses into identical blanks.
+ */
+function PatternVisualFallback({ artifact }: { artifact: MilestoneArtifact }) {
+  const variant = fallbackVariant(artifact.title);
+  const labels = (artifact.ingredients ?? []).slice(0, 3);
+
+  return (
+    <div
+      className={`pattern-visual-fallback pattern-visual-fallback-${variant}`}
+      role="img"
+      aria-label={`Structural preview for ${artifact.title}`}
+    >
+      <div className="pattern-visual-browserbar">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="pattern-visual-canvas">
+        <div className="pattern-visual-eyebrow" />
+        <div className="pattern-visual-headline" />
+        <div className="pattern-visual-subhead" />
+        <div className="pattern-visual-proof">
+          <b>24%</b>
+          <span />
+        </div>
+        <div className="pattern-visual-panel pattern-visual-panel-a" />
+        <div className="pattern-visual-panel pattern-visual-panel-b" />
+        <div className="pattern-visual-panel pattern-visual-panel-c" />
+      </div>
+      {labels.length > 0 && (
+        <div className="pattern-visual-labels" aria-hidden>
+          {labels.map((label) => <span key={label}>{label}</span>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PatternThumbnail({
   artifact,
   imageUrlOverride,
@@ -30,7 +75,9 @@ function PatternThumbnail({
   }, [artifact, imageUrlOverride]);
 
   if (!imageUrl || failed) {
-    return <div className="direction-card-thumb-placeholder" aria-hidden />;
+    return artifact.kind === "pattern_shortlist"
+      ? <PatternVisualFallback artifact={artifact} />
+      : <div className="direction-card-thumb-placeholder" aria-hidden />;
   }
 
   return (
@@ -185,7 +232,7 @@ export function DirectionCards(props: {
       <div className="direction-cards">
         {artifacts.map((a) => {
           const isChosen = CHOSEN_STATUSES.has(a.status);
-          const canPreview = !!initialPatternImage(a);
+          const canPreview = a.kind === "pattern_shortlist" || !!initialPatternImage(a);
           const canRefresh = isPublicHttpUrl(a.sourceUrl);
           const refreshedImage = refreshedImages[a.id];
           const refreshing = refreshingIds[a.id] ?? false;

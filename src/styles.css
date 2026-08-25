@@ -1591,6 +1591,106 @@ body {
   height: 100%;
   background: linear-gradient(135deg, var(--border-subtle), var(--bg-surface-light));
 }
+.pattern-visual-fallback {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--text-bold);
+  background: #f4f1eb;
+}
+.pattern-visual-browserbar {
+  height: 13%;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 7%;
+  border-bottom: 1px solid rgba(31, 31, 31, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+}
+.pattern-visual-browserbar i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(31, 31, 31, 0.28);
+}
+.pattern-visual-canvas {
+  position: relative;
+  height: 87%;
+  padding: 9% 8%;
+}
+.pattern-visual-eyebrow,
+.pattern-visual-headline,
+.pattern-visual-subhead,
+.pattern-visual-panel,
+.pattern-visual-proof span {
+  position: absolute;
+  border-radius: 2px;
+  background: rgba(31, 31, 31, 0.16);
+}
+.pattern-visual-eyebrow { top: 13%; left: 8%; width: 19%; height: 4%; }
+.pattern-visual-headline { top: 22%; left: 8%; width: 51%; height: 9%; background: rgba(31, 31, 31, 0.76); }
+.pattern-visual-subhead { top: 36%; left: 8%; width: 42%; height: 4%; }
+.pattern-visual-proof {
+  position: absolute;
+  top: 48%;
+  left: 8%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pattern-visual-proof b { font-size: clamp(13px, 2.5vw, 25px); line-height: 1; }
+.pattern-visual-proof span { position: static; width: 28px; height: 4px; }
+.pattern-visual-panel { bottom: 9%; height: 20%; background: rgba(255, 163, 0, 0.58); }
+.pattern-visual-panel-a { left: 8%; width: 25%; }
+.pattern-visual-panel-b { left: 37%; width: 25%; }
+.pattern-visual-panel-c { left: 66%; width: 25%; }
+.pattern-visual-labels {
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+  display: flex;
+  gap: 3px;
+  max-width: 90%;
+}
+.pattern-visual-labels span {
+  max-width: 72px;
+  overflow: hidden;
+  padding: 2px 4px;
+  border: 1px solid rgba(31, 31, 31, 0.12);
+  border-radius: 999px;
+  color: rgba(31, 31, 31, 0.66);
+  background: rgba(255, 255, 255, 0.84);
+  font-size: 7px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Five deterministic compositions make source-less pattern cards genuinely
+   comparable instead of showing the same anonymous gray placeholder. */
+.pattern-visual-fallback-1 .pattern-visual-headline { width: 35%; }
+.pattern-visual-fallback-1 .pattern-visual-proof { top: 21%; left: 55%; }
+.pattern-visual-fallback-1 .pattern-visual-panel-a { left: 55%; bottom: 24%; width: 37%; height: 31%; }
+.pattern-visual-fallback-1 .pattern-visual-panel-b { left: 8%; width: 19%; }
+.pattern-visual-fallback-1 .pattern-visual-panel-c { left: 30%; width: 19%; }
+.pattern-visual-fallback-2 .pattern-visual-canvas { border-left: 24px solid rgba(31, 31, 31, 0.76); }
+.pattern-visual-fallback-2 .pattern-visual-headline { left: 19%; width: 60%; }
+.pattern-visual-fallback-2 .pattern-visual-subhead { left: 19%; }
+.pattern-visual-fallback-2 .pattern-visual-proof { left: 19%; }
+.pattern-visual-fallback-2 .pattern-visual-panel-a { left: 19%; width: 68%; height: 14%; }
+.pattern-visual-fallback-2 .pattern-visual-panel-b,
+.pattern-visual-fallback-2 .pattern-visual-panel-c { display: none; }
+.pattern-visual-fallback-3 .pattern-visual-headline { width: 67%; }
+.pattern-visual-fallback-3 .pattern-visual-proof { top: 48%; }
+.pattern-visual-fallback-3 .pattern-visual-panel-a { left: 8%; width: 39%; height: 25%; }
+.pattern-visual-fallback-3 .pattern-visual-panel-b { left: 53%; width: 39%; height: 25%; }
+.pattern-visual-fallback-3 .pattern-visual-panel-c { display: none; }
+.pattern-visual-fallback-4 .pattern-visual-headline { width: 27%; height: 6%; }
+.pattern-visual-fallback-4 .pattern-visual-subhead { top: 32%; width: 27%; }
+.pattern-visual-fallback-4 .pattern-visual-proof { top: 46%; }
+.pattern-visual-fallback-4 .pattern-visual-panel-a { left: 45%; bottom: 9%; width: 47%; height: 69%; }
+.pattern-visual-fallback-4 .pattern-visual-panel-b,
+.pattern-visual-fallback-4 .pattern-visual-panel-c { display: none; }
 .direction-card-body {
   padding: var(--space-s);
   display: flex;
@@ -1718,6 +1818,11 @@ body {
   height: auto;
   min-height: 320px;
   object-fit: contain;
+}
+.pattern-preview-image .pattern-visual-fallback {
+  width: 100%;
+  min-height: min(640px, 68vh);
+  aspect-ratio: 16 / 10;
 }
 .pattern-preview-footer {
   display: flex;
