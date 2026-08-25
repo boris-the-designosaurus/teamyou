@@ -31,7 +31,7 @@ const SINGLE_PATTERN_GATE =
 const FLEXIBLE_PATTERN_SELECTION =
   /\b(?:select|choose)\s+(?:one\s+or\s+more|any|multiple|several)\b/i;
 const GROUNDED_PATTERN_RECOMMENDATION =
-  /\b(?:recommend(?:ed|ing|ation)?|strongest fit|best fit|i(?:'d|’d| would) (?:(?:start|lead|go) with|start there)|my (?:pick|choice) is)\b/i;
+  /\b(?:recommend(?:ed|ing|ation)?|strongest fit|best fit|i(?:'d|’d| would) (?:anchor on|start (?:with|there)|lead with|go with)|my (?:recommendation|pick|choice) is)\b/i;
 const STRATEGIC_EMPHASIS = /\*\*[^*\n]+\*\*/;
 const SCREENSHOT_GROUNDING =
   /\b(screenshot|image|reference|comparison|current (?:page|screen|site|portfolio)|shown|visible|looking at|based on what (?:is|you've) shown)\b/i;
