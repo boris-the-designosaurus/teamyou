@@ -144,6 +144,9 @@ describe("coach flow boundaries", () => {
     );
     expect(prompt).toContain('"ingredients": ["Direct offer", "Availability", "Builder positioning"]');
     expect(prompt).toContain("Pattern cards replace quick replies for this choice");
+    expect(prompt).toContain(
+      "may use a fourth short sentence only for the selection instruction",
+    );
   });
 
   it("keeps evidence questions out of Understand the request", () => {

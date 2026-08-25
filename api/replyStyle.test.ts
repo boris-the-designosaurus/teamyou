@@ -123,6 +123,26 @@ describe("checkReplyStyle — concise mode (normal coaching turns)", () => {
     expect(check.sentenceCount).toBe(3);
   });
 
+  it("allows the fourth selection-instruction sentence for a pattern set", () => {
+    const reply =
+      "Criteria locked: **outcome-led hierarchy targets the credibility gap directly**. Here are five structurally distinct patterns that lead with proof. I'd start with Proof-first hero because it puts the strongest metric first. Select one or more, combine ingredients, ask for more, or bring your own example.";
+    const check = checkReplyStyle(reply, "concise", {
+      activeStep: "find_patterns",
+    });
+
+    expect(check.ok).toBe(true);
+    expect(check.sentenceCount).toBe(4);
+  });
+
+  it("keeps the three-sentence ceiling outside pattern exploration", () => {
+    const reply = "One. Two. Three. Four.";
+    const check = checkReplyStyle(reply, "concise", {
+      activeStep: "set_criteria",
+    });
+
+    expect(check.ok).toBe(false);
+  });
+
   it("rejects the scolding process language from the reference-broadening regression", () => {
     const check = checkReplyStyle(
       "You've asked twice to broaden — that's an explicit override, so I'll add contrasting references while keeping Joey Shiner as an anchor. What kind of contrast do you want?",

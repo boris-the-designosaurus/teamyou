@@ -22,6 +22,11 @@ export const CONCISE_TARGET_MAX_WORDS = 80;
 /** "Keep responses to 1-3 short sentences" — enforced alongside the word
  * ceiling, not instead of it, so a reply can't satisfy one and dodge the other. */
 export const CONCISE_MAX_SENTENCES = 3;
+export const PATTERN_SET_MAX_SENTENCES = 4;
+
+export type ReplyStyleContext = {
+  activeStep?: string;
+};
 
 export function countWords(text: string): number {
   const trimmed = text.trim();
@@ -82,12 +87,18 @@ export function hasBlamingProcessLanguage(text: string): boolean {
 export function checkReplyStyle(
   reply: string,
   responseMode: "concise" | "detailed" = "concise",
+  context: ReplyStyleContext = {},
 ): ReplyStyleCheck {
   const wordCount = countWords(reply);
   const questionCount = countQuestions(reply);
   const sentenceCount = countSentences(reply);
   const headingListTable = hasHeadingListOrTable(reply);
   const blamingProcessLanguage = hasBlamingProcessLanguage(reply);
+  const sentenceCeiling =
+    context.activeStep === "find_patterns" ||
+    context.activeStep === "review_shortlist"
+      ? PATTERN_SET_MAX_SENTENCES
+      : CONCISE_MAX_SENTENCES;
 
   if (responseMode === "detailed") {
     return {
@@ -105,9 +116,9 @@ export function checkReplyStyle(
   if (wordCount > CONCISE_MAX_WORDS) {
     reasons.push(`the reply is ${wordCount} words — over the ${CONCISE_MAX_WORDS}-word ceiling for a normal turn`);
   }
-  if (sentenceCount > CONCISE_MAX_SENTENCES) {
+  if (sentenceCount > sentenceCeiling) {
     reasons.push(
-      `the reply is ${sentenceCount} sentences — over the ${CONCISE_MAX_SENTENCES}-sentence ceiling for a normal turn`,
+      `the reply is ${sentenceCount} sentences — over the ${sentenceCeiling}-sentence ceiling for this turn`,
     );
   }
   if (questionCount > 1) {

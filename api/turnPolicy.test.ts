@@ -602,6 +602,37 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("rejects announcing pattern cards without capturing their artifacts", () => {
+    const result = checkTurnPolicy(
+      "set_criteria",
+      turn({
+        reply:
+          "Criteria locked: **outcome-led hierarchy targets the credibility gap directly**. Here are five structurally distinct patterns that lead with proof. I'd start with Proof-first hero because it puts the strongest metric first. Select one or more, combine ingredients, ask for more, or bring your own example.",
+        activeStep: "find_patterns",
+        stepGate: {
+          linkedDecision: "Which structural patterns to shortlist",
+          blocking: false,
+          disposition: "proceed",
+        },
+        specUpdates: {},
+        guidePanel: {
+          title: "Find relevant patterns",
+          captured: [
+            "Proof-first hero",
+            "Outcome ticker + condensed bio",
+            "Case-study-led homepage",
+            "Split hero",
+            "Personal studio",
+          ],
+          need: "",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/pattern cards cannot display in chat/);
+  });
+
   it("rejects turning pattern exploration into a forced single choice", () => {
     const result = checkTurnPolicy(
       "find_patterns",
