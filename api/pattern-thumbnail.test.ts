@@ -20,8 +20,8 @@ describe("pattern thumbnail proxy", () => {
     expect(result.contentType).toBe("image/png");
     expect([...result.body]).toEqual([137, 80, 78, 71]);
     const upstreamUrl = String(fetchMock.mock.calls[0][0]);
-    expect(upstreamUrl).toContain("api.microlink.io");
-    expect(upstreamUrl).toContain("force=true");
+    expect(upstreamUrl).toContain("image.thum.io/get");
+    expect(upstreamUrl).toContain("maxAge/0");
     expect(upstreamUrl).toContain("url=https%3A%2F%2Fexample.com%2Fcase-study");
   });
 
@@ -36,13 +36,35 @@ describe("pattern thumbnail proxy", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("fails visibly when the upstream response is not an image", async () => {
+  it("falls back to Microlink when the primary thumbnail provider fails", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("rate limited", { status: 429 }))
+      .mockResolvedValueOnce(
+        new Response(new Uint8Array([137, 80, 78, 71]), {
+          status: 200,
+          headers: { "content-type": "image/png" },
+        }),
+      );
+    const result = await fetchPatternThumbnail(
+      "https://example.com",
+      false,
+      fetchMock as typeof fetch,
+    );
+    expect(result.status).toBe(200);
+    expect(String(fetchMock.mock.calls[1][0])).toContain("api.microlink.io");
+    expect(String(fetchMock.mock.calls[1][0])).toContain("waitForTimeout=1500");
+  });
+
+  it("fails visibly only after both thumbnail providers fail", async () => {
     const result = await fetchPatternThumbnail(
       "https://example.com",
       false,
       vi.fn(async () => new Response("rate limited", { status: 429 })) as typeof fetch,
     );
     expect(result.status).toBe(502);
-    expect(new TextDecoder().decode(result.body)).toContain("capture_failed_429");
+    expect(new TextDecoder().decode(result.body)).toContain(
+      "capture_failed_thum_429_microlink_429",
+    );
   });
 });
