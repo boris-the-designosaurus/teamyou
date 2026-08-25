@@ -44,6 +44,8 @@ const PORTFOLIO_CONTENT_VENDOR_HOST =
   /(?:^|\.)(?:uxfol\.io|tailorcv\.com|productic\.net|careerfoundry\.com|interaction-design\.org|designlab\.com|toptal\.com|medium\.com|substack\.com)$/i;
 const PORTFOLIO_CONTEXT =
   /\b(?:portfolio|case stud(?:y|ies)|hiring manager|design lead|product design(?:er)? job)\b/i;
+const FRESH_PATTERN_REQUEST =
+  /\b(?:generate|find|search|retrieve|replace|regenerate|refresh)\b[\s\S]{0,40}\b(?:fresh|new|different|more)?\s*(?:patterns?|pattern cards?|shortlist|examples?)\b/i;
 
 function groundsLatestScreenshot(reply: string): boolean {
   return (
@@ -356,6 +358,14 @@ export function checkTurnPolicy(
   const newPatterns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
     (artifact) => artifact.kind === "pattern_shortlist",
   );
+  if (
+    FRESH_PATTERN_REQUEST.test(context.latestUserText ?? "") &&
+    newPatterns.length < 3
+  ) {
+    reasons.push(
+      "a fresh pattern request must return 3-5 new pattern_shortlist artifacts so the user can compare real alternatives",
+    );
+  }
   if (context.patternWebSearchEnabled && newPatterns.length >= 2) {
     const references = newPatterns.map((artifact) => ({
       url: hasText(artifact.sourceUrl)
@@ -546,6 +556,19 @@ export function checkTurnPolicy(
 }
 
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
+  if (
+    check.reasons.some((reason) =>
+      reason.includes("fresh pattern request must return 3-5"),
+    )
+  ) {
+    return (
+      `The user explicitly requested a fresh comparative pattern set, but you returned fewer than three cards. ` +
+      `Use web search now and re-send the SAME turn with 3-5 distinct pattern_shortlist artifacts in ` +
+      `specUpdates.milestoneArtifacts. For a portfolio redesign, every card must use a different individual ` +
+      `designer's own live portfolio homepage or case-study sourceUrl, with sourceTitle, supportingLine, and ` +
+      `2-4 reusable ingredients. Recommend one with a grounded reason while preserving multi-select choice.`
+    );
+  }
   if (
     check.reasons.some((reason) =>
       reason.includes("original public sourceUrl") ||
