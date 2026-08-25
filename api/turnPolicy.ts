@@ -296,6 +296,15 @@ export function checkTurnPolicy(
   const newPatterns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
     (artifact) => artifact.kind === "pattern_shortlist",
   );
+  if (
+    previousStep === "set_criteria" &&
+    turn.activeStep === "find_patterns" &&
+    newPatterns.length < 2
+  ) {
+    reasons.push(
+      "the turn announces a pattern set but does not capture it as pattern_shortlist milestoneArtifacts, so the pattern cards cannot display in chat",
+    );
+  }
   const performedPatternExploration =
     (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
     newPatterns.length > 0 &&
