@@ -443,6 +443,24 @@ export function checkTurnPolicy(
 }
 
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
+  if (
+    check.reasons.some((reason) =>
+      reason.includes("pattern cards cannot display in chat"),
+    )
+  ) {
+    return (
+      `Your last turn claimed that a pattern set was generated, but specUpdates was empty, so no cards can render. ` +
+      `Re-send the SAME substantive turn as valid JSON. REQUIRED: specUpdates.milestoneArtifacts must contain ` +
+      `3-5 distinct objects shaped exactly like ` +
+      `{"kind":"pattern_shortlist","title":"Metric-first header","status":"exploring",` +
+      `"supportingLine":"Leads with measurable impact for a fast hiring-manager scan.",` +
+      `"ingredients":["Outcome metric","Role clarity","Project link"],"step":"find_patterns"}. ` +
+      `Give every card a unique title, one criteria-grounded supportingLine, and 2-4 reusable ingredients. ` +
+      `A sentence saying patterns exist, guidePanel.captured labels, or an artifact_generated activity event does NOT create cards. ` +
+      `Do not return specUpdates: {}. Keep quickReplies empty, omit recommendedQuickReply, recommend one card in the reply, ` +
+      `and invite selecting one or more or combining ingredients.`
+    );
+  }
   return (
     `Your last turn violated the TeamYou surface/flow contract: ${check.reasons.join("; ")}. ` +
     `Re-send the SAME substantive turn as valid JSON. The chat reply must contain the one actual ` +
