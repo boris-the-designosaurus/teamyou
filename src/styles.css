@@ -527,6 +527,19 @@ body {
   border: 1px solid var(--border);
   display: block;
 }
+.bubble-attachment-missing {
+  display: grid;
+  place-items: center;
+  width: 240px;
+  min-height: 96px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-gray-subtler);
+  color: var(--text-subtle);
+  font-size: var(--font-size-75);
+  text-align: center;
+}
 .bubble-attachment-link {
   margin-top: 3px;
   font-size: var(--font-size-75);
