@@ -95,19 +95,75 @@ export function loadStore(): Store {
 }
 
 export function saveStore(store: Store): void {
+  const storageSafe = storageSafeStore(store);
   try {
-    localStorage.setItem(KEY, JSON.stringify(store));
+    localStorage.setItem(KEY, JSON.stringify(storageSafe));
   } catch {
-    // Likely QuotaExceededError from big attachments. Drop the oldest doc that
-    // isn't the current one and try once more; if it still fails, give up
-    // quietly — persistence is best-effort.
-    const trimmed = evictOldest(store);
+    // Legacy projects may already contain full-size screenshots without a
+    // persisted preview. Preserve every decision, message, and currentStep by
+    // dropping only those image payloads before considering document eviction.
+    const metadataOnly = withoutImagePayloads(storageSafe);
     try {
-      localStorage.setItem(KEY, JSON.stringify(trimmed));
+      localStorage.setItem(KEY, JSON.stringify(metadataOnly));
     } catch {
-      /* noop */
+      const trimmed = evictOldest(metadataOnly);
+      try {
+        localStorage.setItem(KEY, JSON.stringify(trimmed));
+      } catch {
+        /* noop */
+      }
     }
   }
+}
+
+/** Replace full screenshot bytes with the lightweight preview generated when
+ * the attachment was added. The in-memory Store is never mutated. */
+export function storageSafeStore(store: Store): Store {
+  return mapAttachments(store, (attachment) => {
+    const dataUrl = attachment.persistedDataUrl ?? attachment.dataUrl;
+    const mediaType =
+      attachment.persistedMediaType ?? attachment.mediaType;
+    const {
+      persistedDataUrl: _persistedDataUrl,
+      persistedMediaType: _persistedMediaType,
+      ...rest
+    } = attachment;
+    return { ...rest, dataUrl, mediaType };
+  });
+}
+
+function withoutImagePayloads(store: Store): Store {
+  return mapAttachments(store, (attachment) => ({
+    ...attachment,
+    dataUrl: "",
+    sendable: false,
+  }));
+}
+
+function mapAttachments(
+  store: Store,
+  mapAttachment: (
+    attachment: NonNullable<WorkItem["messages"][number]["attachments"]>[number],
+  ) => NonNullable<WorkItem["messages"][number]["attachments"]>[number],
+): Store {
+  return {
+    ...store,
+    docs: Object.fromEntries(
+      Object.entries(store.docs).map(([id, doc]) => [
+        id,
+        {
+          ...doc,
+          item: {
+            ...doc.item,
+            messages: doc.item.messages.map((message) => ({
+              ...message,
+              attachments: message.attachments?.map(mapAttachment),
+            })),
+          },
+        },
+      ]),
+    ),
+  };
 }
 
 function evictOldest(store: Store): Store {
