@@ -50,4 +50,35 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain('aria-label="Refresh thumbnail for Contextual offer"');
     expect(html).toContain('title="Capture a fresh thumbnail"');
   });
+
+  it("draws wireframe artifacts instead of asking for a live example", () => {
+    const artifacts: MilestoneArtifact[] = [{
+      id: "wireframe-1",
+      kind: "wireframe",
+      title: "Metric-led portfolio",
+      status: "exploring",
+      supportingLine: "Lead with proof before biography.",
+      ingredients: ["Outcome proof", "Personal voice", "Project cards"],
+      wireframeSpec: {
+        surface: "page",
+        eyebrow: "Selected work",
+        headline: "24% more completed bookings",
+        body: "Senior product designer for complex SaaS workflows.",
+        primaryAction: "View project",
+        blocks: ["Role + contribution", "Outcome proof", "Project teaser"],
+      },
+      createdAt: "2026-08-25T12:00:00.000Z",
+      step: "choose_direction",
+    }];
+
+    const html = renderToStaticMarkup(
+      <DirectionCards artifacts={artifacts} onChoose={vi.fn()} onContinue={vi.fn()} />,
+    );
+
+    expect(html).toContain('aria-label="Wireframe for Metric-led portfolio"');
+    expect(html).toContain("24% more completed bookings");
+    expect(html).toContain("Role + contribution");
+    expect(html).toContain("Develop selected direction");
+    expect(html).not.toContain("Live example required");
+  });
 });
