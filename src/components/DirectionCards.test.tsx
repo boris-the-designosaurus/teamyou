@@ -43,7 +43,9 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain('aria-label="View larger example for Contextual offer"');
     expect(html).toContain("View larger");
     expect(html).toContain('aria-label="View larger example for Control before commitment"');
-    expect(html).toContain('aria-label="Structural preview for Control before commitment"');
+    expect(html).toContain("Live example required");
+    expect(html).not.toContain("24%");
+    expect(html).not.toContain("pattern-visual-fallback");
     expect(html).not.toContain('disabled="" aria-label="View larger example for Control before commitment"');
     expect(html).toContain('aria-label="Refresh thumbnail for Contextual offer"');
     expect(html).toContain('title="Capture a fresh thumbnail"');
