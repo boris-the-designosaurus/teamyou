@@ -46,7 +46,7 @@ import { ReviewWorkspace } from "./components/ReviewWorkspace";
 import { REVIEW_CATEGORIES } from "./types";
 import { buildAskStreakNudge, nextAskStreak, turnWasAsk } from "./coachGate";
 import { findLastCoachMessageId } from "./chatLocate";
-import { appendCoachTurnMessages } from "./messageOrder";
+import { appendCoachTurnMessages, requestsPatternCardRedisplay } from "./messageOrder";
 
 const VALID_TYPES: WorkItemType[] = [
   "feature_spec",
@@ -292,6 +292,20 @@ export function App() {
       const newMilestoneArtifactIds = mergedSpec.milestoneArtifacts
         .filter((a) => !priorArtifactIds.has(a.id))
         .map((a) => a.id);
+      // Saved cards normally stay attached to the turn that introduced them.
+      // When the user explicitly asks to see them again, re-link the existing
+      // shortlist to THIS coach turn so the UI renders the cards at the bottom
+      // of chat regardless of whether the model remembered the rendering ids.
+      const redisplayedPatternIds =
+        newMilestoneArtifactIds.length === 0 && requestsPatternCardRedisplay(trimmed)
+          ? mergedSpec.milestoneArtifacts
+              .filter((artifact) => artifact.kind === "pattern_shortlist")
+              .map((artifact) => artifact.id)
+          : [];
+      const visibleMilestoneArtifactIds =
+        newMilestoneArtifactIds.length > 0
+          ? newMilestoneArtifactIds
+          : redisplayedPatternIds;
 
       const coachMsg: Message = {
         id: crypto.randomUUID(),
@@ -300,7 +314,7 @@ export function App() {
         quickReplies: turn.quickReplies && turn.quickReplies.length > 0 ? turn.quickReplies : undefined,
         recommendedQuickReply: turn.recommendedQuickReply,
         milestoneArtifactIds:
-          newMilestoneArtifactIds.length > 0 ? newMilestoneArtifactIds : undefined,
+          visibleMilestoneArtifactIds.length > 0 ? visibleMilestoneArtifactIds : undefined,
         evidenceBrief: turn.specUpdates.evidenceBrief,
         evidenceSnapshot: turn.specUpdates.evidenceBrief
           ? mergedSpec.evidence.filter((item) => item.step === "assess_evidence")

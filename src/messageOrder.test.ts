@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Message } from "./types";
-import { appendCoachTurnMessages } from "./messageOrder";
+import { appendCoachTurnMessages, requestsPatternCardRedisplay } from "./messageOrder";
 
 const message = (id: string, role: Message["role"], content: string): Message => ({
   id,
@@ -27,5 +27,20 @@ describe("appendCoachTurnMessages", () => {
     const result = appendCoachTurnMessages(existing, coach, null);
 
     expect(result.map((item) => item.id)).toEqual(["user", "coach"]);
+  });
+});
+
+describe("requestsPatternCardRedisplay", () => {
+  it.each([
+    "display the patterns again",
+    "Can you show the pattern cards?",
+    "bring back the thumbnails",
+    "where are the patterns?",
+  ])("recognizes an explicit card redisplay request: %s", (text) => {
+    expect(requestsPatternCardRedisplay(text)).toBe(true);
+  });
+
+  it("does not treat ordinary pattern discussion as a UI command", () => {
+    expect(requestsPatternCardRedisplay("Which pattern is strongest?")).toBe(false);
   });
 });
