@@ -1,6 +1,6 @@
 import type { MilestoneArtifact } from "./types";
 
-const MICROLINK_ENDPOINT = "https://api.microlink.io";
+const PATTERN_THUMBNAIL_ENDPOINT = "/api/pattern-thumbnail";
 
 export function isPublicHttpUrl(value: string | undefined): value is string {
   if (!value) return false;
@@ -12,7 +12,7 @@ export function isPublicHttpUrl(value: string | undefined): value is string {
   }
 }
 
-/** Resolve a public reference page into an embeddable viewport screenshot. */
+/** Resolve a public reference page through TeamYou's server-owned screenshot proxy. */
 export function pagePreviewUrl(
   sourceUrl: string | undefined,
   options: { force?: boolean } = {},
@@ -20,12 +20,9 @@ export function pagePreviewUrl(
   if (!isPublicHttpUrl(sourceUrl)) return undefined;
   const params = new URLSearchParams({
     url: sourceUrl,
-    screenshot: "true",
-    meta: "false",
-    embed: "screenshot.url",
   });
   if (options.force) params.set("force", "true");
-  return `${MICROLINK_ENDPOINT}?${params.toString()}`;
+  return `${PATTERN_THUMBNAIL_ENDPOINT}?${params.toString()}`;
 }
 
 export function initialPatternImage(artifact: MilestoneArtifact): string | undefined {

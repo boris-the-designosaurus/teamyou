@@ -8,9 +8,7 @@ import {
 describe("pattern reference previews", () => {
   it("builds a screenshot preview for a public source page", () => {
     const preview = pagePreviewUrl("https://example.com/product?view=pattern");
-    expect(preview).toContain("https://api.microlink.io?");
-    expect(preview).toContain("screenshot=true");
-    expect(preview).toContain("embed=screenshot.url");
+    expect(preview).toContain("/api/pattern-thumbnail?");
     expect(preview).toContain("url=https%3A%2F%2Fexample.com%2Fproduct%3Fview%3Dpattern");
   });
 
