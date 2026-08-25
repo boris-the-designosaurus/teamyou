@@ -737,11 +737,56 @@ describe("checkTurnPolicy", () => {
       patternWebSearchEnabled: true,
     });
     expect(result.ok).toBe(false);
-    expect(result.reasons.join(" ")).toMatch(/sourceUrl.*thumbnails can display/);
+    expect(result.reasons.join(" ")).toMatch(/sourceUrl.*example thumbnails can display/);
 
     const correction = turnPolicyCorrectionPrompt(result);
     expect(correction).toContain("Use web search now");
-    expect(correction).toContain("sourceUrl and sourceTitle on EVERY");
+    expect(correction).toContain("sourceUrl and the example's own sourceTitle on EVERY");
+  });
+
+  it("rejects duplicate article thumbnails instead of actual examples", () => {
+    const candidate = turn({
+      reply:
+        "I recommend **Outcome first** because it puts proof above the fold. Select one or more patterns and combine useful ingredients.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Portfolio structures to compare",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Outcome first",
+            status: "exploring",
+            sourceUrl: "https://example.com/blog/portfolio-roundup",
+            sourceTitle: "16 Best UX Portfolio Examples That Stand Out",
+            step: "find_patterns",
+          },
+          {
+            kind: "pattern_shortlist",
+            title: "Narrative arc",
+            status: "exploring",
+            sourceUrl: "https://example.com/blog/portfolio-roundup#second",
+            sourceTitle: "16 Best UX Portfolio Examples That Stand Out",
+            step: "find_patterns",
+          },
+        ],
+      },
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: [],
+    });
+
+    const result = checkTurnPolicy("find_patterns", candidate, {
+      patternWebSearchEnabled: true,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/distinct original example pages/);
+    expect(result.reasons.join(" ")).toMatch(/original example, not a listicle/);
+    const correction = turnPolicyCorrectionPrompt(result);
+    expect(correction).toContain("follow any article or roundup to the ORIGINAL");
+    expect(correction).toContain("Do not reuse one source");
   });
 
   it("accepts I'd start with as a grounded pattern recommendation", () => {

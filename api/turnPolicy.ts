@@ -36,6 +36,8 @@ const DATA_ARTIFACT =
   /\b(?:ga4|google analytics|analytics dashboard|dashboard|chart|graph|spreadsheet|report)\b/i;
 const DATA_ARTIFACT_OBSERVATION =
   /\b(?:shows?|confirms?|indicates?|records?|reports?|reveals?|lists?|contains?)\b/i;
+const AGGREGATOR_REFERENCE_TITLE =
+  /(?:\bhow to\b.*\b(?:portfolio|case stud(?:y|ies))\b|\b(?:best|top)\b.*\bexamples?\b|\bexamples? that\b|\broundup\b|\binspiration\b|\btemplate\s*\+\s*examples?\b)/i;
 
 function groundsLatestScreenshot(reply: string): boolean {
   return (
@@ -72,6 +74,19 @@ function turnGroundsLatestScreenshot(turn: CoachTurnResponse): boolean {
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function normalizedReferenceUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    url.hash = "";
+    url.search = "";
+    url.pathname = url.pathname.replace(/\/+$/, "") || "/";
+    return url.href;
+  } catch {
+    return null;
+  }
 }
 
 function snapshotBriefValue(
@@ -297,22 +312,31 @@ export function checkTurnPolicy(
   const newPatterns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
     (artifact) => artifact.kind === "pattern_shortlist",
   );
-  if (
-    context.patternWebSearchEnabled &&
-    newPatterns.length >= 2 &&
-    newPatterns.some((artifact) => {
-      if (!hasText(artifact.sourceUrl)) return true;
-      try {
-        const url = new URL(artifact.sourceUrl);
-        return url.protocol !== "http:" && url.protocol !== "https:";
-      } catch {
-        return true;
-      }
-    })
-  ) {
-    reasons.push(
-      "retrieved pattern cards must each include a real public sourceUrl so their reference thumbnails can display",
-    );
+  if (context.patternWebSearchEnabled && newPatterns.length >= 2) {
+    const references = newPatterns.map((artifact) => ({
+      url: hasText(artifact.sourceUrl)
+        ? normalizedReferenceUrl(artifact.sourceUrl)
+        : null,
+      title: hasText(artifact.sourceTitle) ? artifact.sourceTitle.trim() : "",
+    }));
+    if (references.some((reference) => !reference.url || !reference.title)) {
+      reasons.push(
+        "retrieved pattern cards must each include an original public sourceUrl and sourceTitle so their example thumbnails can display",
+      );
+    }
+    const validUrls = references
+      .map((reference) => reference.url)
+      .filter((url): url is string => url !== null);
+    if (new Set(validUrls).size !== validUrls.length) {
+      reasons.push(
+        "retrieved pattern cards must use distinct original example pages instead of repeating one source thumbnail",
+      );
+    }
+    if (references.some((reference) => AGGREGATOR_REFERENCE_TITLE.test(reference.title))) {
+      reasons.push(
+        "retrieved pattern thumbnails must show the original example, not a listicle, roundup, article, or tutorial about examples",
+      );
+    }
   }
   if (
     previousStep === "set_criteria" &&
@@ -467,14 +491,18 @@ export function checkTurnPolicy(
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
   if (
     check.reasons.some((reason) =>
-      reason.includes("sourceUrl so their reference thumbnails can display"),
+      reason.includes("original public sourceUrl") ||
+      reason.includes("distinct original example pages") ||
+      reason.includes("original example, not a listicle"),
     )
   ) {
     return (
-      `Your pattern cards are missing retrievable visual references. Use web search now, then re-send the SAME ` +
-      `substantive turn as JSON with a real public http(s) sourceUrl and sourceTitle on EVERY ` +
-      `pattern_shortlist artifact. Use exact source pages whose visible interface demonstrates the pattern; ` +
-      `do not invent URLs or return search-result pages. Keep the existing titles, supportingLine, ingredients, ` +
+      `Your pattern cards are not showing the actual examples. Use web search now, follow any article or roundup ` +
+      `to the ORIGINAL designer, portfolio, product, or pattern-library page, then re-send the SAME substantive ` +
+      `turn as JSON with a distinct public http(s) sourceUrl and the example's own sourceTitle on EVERY ` +
+      `pattern_shortlist artifact. The visible interface on each sourceUrl must demonstrate that card's pattern. ` +
+      `Do not reuse one source, return an article/listicle/tutorial/gallery index, invent URLs, or use search-result ` +
+      `pages. If an original cannot be reached, replace that candidate. Keep the existing supportingLine, ingredients, ` +
       `recommendation, selection invitation, and all other valid specUpdates.`
     );
   }

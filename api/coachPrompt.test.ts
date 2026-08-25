@@ -14,8 +14,10 @@ describe("coach flow boundaries", () => {
   it("requires retrieved public references for pattern thumbnails", () => {
     const prompt = promptAt("find_patterns");
     expect(prompt).toContain("USE IT before creating the shortlist");
-    expect(prompt).toContain("return that exact page as \`sourceUrl\`");
-    expect(prompt).toContain("The client creates a page thumbnail from \`sourceUrl\`");
+    expect(prompt).toContain("return the ORIGINAL designer, portfolio, product, or pattern-library page as \`sourceUrl\`");
+    expect(prompt).toContain("it is NEVER the card's sourceUrl");
+    expect(prompt).toContain("The client screenshots \`sourceUrl\` as the thumbnail");
+    expect(prompt).toContain("never reuse one article or screenshot for several inferred patterns");
     expect(prompt).toContain('"sourceTitle"?');
   });
 
