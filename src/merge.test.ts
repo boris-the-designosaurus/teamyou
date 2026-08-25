@@ -275,6 +275,32 @@ describe("mergeSpec — Rule 3", () => {
     ]);
   });
 
+  it("preserves structured wireframe data for the visual renderer", () => {
+    const spec = mergeSpec(
+      emptySpec(),
+      {
+        milestoneArtifacts: [{
+          kind: "wireframe",
+          title: "Outcome-first page",
+          status: "exploring",
+          step: "choose_direction",
+          wireframeSpec: {
+            surface: "page",
+            headline: "24% more completed bookings",
+            blocks: ["Outcome", "Contribution", "Project"],
+          },
+        }],
+      },
+      () => "wireframe_1",
+    );
+
+    expect(spec.milestoneArtifacts[0].wireframeSpec).toEqual({
+      surface: "page",
+      headline: "24% more completed bookings",
+      blocks: ["Outcome", "Contribution", "Project"],
+    });
+  });
+
   it("preserves safe pattern reference metadata and rejects unsafe URLs", () => {
     let spec = mergeSpec(
       emptySpec(),
