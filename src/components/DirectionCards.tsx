@@ -31,28 +31,80 @@ function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
   const spec = artifact.wireframeSpec ?? inferredWireframeSpec(artifact);
   const blocks = spec.blocks?.length ? spec.blocks.slice(0, 3) : ["Primary content", "Supporting proof"];
 
+  if (spec.surface === "page") {
+    return (
+      <div
+        className="wireframe-visual wireframe-visual-page"
+        role="img"
+        aria-label={`Wireframe for ${artifact.title}`}
+      >
+        <div className="wireframe-browserbar">
+          <span>Portfolio</span><i /><i /><i />
+        </div>
+        <div className="wireframe-page">
+          <section className="wireframe-page-hero">
+            <div className="wireframe-page-hero-copy">
+              {spec.eyebrow && <div className="wireframe-eyebrow">{spec.eyebrow}</div>}
+              <div className="wireframe-headline">{spec.headline}</div>
+              {spec.body && <div className="wireframe-copy">{spec.body}</div>}
+              <div className="wireframe-actions">
+                {spec.primaryAction && <span className="primary">{spec.primaryAction}</span>}
+                {spec.secondaryAction && <span>{spec.secondaryAction}</span>}
+              </div>
+            </div>
+            <div className="wireframe-hero-media" aria-hidden>
+              <b /><i /><i /><i />
+            </div>
+          </section>
+
+          <section className="wireframe-proof-row" aria-label="Proof summary">
+            {blocks.map((block, index) => (
+              <div key={block}>
+                <strong>{index === 0 ? "24%" : index === 1 ? "15+" : "3×"}</strong>
+                <span>{block}</span>
+              </div>
+            ))}
+          </section>
+
+          <section className="wireframe-work-section">
+            <div className="wireframe-section-heading"><strong>Selected work</strong><i /></div>
+            <div className="wireframe-project-grid">
+              {blocks.slice(0, 2).map((block, index) => (
+                <article key={`${block}-${index}`}>
+                  <div className="wireframe-project-media" aria-hidden><b /><i /><i /></div>
+                  <small>{index === 0 ? "FEATURED CASE STUDY" : "RECENT PROJECT"}</small>
+                  <strong>{block}</strong>
+                  <span>Role, decision, and measurable outcome</span>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`wireframe-visual wireframe-visual-${spec.surface}`}
       role="img"
       aria-label={`Wireframe for ${artifact.title}`}
     >
-      {spec.surface === "page" && (
-        <div className="wireframe-browserbar">
-          <span>Portfolio</span><i /><i /><i />
-        </div>
-      )}
       <div className="wireframe-surface">
         {spec.surface === "modal" && <span className="wireframe-close" aria-hidden>×</span>}
         {spec.eyebrow && <div className="wireframe-eyebrow">{spec.eyebrow}</div>}
         <div className="wireframe-headline">{spec.headline}</div>
         {spec.body && <div className="wireframe-copy">{spec.body}</div>}
-        <div className="wireframe-blocks">
-          {blocks.map((block) => <div key={block}>{block}</div>)}
+        <div className="wireframe-checklist">
+          {blocks.map((block) => <div key={block}><i />{block}</div>)}
         </div>
-        <div className="wireframe-actions">
-          {spec.primaryAction && <span className="primary">{spec.primaryAction}</span>}
-          {spec.secondaryAction && <span>{spec.secondaryAction}</span>}
+        <div className="wireframe-offer-box">
+          <strong>{spec.primaryAction ? `Ready to ${spec.primaryAction.toLowerCase()}?` : "Ready to continue?"}</strong>
+          <span>Review the details before anything changes.</span>
+          <div className="wireframe-actions">
+            {spec.primaryAction && <span className="primary">{spec.primaryAction}</span>}
+            {spec.secondaryAction && <span>{spec.secondaryAction}</span>}
+          </div>
         </div>
       </div>
     </div>
