@@ -78,6 +78,10 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain('aria-label="Wireframe for Metric-led portfolio"');
     expect(html).toContain("24% more completed bookings");
     expect(html).toContain("Role + contribution");
+    expect(html).toContain("Selected work");
+    expect(html).toContain("FEATURED CASE STUDY");
+    expect(html).toContain("Role, decision, and measurable outcome");
+    expect(html).toContain("wireframe-project-grid");
     expect(html).toContain("Develop selected direction");
     expect(html).not.toContain("Live example required");
   });
