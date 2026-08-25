@@ -426,7 +426,11 @@ export function checkTurnPolicy(
   }
 
   if (newPatterns.length >= 2) {
-    if (!/\b(?:recommend|strongest fit|best fit)\b/i.test(turn.reply)) {
+    if (
+      !/\b(?:recommend(?:ed|ing|ation)?|strongest fit|best fit|i(?:'d|’d| would) (?:start|lead|go) with|my (?:pick|choice) is)\b/i.test(
+        turn.reply,
+      )
+    ) {
       reasons.push("a multi-pattern set must include one grounded recommendation");
     }
     if (!FLEXIBLE_PATTERN_SELECTION.test(turn.reply) || !/\bcombine\b/i.test(turn.reply)) {
