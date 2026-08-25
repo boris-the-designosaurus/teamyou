@@ -303,12 +303,12 @@ export function ChatPanel(props: {
                       m.milestoneArtifactIds!.includes(a.id),
                     )}
                     onChoose={props.onChooseArtifact}
-                    onContinue={(selected) =>
-                      props.onSend(
-                        `Generate wireframes for: ${selected.map((a) => a.title).join(", ")}`,
-                        [],
-                      )
-                    }
+                    onContinue={(selected) => {
+                      const action = selected[0]?.kind === "wireframe"
+                        ? "Develop selected wireframe"
+                        : "Generate wireframes for";
+                      props.onSend(`${action}: ${selected.map((a) => a.title).join(", ")}`, []);
+                    }}
                   />
                 )}
               {m.role === "coach" &&

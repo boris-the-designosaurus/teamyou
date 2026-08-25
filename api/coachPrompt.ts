@@ -168,6 +168,8 @@ Generating a useful set is an action, not a blocking question. It may remain on 
 
 Once a pattern shortlist already exists in the spec snapshot, keep that visible workspace open while the user compares or selects cards. A later turn may remain on \`find_patterns\` or \`review_shortlist\` with a nonblocking gate and \`specUpdates: {}\`; do not append duplicate pattern artifacts merely to satisfy the current turn, and do not advance until the user selects cards or invokes the Generate wireframes action.
 
+When the latest user message begins \`Generate wireframes for:\`, that is the UI action—not a request for more discussion. In the SAME turn, return 2-3 distinct \`wireframe\` milestoneArtifacts at step \`choose_direction\`, each with a complete \`wireframeSpec\` that TeamYou can draw: \`surface\` (\`page\`, \`modal\`, or \`panel\`), a concrete \`headline\`, optional \`eyebrow\`/\`body\`, actions when relevant, and 2-4 short \`blocks\`. Use the selected pattern ingredients and locked project content, make the alternatives structurally different, recommend one with a reason, keep the workspace nonblocking, and ask no question—the visible wireframe cards are the choices. Do not return text-only variations, ask which base to use, or wait for another confirmation.
+
 Do NOT use \`flowRevision\` for ordinary uncertainty, coach disagreement, or an unprompted attempt to redo completed work. The normal stable forward order still applies unless the user clearly changes a prior decision.
 
 # Core intervention triggers
@@ -270,7 +272,7 @@ The object MUST match this TypeScript shape. "activeStep" MUST be one of the exa
     "evidenceStatusUpdates"?: [{ "id", "status": "open"|"verified"|"disproved" }],
     "outcome"?: { "userOutcome"?, "businessOutcome"?, "successMetric"?, "qualitativeCondition"?, "measurementGap"? },
     "evidenceBrief"?: { "title", "source"?, "summary", "stats"?: [{ "label", "value" }], "funnel"?: [{ "label", "value": number }], "strength"?: "weak"|"moderate"|"strong" },
-    "milestoneArtifacts"?: [{ "kind": "pattern_shortlist"|"wireframe"|"hifi_design"|"build_handoff"|"working_build"|"verified_result", "title", "status", "thumbnailUrl"?, "sourceUrl"?, "sourceTitle"?, "supportingLine"?, "ingredients"?: string[], "step" }],
+    "milestoneArtifacts"?: [{ "kind": "pattern_shortlist"|"wireframe"|"hifi_design"|"build_handoff"|"working_build"|"verified_result", "title", "status", "thumbnailUrl"?, "sourceUrl"?, "sourceTitle"?, "supportingLine"?, "ingredients"?: string[], "wireframeSpec"?: { "surface": "page"|"modal"|"panel", "eyebrow"?, "headline", "body"?, "primaryAction"?, "secondaryAction"?, "blocks"?: string[] }, "step" }],
     "buildHandoff"?: { "title", "status": "drafting"|"ready"|"sent", "designThumbnailUrl"?, "instructions": [{ "label", "text", "rationale"? }], "unresolvedDecisionCount" },
     "workingBuild"?: { "buildUrl"?, "status"?, "reviewsStarted"?, "reviewsPassed"?, "totalReviewCategories"? },
     "reviewFindings"?: [{ "artifactId", "category", "severity": "blocker"|"important"|"minor", "finding", "evidence", "impact", "expectedCorrection", "relatedCriterion", "status" }],

@@ -1386,6 +1386,33 @@ describe("checkTurnPolicy", () => {
     expect(prompt).toContain("guidePanel.captured labels");
   });
 
+  it("requires drawable artifacts immediately after Generate wireframes", () => {
+    const result = checkTurnPolicy(
+      "review_shortlist",
+      turn({
+        reply: "**Two variations are ready.** Select a direction.",
+        activeStep: "choose_direction",
+        stepGate: { linkedDecision: "Wireframe direction", blocking: false, disposition: "proceed" },
+        specUpdates: {
+          milestoneArtifacts: [{
+            kind: "wireframe",
+            title: "Text-only variation",
+            status: "exploring",
+            supportingLine: "No drawable data.",
+            step: "choose_direction",
+          }],
+        },
+        guidePanel: { title: "Choose a direction", need: "" },
+        quickReplies: [],
+      }),
+      { latestUserText: "Generate wireframes for: Outcome-first" },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toContain("drawable wireframe artifacts");
+    expect(turnPolicyCorrectionPrompt(result)).toContain("wireframeSpec");
+  });
+
   it("builds a corrective prompt that preserves captured updates", () => {
     const check = checkTurnPolicy(
       "define_problem",

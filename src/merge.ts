@@ -275,6 +275,9 @@ export function mergeSpec(
         sourceTitle: a.sourceTitle,
         supportingLine: a.supportingLine,
         ingredients: a.ingredients ? [...a.ingredients] : undefined,
+        wireframeSpec: a.wireframeSpec
+          ? { ...a.wireframeSpec, blocks: a.wireframeSpec.blocks ? [...a.wireframeSpec.blocks] : undefined }
+          : undefined,
         createdAt: now,
         step: a.step,
       });

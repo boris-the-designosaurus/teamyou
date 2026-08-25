@@ -1569,6 +1569,124 @@ body {
 @keyframes pattern-thumb-spin {
   to { transform: rotate(360deg); }
 }
+.wireframe-visual {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #222;
+  background: #f3f1ec;
+  font-size: 9px;
+  line-height: 1.25;
+  text-align: left;
+}
+.wireframe-browserbar {
+  height: 19%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 7%;
+  border-bottom: 1px solid #d8d5ce;
+  background: #fff;
+  font-weight: 700;
+}
+.wireframe-browserbar span { margin-right: auto; }
+.wireframe-browserbar i {
+  width: 14%;
+  height: 3px;
+  border-radius: 2px;
+  background: #aaa7a0;
+}
+.wireframe-surface {
+  position: relative;
+  height: 100%;
+  padding: 9% 8%;
+}
+.wireframe-visual-page .wireframe-surface { height: 81%; }
+.wireframe-visual-modal,
+.wireframe-visual-panel {
+  display: grid;
+  place-items: center;
+  padding: 7%;
+  background: #e8e6e1;
+}
+.wireframe-visual-modal .wireframe-surface,
+.wireframe-visual-panel .wireframe-surface {
+  width: 88%;
+  height: auto;
+  max-height: 90%;
+  padding: 9%;
+  border: 2px solid #77746f;
+  border-radius: 7px;
+  background: #fff;
+}
+.wireframe-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  color: #77746f;
+  font-size: 13px;
+}
+.wireframe-eyebrow {
+  margin-bottom: 4px;
+  color: #77746f;
+  font-size: 0.78em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.wireframe-headline {
+  max-width: 92%;
+  font-size: 1.55em;
+  font-weight: 800;
+  line-height: 1.08;
+}
+.wireframe-copy {
+  display: -webkit-box;
+  max-width: 92%;
+  margin-top: 5px;
+  overflow: hidden;
+  color: #66635e;
+  font-size: 0.88em;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.wireframe-blocks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 8px;
+}
+.wireframe-blocks div {
+  min-height: 22px;
+  padding: 5px;
+  overflow: hidden;
+  border: 1px solid #aaa7a0;
+  border-radius: 3px;
+  background: #f7f6f3;
+  color: #66635e;
+  font-size: 0.72em;
+}
+.wireframe-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+.wireframe-actions span {
+  padding: 4px 7px;
+  border: 1px solid #77746f;
+  border-radius: 3px;
+  background: #fff;
+  font-size: 0.75em;
+  font-weight: 700;
+}
+.wireframe-actions .primary {
+  color: #fff;
+  background: #55524e;
+}
+.pattern-preview-image .wireframe-visual {
+  min-height: min(640px, 68vh);
+  font-size: 18px;
+}
 .direction-card-thumb-action {
   position: absolute;
   right: 8px;

@@ -49,6 +49,7 @@ const PORTFOLIO_CONTEXT =
   /\b(?:portfolio|case stud(?:y|ies)|hiring manager|design lead|product design(?:er)? job)\b/i;
 const FRESH_PATTERN_REQUEST =
   /\b(?:generate|find|search|retrieve|replace|regenerate|refresh)\b[\s\S]{0,40}\b(?:fresh|new|different|more)?\s*(?:patterns?|pattern cards?|shortlist|examples?)\b/i;
+const GENERATE_WIREFRAMES_REQUEST = /^\s*Generate wireframes for:/i;
 
 function groundsLatestScreenshot(reply: string): boolean {
   return (
@@ -361,6 +362,23 @@ export function checkTurnPolicy(
   const newPatterns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
     (artifact) => artifact.kind === "pattern_shortlist",
   );
+  const newWireframes = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "wireframe",
+  );
+  if (
+    GENERATE_WIREFRAMES_REQUEST.test(context.latestUserText ?? "") &&
+    (newWireframes.length < 2 ||
+      newWireframes.some(
+        (artifact) =>
+          !artifact.wireframeSpec ||
+          !hasText(artifact.wireframeSpec.headline) ||
+          !(artifact.wireframeSpec.blocks?.length),
+      ))
+  ) {
+    reasons.push(
+      "the Generate wireframes action must immediately return 2-3 drawable wireframe artifacts with complete wireframeSpec data",
+    );
+  }
   if (
     FRESH_PATTERN_REQUEST.test(context.latestUserText ?? "") &&
     newPatterns.length < 3
@@ -557,6 +575,20 @@ export function checkTurnPolicy(
 }
 
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
+  if (
+    check.reasons.some((reason) =>
+      reason.includes("Generate wireframes action must immediately return"),
+    )
+  ) {
+    return (
+      `The user clicked Generate wireframes, but you returned discussion or text-only cards. Re-send the SAME turn ` +
+      `with 2-3 structurally distinct wireframe milestoneArtifacts in specUpdates at step choose_direction. Every ` +
+      `artifact must include wireframeSpec shaped like ` +
+      `{"surface":"page","eyebrow":"Selected work","headline":"24% more bookings","body":"Short supporting copy","primaryAction":"View project","blocks":["Role + contribution","Outcome proof","Project teaser"]}. ` +
+      `Use the selected patterns and locked project content; recommend one with one grounded reason; ask no question; ` +
+      `keep quickReplies empty, guidePanel.need empty, and the step nonblocking so the cards themselves are the choice.`
+    );
+  }
   if (
     check.reasons.some((reason) =>
       reason.includes("fresh pattern request must return 3-5"),
