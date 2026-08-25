@@ -37,7 +37,7 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain("Task-specific value");
     expect(html).toContain("1 selected");
     expect(html).toContain("Generate wireframes");
-    expect(html).toContain("api.microlink.io");
+    expect(html).toContain("/api/pattern-thumbnail");
     expect(html).toContain("Reference: Example pattern library");
     expect(html).toContain('href="https://www.example.com/patterns/contextual-offer"');
     expect(html).toContain('aria-label="View larger example for Contextual offer"');

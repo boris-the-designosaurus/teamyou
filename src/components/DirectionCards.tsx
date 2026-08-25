@@ -209,8 +209,8 @@ export function DirectionCards(props: {
     setRefreshingIds((current) => ({ ...current, [artifact.id]: true }));
 
     try {
-      // Microlink's `force=true` invalidates its screenshot cache; no-store
-      // prevents the browser from returning its own cached response.
+      // TeamYou's same-origin endpoint forwards force=true to the capture
+      // service; no-store prevents the browser from returning its own copy.
       const response = await fetch(freshUrl, { cache: "no-store" });
       if (!response.ok) throw new Error(`Thumbnail refresh failed (${response.status})`);
       const blobUrl = URL.createObjectURL(await response.blob());

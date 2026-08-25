@@ -47,6 +47,7 @@ import { REVIEW_CATEGORIES } from "./types";
 import { buildAskStreakNudge, nextAskStreak, turnWasAsk } from "./coachGate";
 import { findLastCoachMessageId } from "./chatLocate";
 import { appendCoachTurnMessages, requestsPatternCardRedisplay } from "./messageOrder";
+import { requestsFreshPatternSearch, resetForFreshPatternSearch } from "./freshPatterns";
 
 const VALID_TYPES: WorkItemType[] = [
   "feature_spec",
@@ -242,6 +243,10 @@ export function App() {
     // capture the durable observation/reference they support in specUpdates,
     // but merely attaching an image must not promote it into the decision spine.
 
+    const startingWorkItem = requestsFreshPatternSearch(trimmed)
+      ? resetForFreshPatternSearch(workItem)
+      : workItem;
+
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: "user",
@@ -255,12 +260,12 @@ export function App() {
 
     // The Brief begins when the conversation starts — log it once, at the top.
     const startMarkers: Message[] =
-      workItem.messages.length === 0 ? [stepStartedMsg("understand_request")] : [];
+      startingWorkItem.messages.length === 0 ? [stepStartedMsg("understand_request")] : [];
 
     const withUser: WorkItem = {
-      ...workItem,
-      spec: workItem.spec,
-      messages: [...workItem.messages, ...startMarkers, userMsg],
+      ...startingWorkItem,
+      spec: startingWorkItem.spec,
+      messages: [...startingWorkItem.messages, ...startMarkers, userMsg],
       updatedAt: nowISO(),
     };
     setWorkItem(withUser);

@@ -39,6 +39,28 @@ function coachApiPlugin(): Plugin {
           }
         });
       });
+      server.middlewares.use("/api/pattern-thumbnail", async (req, res, next) => {
+        if (req.method !== "GET") return next();
+        try {
+          const requestUrl = new URL(req.url ?? "", "http://localhost");
+          const mod = await server.ssrLoadModule("/api/pattern-thumbnail.ts");
+          const result = await mod.fetchPatternThumbnail(
+            requestUrl.searchParams.get("url") ?? undefined,
+            requestUrl.searchParams.get("force") === "true",
+          );
+          res.statusCode = result.status;
+          res.setHeader("content-type", result.contentType);
+          res.setHeader("cache-control", result.cacheControl ?? "no-store");
+          res.end(Buffer.from(result.body));
+        } catch (err) {
+          res.statusCode = 502;
+          res.setHeader("content-type", "application/json");
+          res.end(JSON.stringify({
+            error: "pattern_thumbnail_error",
+            message: err instanceof Error ? err.message : String(err),
+          }));
+        }
+      });
     },
   };
 }
