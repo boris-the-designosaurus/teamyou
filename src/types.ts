@@ -177,6 +177,11 @@ export type ImageAttachment = {
   id: string;
   // Full data URL for rendering in the browser (e.g. "data:image/png;base64,...").
   dataUrl: string;
+  // Smaller preview used only for persistence. The full-resolution dataUrl
+  // remains in memory long enough for the Coach request, while this prevents
+  // screenshots from exhausting localStorage and freezing project progress.
+  persistedDataUrl?: string;
+  persistedMediaType?: string;
   mediaType: string; // "image/png" | "image/jpeg" | "image/gif" | "image/webp"
   name?: string;
   bytes?: number; // approximate payload size, for logging/limits
