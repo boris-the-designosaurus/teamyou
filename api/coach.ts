@@ -387,6 +387,155 @@ function repairCompletedPortfolioRequest(
 }
 
 /**
+ * Generate wireframes is a button action, not an open-ended coaching turn.
+ * If the model spends both retries discussing the selection, synthesize a
+ * small drawable comparison from the selected pattern records instead of
+ * surfacing a policy error. The renderer still owns the pixels; this merely
+ * guarantees the structural data the action promises.
+ */
+function repairGenerateWireframes(
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+  policyContext: import("./turnPolicy").TurnPolicyContext,
+): CoachTurnResponse | null {
+  if (
+    !policyReasons.some((reason) =>
+      reason.includes("Generate wireframes action must immediately return"),
+    )
+  ) {
+    return null;
+  }
+
+  const snapshot =
+    policyContext.specSnapshot && typeof policyContext.specSnapshot === "object"
+      ? (policyContext.specSnapshot as Record<string, unknown>)
+      : {};
+  const allArtifacts = Array.isArray(snapshot.milestoneArtifacts)
+    ? snapshot.milestoneArtifacts.filter(
+        (item): item is Record<string, unknown> =>
+          !!item && typeof item === "object" && item.kind === "pattern_shortlist",
+      )
+    : [];
+  const selected = allArtifacts.filter((item) => item.status === "selected");
+  const patterns = (selected.length > 0 ? selected : allArtifacts.slice(-2)).slice(0, 2);
+  const requestedTitle = (policyContext.latestUserText ?? "")
+    .replace(/^\s*Generate wireframes for:\s*/i, "")
+    .trim();
+  if (patterns.length === 0) {
+    patterns.push({
+      title: requestedTitle || "Selected pattern",
+      supportingLine: "Turns the selected structure into a concrete direction.",
+      ingredients: [],
+    });
+  }
+
+  const snapshotText = JSON.stringify(snapshot);
+  const portfolio = /portfolio|case stud(?:y|ies)|hiring manager/i.test(snapshotText);
+  const modal = /modal|dialog|offer|upgrade|trial/i.test(snapshotText);
+  const variants = [
+    {
+      label: "Proof-first",
+      headline: portfolio
+        ? "Measurable impact, before the scroll"
+        : "See the value before you commit",
+      body: portfolio
+        ? "Lead with the strongest outcome, then make the designer's role and decisions easy to scan."
+        : "Show what will happen, why it helps, and what remains under the user's control.",
+      primaryAction: portfolio ? "View project" : "Try it",
+      secondaryAction: portfolio ? "View résumé" : "Not now",
+      fallbackBlocks: portfolio
+        ? ["Outcome proof", "Role + contribution", "Project preview"]
+        : ["Task preview", "Expected result", "Review before applying"],
+    },
+    {
+      label: "Narrative-first",
+      headline: portfolio
+        ? "The decisions behind the outcome"
+        : "Keep control while the work gets done",
+      body: portfolio
+        ? "Open with a concise point of view, then connect process decisions to visible results."
+        : "Explain the workflow in sequence and make the approval point unmistakable.",
+      primaryAction: portfolio ? "Read case study" : "Preview changes",
+      secondaryAction: portfolio ? "Contact me" : "Keep doing it manually",
+      fallbackBlocks: portfolio
+        ? ["Problem framing", "Decision trail", "Measured outcome"]
+        : ["What the agent does", "What you review", "What happens next"],
+    },
+  ];
+  const existingNonWireframes = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind !== "wireframe",
+  );
+  const wireframes = variants.map((variant, index) => {
+    const pattern = patterns[index % patterns.length];
+    const patternTitle =
+      typeof pattern.title === "string" && pattern.title.trim()
+        ? pattern.title.trim()
+        : requestedTitle || "Selected pattern";
+    const patternIngredients = Array.isArray(pattern.ingredients)
+      ? pattern.ingredients.filter((item): item is string => typeof item === "string")
+      : [];
+    const blocks = [...patternIngredients, ...variant.fallbackBlocks].slice(0, 3);
+    return {
+      kind: "wireframe" as const,
+      title: `Variation ${String.fromCharCode(65 + index)} — ${variant.label}`,
+      status: "exploring" as const,
+      supportingLine:
+        typeof pattern.supportingLine === "string"
+          ? pattern.supportingLine
+          : variant.body,
+      ingredients: blocks,
+      wireframeSpec: {
+        surface: portfolio ? ("page" as const) : modal ? ("modal" as const) : ("panel" as const),
+        eyebrow: patternTitle,
+        headline: variant.headline,
+        body: variant.body,
+        primaryAction: variant.primaryAction,
+        secondaryAction: variant.secondaryAction,
+        blocks,
+      },
+      step: "choose_direction" as const,
+    };
+  });
+
+  return {
+    ...turn,
+    reply:
+      `**Two drawable wireframe directions are ready** — both carry the selected pattern into a concrete structure. ` +
+      `I'd start with ${wireframes[0].title} because it makes the primary proof and action fastest to scan; select either card or combine their useful ingredients.`,
+    activeStep: "review_shortlist",
+    stepGate: {
+      linkedDecision: "Which wireframe direction to develop",
+      blocking: false,
+      disposition: "proceed",
+    },
+    specUpdates: {
+      ...turn.specUpdates,
+      milestoneArtifacts: [...existingNonWireframes, ...wireframes],
+    },
+    guidePanel: {
+      title: STEP_TITLES.review_shortlist,
+      captured: wireframes.map((wireframe) => wireframe.title),
+      need: "",
+      priorSummary: `Generated from: ${patterns
+        .map((pattern) =>
+          String(pattern.title ?? (requestedTitle || "Selected pattern")),
+        )
+        .join(" + ")}`,
+    },
+    activityEvents: [
+      ...turn.activityEvents,
+      {
+        type: "milestone_captured",
+        importance: "significant",
+        label: "Generated 2 drawable wireframe directions",
+      },
+    ],
+    quickReplies: [],
+    recommendedQuickReply: undefined,
+  };
+}
+
+/**
  * The decision-criticality gate's brevity contract, enforced as code: a
  * structurally-valid turn that violates the concise-reply rules (too long,
  * more than one question, headings/lists/tables) gets ONE regenerate retry —
@@ -455,6 +604,27 @@ export async function withPolicyRetry(
       );
       if (repairedStyle.ok && repairedPolicy.ok) {
         return { status: 200, json: repaired };
+      }
+    }
+
+    const repairedWireframes = repairGenerateWireframes(
+      candidate,
+      policyCheck.reasons,
+      policyContext,
+    );
+    if (repairedWireframes) {
+      const repairedStyle = checkReplyStyle(
+        repairedWireframes.reply,
+        repairedWireframes.responseMode ?? "concise",
+        { activeStep: repairedWireframes.activeStep },
+      );
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repairedWireframes,
+        policyContext,
+      );
+      if (repairedStyle.ok && repairedPolicy.ok) {
+        return { status: 200, json: repairedWireframes };
       }
     }
 
