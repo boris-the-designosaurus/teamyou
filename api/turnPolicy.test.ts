@@ -701,6 +701,46 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts I'd start with as a grounded pattern recommendation", () => {
+    const result = checkTurnPolicy(
+      "set_criteria",
+      turn({
+        reply:
+          "**Set the criteria is complete**, so I'm moving to pattern-finding. I'd start with the Outcome-first hero — it puts the strongest proof in the very first glance, directly fixing the sequencing problem. Select one or more of these, combine ingredients across them, or ask for something different.",
+        activeStep: "find_patterns",
+        stepGate: {
+          linkedDecision: "Which structural patterns best express the locked criteria",
+          blocking: false,
+          disposition: "proceed",
+        },
+        specUpdates: {
+          milestoneArtifacts: [
+            {
+              kind: "pattern_shortlist",
+              title: "Outcome-first hero",
+              status: "exploring",
+              supportingLine: "Opens with the strongest measurable result.",
+              ingredients: ["Metric-led headline", "One case teaser"],
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Process-narrative structure",
+              status: "exploring",
+              supportingLine: "Shows thinking before the polished result.",
+              ingredients: ["Problem framing", "Decision trail"],
+              step: "find_patterns",
+            },
+          ],
+        },
+        guidePanel: { title: "Find relevant patterns", need: "" },
+        quickReplies: [],
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects duplicating a multi-pattern card set as quick replies", () => {
     const base = turn({
       reply:
