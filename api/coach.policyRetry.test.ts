@@ -79,6 +79,79 @@ const validFinalCorrection: CoachTurnResponse = {
 };
 
 describe("withPolicyRetry", () => {
+  it("deterministically returns drawable wireframes when the model discusses the selection", async () => {
+    const discussionOnly: CoachTurnResponse = {
+      reply:
+        "Both patterns are selected. Do you want to refine one or combine them?",
+      activeStep: "review_shortlist",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Which direction to refine",
+        blocking: true,
+        disposition: "ask",
+      },
+      specUpdates: {},
+      guidePanel: {
+        title: "Review and shortlist",
+        need: "Direction to refine",
+        nextPrompt: "Do you want to refine one or combine them?",
+      },
+      activityEvents: [],
+      quickReplies: ["Refine A", "Refine B", "Combine both"],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic action repair should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "find_patterns",
+      [],
+      JSON.stringify(discussionOnly),
+      discussionOnly,
+      generate,
+      {
+        latestUserText:
+          "Generate wireframes for: Step-by-step process narrative + Large personal positioning",
+        workItemType: "design_project",
+        specSnapshot: {
+          brief: { goal: "Redesign my product design portfolio" },
+          milestoneArtifacts: [
+            {
+              kind: "pattern_shortlist",
+              title: "Step-by-step process narrative",
+              status: "selected",
+              supportingLine: "Makes the reasoning visible at each stage.",
+              ingredients: ["Decision trail", "Outcome callout"],
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Large personal positioning",
+              status: "selected",
+              ingredients: ["Personal voice", "Project cards"],
+            },
+          ],
+        },
+      },
+    );
+
+    expect(result.status).toBe(200);
+    if (!("specUpdates" in result.json)) throw new Error("Expected coach turn");
+    const wireframes = result.json.specUpdates.milestoneArtifacts?.filter(
+      (artifact) => artifact.kind === "wireframe",
+    );
+    expect(wireframes).toHaveLength(2);
+    expect(wireframes?.every((artifact) => artifact.wireframeSpec?.headline)).toBe(true);
+    expect(wireframes?.every((artifact) => artifact.wireframeSpec?.blocks?.length)).toBe(true);
+    expect(result.json).toMatchObject({
+      activeStep: "review_shortlist",
+      guidePanel: { need: "" },
+      quickReplies: [],
+    });
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it("accepts a valid second correction instead of returning a blank policy error", async () => {
     const generated = [
       JSON.stringify(stillInvalid),
