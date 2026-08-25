@@ -1515,11 +1515,43 @@ body {
   aspect-ratio: 16 / 10;
   background: var(--bg-gray-subtler, var(--border-subtle));
 }
+.direction-card-thumb-button {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  cursor: zoom-in;
+  text-align: initial;
+}
+.direction-card-thumb-button:disabled {
+  cursor: default;
+}
 .direction-card-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+.direction-card-thumb-action {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--text-inverse);
+  background: color-mix(in srgb, var(--bg-gray-bold) 82%, transparent);
+  font-size: var(--font-size-50);
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+.direction-card-thumb-button:hover .direction-card-thumb-action,
+.direction-card-thumb-button:focus-visible .direction-card-thumb-action {
+  opacity: 1;
+  transform: translateY(0);
 }
 .direction-card-thumb-placeholder {
   width: 100%;
@@ -1559,6 +1591,108 @@ body {
 .direction-card-source:hover {
   color: var(--text-default);
   text-decoration: underline;
+}
+
+/* Full-size reference viewer opened from a pattern thumbnail. */
+.pattern-preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: rgba(20, 20, 18, 0.72);
+  backdrop-filter: blur(3px);
+}
+.pattern-preview-dialog {
+  width: min(1120px, 100%);
+  max-height: calc(100vh - 64px);
+  max-height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--bg-surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+.pattern-preview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pattern-preview-header h2,
+.pattern-preview-header p {
+  margin: 0;
+}
+.pattern-preview-header h2 {
+  color: var(--text-bold);
+  font-size: var(--font-size-300);
+  line-height: 1.25;
+}
+.pattern-preview-header p {
+  margin-top: 4px;
+  color: var(--text-subtle);
+  font-size: var(--font-size-100);
+  line-height: 1.4;
+}
+.pattern-preview-close {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  color: var(--text-bold);
+  background: var(--bg-surface);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pattern-preview-image {
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg-surface-light);
+}
+.pattern-preview-image img,
+.pattern-preview-image .direction-card-thumb-placeholder {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 320px;
+  object-fit: contain;
+}
+.pattern-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-subtle);
+  font-size: var(--font-size-75);
+}
+.pattern-preview-footer a {
+  color: var(--text-bold);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+.pattern-preview-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .pattern-preview-backdrop {
+    padding: 12px;
+  }
+  .pattern-preview-dialog {
+    max-height: calc(100dvh - 24px);
+  }
+  .pattern-preview-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 .direction-card-ingredients {
   display: flex;

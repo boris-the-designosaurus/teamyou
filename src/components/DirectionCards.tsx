@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { MilestoneArtifact } from "../types";
 import { CheckmarkIcon } from "../icons";
 import {
@@ -35,6 +36,68 @@ function PatternThumbnail({ artifact }: { artifact: MilestoneArtifact }) {
   );
 }
 
+function PatternPreview(props: {
+  artifact: MilestoneArtifact;
+  onClose: () => void;
+}) {
+  const { artifact, onClose } = props;
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  const dialog = (
+    <div
+      className="pattern-preview-backdrop"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <section
+        className="pattern-preview-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pattern-preview-title"
+      >
+        <header className="pattern-preview-header">
+          <div>
+            <h2 id="pattern-preview-title">{artifact.title}</h2>
+            {artifact.supportingLine && <p>{artifact.supportingLine}</p>}
+          </div>
+          <button
+            type="button"
+            className="pattern-preview-close"
+            onClick={onClose}
+            aria-label="Close pattern preview"
+            autoFocus
+          >
+            ×
+          </button>
+        </header>
+
+        <div className="pattern-preview-image">
+          <PatternThumbnail artifact={artifact} />
+        </div>
+
+        {isPublicHttpUrl(artifact.sourceUrl) && (
+          <footer className="pattern-preview-footer">
+            <span>Reference: {patternSourceLabel(artifact)}</span>
+            <a href={artifact.sourceUrl} target="_blank" rel="noreferrer">
+              Open original example <span aria-hidden>↗</span>
+            </a>
+          </footer>
+        )}
+      </section>
+    </div>
+  );
+
+  return typeof document === "undefined" ? dialog : createPortal(dialog, document.body);
+}
+
 /**
  * The pattern/wireframe/treatment "Choose" grid shown inline in chat during
  * Explore directions and Design the solution — a genuine shortlist the user
@@ -48,6 +111,7 @@ export function DirectionCards(props: {
   onContinue?: (selected: MilestoneArtifact[]) => void;
 }) {
   const { artifacts, onChoose, onContinue } = props;
+  const [previewArtifact, setPreviewArtifact] = useState<MilestoneArtifact | null>(null);
   if (!artifacts.length) return null;
 
   const isShortlist = artifacts[0].kind === "pattern_shortlist";
@@ -58,11 +122,19 @@ export function DirectionCards(props: {
       <div className="direction-cards">
         {artifacts.map((a) => {
           const isChosen = CHOSEN_STATUSES.has(a.status);
+          const canPreview = !!initialPatternImage(a);
           return (
             <div key={a.id} className={`direction-card${isChosen ? " chosen" : ""}`}>
-              <div className="direction-card-thumb">
+              <button
+                type="button"
+                className="direction-card-thumb direction-card-thumb-button"
+                onClick={() => setPreviewArtifact(a)}
+                disabled={!canPreview}
+                aria-label={`View larger example for ${a.title}`}
+              >
                 <PatternThumbnail artifact={a} />
-              </div>
+                {canPreview && <span className="direction-card-thumb-action">View larger</span>}
+              </button>
               <div className="direction-card-body">
                 <div className="direction-card-title-row">
                   <span className="direction-card-title">{a.title}</span>
@@ -114,6 +186,12 @@ export function DirectionCards(props: {
             Generate wireframes
           </button>
         </div>
+      )}
+      {previewArtifact && (
+        <PatternPreview
+          artifact={previewArtifact}
+          onClose={() => setPreviewArtifact(null)}
+        />
       )}
     </div>
   );
