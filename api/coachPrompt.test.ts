@@ -11,6 +11,14 @@ function promptAt(activeStep: Parameters<typeof buildSystemPrompt>[0]["activeSte
 }
 
 describe("coach flow boundaries", () => {
+  it("requires retrieved public references for pattern thumbnails", () => {
+    const prompt = promptAt("find_patterns");
+    expect(prompt).toContain("USE IT before creating the shortlist");
+    expect(prompt).toContain("return that exact page as \`sourceUrl\`");
+    expect(prompt).toContain("The client creates a page thumbnail from \`sourceUrl\`");
+    expect(prompt).toContain('"sourceTitle"?');
+  });
+
   it("requires screenshot-aware judgment without treating references as proof", () => {
     const prompt = buildSystemPrompt({
       workItemType: "design_project",

@@ -275,6 +275,36 @@ describe("mergeSpec — Rule 3", () => {
     ]);
   });
 
+  it("preserves safe pattern reference metadata and rejects unsafe URLs", () => {
+    let spec = mergeSpec(
+      emptySpec(),
+      {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Outcome-led action",
+            status: "exploring",
+            sourceUrl: "https://example.com/pattern",
+            sourceTitle: "Example pattern",
+            step: "find_patterns",
+          },
+          {
+            kind: "pattern_shortlist",
+            title: "Unsafe",
+            status: "exploring",
+            sourceUrl: "javascript:alert(1)",
+            step: "find_patterns",
+          },
+        ],
+      },
+      seqIds(),
+    );
+
+    expect(spec.milestoneArtifacts[0].sourceUrl).toBe("https://example.com/pattern");
+    expect(spec.milestoneArtifacts[0].sourceTitle).toBe("Example pattern");
+    expect(spec.milestoneArtifacts[1].sourceUrl).toBeUndefined();
+  });
+
   it("array append: buildHandoff appends a new handoff with nested instruction ids", () => {
     const spec = mergeSpec(
       emptySpec(),

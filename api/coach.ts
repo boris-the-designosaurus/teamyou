@@ -21,6 +21,11 @@ import { checkTurnPolicy, turnPolicyCorrectionPrompt } from "./turnPolicy";
 
 const DEFAULT_MODEL = "claude-sonnet-5";
 const VALID_STEPS: FlowStep[] = FLOW_STEPS;
+const PATTERN_SEARCH_STEPS = new Set<FlowStep>([
+  "set_criteria",
+  "find_patterns",
+  "review_shortlist",
+]);
 // Display labels for the active step — used to synthesize a minimal guidePanel
 // when the model omits one (so a missing container never fails the whole turn).
 const STEP_TITLES: Record<FlowStep, string> = FLOW_STEP_LABEL;
@@ -81,6 +86,13 @@ export type RunCoachResult = {
   status: number;
   json: CoachTurnResponse | { error: string; message?: string; raw?: string };
 };
+
+export function shouldEnablePatternWebSearch(
+  activeStep: FlowStep,
+  setting = process.env.PATTERN_WEB_SEARCH,
+): boolean {
+  return setting !== "false" && PATTERN_SEARCH_STEPS.has(activeStep);
+}
 
 export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -159,15 +171,40 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
 
   const client = new Anthropic({ apiKey });
   const model = process.env.COACH_MODEL ?? DEFAULT_MODEL;
+  const patternWebSearch = shouldEnablePatternWebSearch(activeStep);
 
   async function generate(turns: ApiMessage[]): Promise<string> {
-    const response = await client.messages.create({
+    const request: Anthropic.MessageCreateParamsNonStreaming = {
       model,
       max_tokens: 4096,
       thinking: { type: "disabled" }, // snappy, deterministic-shaped turns
       system,
       messages: turns,
-    });
+      ...(patternWebSearch
+        ? {
+            tools: [
+              {
+                type: "web_search_20250305" as const,
+                name: "web_search" as const,
+                max_uses: 3,
+              },
+            ],
+          }
+        : {}),
+    };
+
+    let response: Anthropic.Message;
+    try {
+      response = await client.messages.create(request);
+    } catch (err) {
+      // Some Anthropic workspaces/models may not have server web search enabled.
+      // Keep coaching usable there, while leaving the missing visual obvious.
+      if (!patternWebSearch || !(err instanceof Anthropic.APIError) || err.status !== 400) {
+        throw err;
+      }
+      const { tools: _tools, ...withoutTools } = request;
+      response = await client.messages.create(withoutTools);
+    }
     return response.content
       .filter((b): b is Anthropic.TextBlock => b.type === "text")
       .map((b) => b.text)
@@ -196,6 +233,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
         latestUserText: latestUserMessage?.content ?? "",
         workItemType,
         specSnapshot: body.spec,
+        patternWebSearchEnabled: patternWebSearch,
       },
     );
 
@@ -230,6 +268,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
         latestUserText: latestUserMessage?.content ?? "",
         workItemType,
         specSnapshot: body.spec,
+        patternWebSearchEnabled: patternWebSearch,
       },
     );
 

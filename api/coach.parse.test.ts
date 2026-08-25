@@ -3,6 +3,7 @@ import {
   escapeControlCharsInStrings,
   extractBalancedObject,
   parseCoachTurn,
+  shouldEnablePatternWebSearch,
 } from "./coach";
 
 const validTurn = {
@@ -12,6 +13,19 @@ const validTurn = {
   guidePanel: { title: "Understand the request", summary: "s" },
   activityEvents: [],
 };
+
+describe("pattern web search routing", () => {
+  it("is limited to criteria and pattern exploration steps", () => {
+    expect(shouldEnablePatternWebSearch("set_criteria", "true")).toBe(true);
+    expect(shouldEnablePatternWebSearch("find_patterns", "true")).toBe(true);
+    expect(shouldEnablePatternWebSearch("review_shortlist", "true")).toBe(true);
+    expect(shouldEnablePatternWebSearch("assess_evidence", "true")).toBe(false);
+  });
+
+  it("can be disabled explicitly", () => {
+    expect(shouldEnablePatternWebSearch("find_patterns", "false")).toBe(false);
+  });
+});
 
 describe("extractBalancedObject", () => {
   it("returns null when there is no object", () => {

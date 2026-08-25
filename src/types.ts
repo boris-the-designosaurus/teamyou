@@ -328,6 +328,8 @@ export type MilestoneArtifact = {
   title: string;
   status: ArtifactStatus;
   thumbnailUrl?: string;
+  sourceUrl?: string; // public reference page used for a retrieved pattern
+  sourceTitle?: string;
   supportingLine?: string; // why chosen / what state it represents
   ingredients?: string[]; // short reusable pattern traits the user can combine
   createdAt: string;
@@ -640,6 +642,8 @@ export type ProposedMilestoneArtifact = {
   title: string;
   status: ArtifactStatus;
   thumbnailUrl?: string;
+  sourceUrl?: string;
+  sourceTitle?: string;
   supportingLine?: string;
   ingredients?: string[];
   step: FlowStep;

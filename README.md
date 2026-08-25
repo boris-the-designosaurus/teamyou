@@ -57,7 +57,7 @@ Vite normally starts at [http://localhost:5173](http://localhost:5173). Use a fi
 npm run dev -- --port 5174 --strictPort
 ```
 
-The API key is read server-side and is not bundled into the browser. `COACH_MODEL` can optionally override the default model.
+The API key is read server-side and is not bundled into the browser. `COACH_MODEL` can optionally override the default model. During pattern discovery, the Coach uses Anthropic web search to retrieve public visual references; set `PATTERN_WEB_SEARCH=false` to disable it.
 
 ## Verify
 

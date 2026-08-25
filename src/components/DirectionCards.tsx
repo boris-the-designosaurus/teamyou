@@ -1,7 +1,39 @@
+import { useState } from "react";
 import type { MilestoneArtifact } from "../types";
 import { CheckmarkIcon } from "../icons";
+import {
+  initialPatternImage,
+  isPublicHttpUrl,
+  pagePreviewUrl,
+  patternSourceLabel,
+} from "../patternReference";
 
 const CHOSEN_STATUSES = new Set(["selected", "ready_for_review", "approved_for_build"]);
+
+function PatternThumbnail({ artifact }: { artifact: MilestoneArtifact }) {
+  const [imageUrl, setImageUrl] = useState(() => initialPatternImage(artifact));
+  const [failed, setFailed] = useState(false);
+  const screenshotUrl = pagePreviewUrl(artifact.sourceUrl);
+
+  if (!imageUrl || failed) {
+    return <div className="direction-card-thumb-placeholder" aria-hidden />;
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={`Reference example for ${artifact.title}`}
+      loading="lazy"
+      onError={() => {
+        if (artifact.thumbnailUrl && screenshotUrl && imageUrl !== screenshotUrl) {
+          setImageUrl(screenshotUrl);
+          return;
+        }
+        setFailed(true);
+      }}
+    />
+  );
+}
 
 /**
  * The pattern/wireframe/treatment "Choose" grid shown inline in chat during
@@ -29,11 +61,7 @@ export function DirectionCards(props: {
           return (
             <div key={a.id} className={`direction-card${isChosen ? " chosen" : ""}`}>
               <div className="direction-card-thumb">
-                {a.thumbnailUrl ? (
-                  <img src={a.thumbnailUrl} alt="" loading="lazy" />
-                ) : (
-                  <div className="direction-card-thumb-placeholder" aria-hidden />
-                )}
+                <PatternThumbnail artifact={a} />
               </div>
               <div className="direction-card-body">
                 <div className="direction-card-title-row">
@@ -50,6 +78,16 @@ export function DirectionCards(props: {
                   </button>
                 </div>
                 {a.supportingLine && <p className="direction-card-sub">{a.supportingLine}</p>}
+                {isPublicHttpUrl(a.sourceUrl) && (
+                  <a
+                    className="direction-card-source"
+                    href={a.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Reference: {patternSourceLabel(a)} <span aria-hidden>↗</span>
+                  </a>
+                )}
                 {a.ingredients && a.ingredients.length > 0 && (
                   <div className="direction-card-ingredients" aria-label="Useful ingredients">
                     {a.ingredients.map((ingredient) => (

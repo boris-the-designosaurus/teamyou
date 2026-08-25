@@ -701,6 +701,49 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("requires source pages when retrieved pattern thumbnails are enabled", () => {
+    const candidate = turn({
+      reply:
+        "I recommend **Personal studio** because it makes the offer clearest. Select one or more patterns and combine useful ingredients.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Portfolio structures to compare",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Personal studio",
+            status: "exploring",
+            sourceUrl: "https://example.com/studio",
+            sourceTitle: "Studio reference",
+            step: "find_patterns",
+          },
+          {
+            kind: "pattern_shortlist",
+            title: "Proof first",
+            status: "exploring",
+            step: "find_patterns",
+          },
+        ],
+      },
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: [],
+    });
+
+    const result = checkTurnPolicy("find_patterns", candidate, {
+      patternWebSearchEnabled: true,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/sourceUrl.*thumbnails can display/);
+
+    const correction = turnPolicyCorrectionPrompt(result);
+    expect(correction).toContain("Use web search now");
+    expect(correction).toContain("sourceUrl and sourceTitle on EVERY");
+  });
+
   it("accepts I'd start with as a grounded pattern recommendation", () => {
     const result = checkTurnPolicy(
       "set_criteria",
