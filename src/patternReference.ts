@@ -13,7 +13,10 @@ export function isPublicHttpUrl(value: string | undefined): value is string {
 }
 
 /** Resolve a public reference page into an embeddable viewport screenshot. */
-export function pagePreviewUrl(sourceUrl: string | undefined): string | undefined {
+export function pagePreviewUrl(
+  sourceUrl: string | undefined,
+  options: { force?: boolean } = {},
+): string | undefined {
   if (!isPublicHttpUrl(sourceUrl)) return undefined;
   const params = new URLSearchParams({
     url: sourceUrl,
@@ -21,6 +24,7 @@ export function pagePreviewUrl(sourceUrl: string | undefined): string | undefine
     meta: "false",
     embed: "screenshot.url",
   });
+  if (options.force) params.set("force", "true");
   return `${MICROLINK_ENDPOINT}?${params.toString()}`;
 }
 

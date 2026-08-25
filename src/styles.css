@@ -1515,6 +1515,9 @@ body {
   aspect-ratio: 16 / 10;
   background: var(--bg-gray-subtler, var(--border-subtle));
 }
+.direction-card-thumb-wrap {
+  position: relative;
+}
 .direction-card-thumb-button {
   position: relative;
   display: block;
@@ -1552,6 +1555,36 @@ body {
 .direction-card-thumb-button:focus-visible .direction-card-thumb-action {
   opacity: 1;
   transform: translateY(0);
+}
+.direction-card-thumb-refresh {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--text-inverse) 38%, transparent);
+  border-radius: 50%;
+  color: var(--text-inverse);
+  background: color-mix(in srgb, var(--bg-gray-bold) 82%, transparent);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.direction-card-thumb-wrap:hover .direction-card-thumb-refresh,
+.direction-card-thumb-refresh:focus-visible {
+  opacity: 1;
+}
+.direction-card-thumb-refresh:active {
+  transform: rotate(45deg);
+}
+.direction-card-thumb-refresh:disabled,
+.pattern-preview-refresh:disabled {
+  cursor: progress;
+  opacity: 0.72;
 }
 .direction-card-thumb-placeholder {
   width: 100%;
@@ -1649,6 +1682,29 @@ body {
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
+}
+.pattern-preview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pattern-preview-refresh {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-bold);
+  background: var(--bg-surface);
+  font-size: var(--font-size-75);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+.pattern-preview-refresh:hover,
+.pattern-preview-close:hover {
+  background: var(--bg-surface-light);
 }
 .pattern-preview-image {
   min-height: 0;
