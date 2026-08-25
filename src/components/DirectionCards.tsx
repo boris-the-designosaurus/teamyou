@@ -31,12 +31,6 @@ function PatternThumbnail({
     setLoaded(false);
   }, [artifact, imageUrlOverride]);
 
-  useEffect(() => {
-    if (!imageUrl || failed) return;
-    const timer = window.setTimeout(() => setFailed(true), 15_000);
-    return () => window.clearTimeout(timer);
-  }, [imageUrl, failed]);
-
   if (!imageUrl || failed) {
     return (
       <div className="direction-card-thumb-unavailable" role="status">
@@ -56,7 +50,9 @@ function PatternThumbnail({
       <img
         src={imageUrl}
         alt={`Reference example for ${artifact.title}`}
-        loading="lazy"
+        // Pattern sets are intentionally small and the screenshots are essential
+        // evidence, so start every capture immediately—even below the fold.
+        loading="eager"
         className={loaded ? "loaded" : "loading"}
         onLoad={() => setLoaded(true)}
         onError={() => {
