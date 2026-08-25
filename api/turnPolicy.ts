@@ -37,7 +37,13 @@ const DATA_ARTIFACT =
 const DATA_ARTIFACT_OBSERVATION =
   /\b(?:shows?|confirms?|indicates?|records?|reports?|reveals?|lists?|contains?)\b/i;
 const AGGREGATOR_REFERENCE_TITLE =
-  /(?:\bhow to\b.*\b(?:portfolio|case stud(?:y|ies))\b|\b(?:best|top)\b.*\bexamples?\b|\bexamples? that\b|\broundup\b|\binspiration\b|\btemplate\s*\+\s*examples?\b)/i;
+  /(?:\bhow to\b|\b(?:best|top|ultimate)\b.*\b(?:portfolio|case stud(?:y|ies)|examples?)\b|\bexamples? that\b|\broundup\b|\binspiration\b|\btemplates?\b|\b(?:portfolio|case stud(?:y|ies))\s+(?:guide|examples?)\b|\bguide to\b|\bportfolio builder\b)/i;
+const EDITORIAL_REFERENCE_PATH =
+  /\/(?:blog|blogs|article|articles|guide|guides|resource|resources|template|templates|inspiration|learn)(?:\/|$)/i;
+const PORTFOLIO_CONTENT_VENDOR_HOST =
+  /(?:^|\.)(?:uxfol\.io|tailorcv\.com|productic\.net|careerfoundry\.com|interaction-design\.org|designlab\.com|toptal\.com|medium\.com|substack\.com)$/i;
+const PORTFOLIO_CONTEXT =
+  /\b(?:portfolio|case stud(?:y|ies)|hiring manager|design lead|product design(?:er)? job)\b/i;
 
 function groundsLatestScreenshot(reply: string): boolean {
   return (
@@ -86,6 +92,30 @@ function normalizedReferenceUrl(value: string): string | null {
     return url.href;
   } catch {
     return null;
+  }
+}
+
+function isPortfolioPatternContext(context: TurnPolicyContext): boolean {
+  let snapshotText = "";
+  try {
+    snapshotText = JSON.stringify(context.specSnapshot ?? {});
+  } catch {
+    snapshotText = "";
+  }
+  return PORTFOLIO_CONTEXT.test(
+    `${context.latestUserText ?? ""} ${snapshotText}`,
+  );
+}
+
+function isEditorialPortfolioReference(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      PORTFOLIO_CONTENT_VENDOR_HOST.test(url.hostname) ||
+      EDITORIAL_REFERENCE_PATH.test(url.pathname)
+    );
+  } catch {
+    return false;
   }
 }
 
@@ -351,6 +381,17 @@ export function checkTurnPolicy(
         "retrieved pattern thumbnails must show the original example, not a listicle, roundup, article, or tutorial about examples",
       );
     }
+    if (
+      isPortfolioPatternContext(context) &&
+      references.some(
+        (reference) =>
+          !!reference.url && isEditorialPortfolioReference(reference.url),
+      )
+    ) {
+      reasons.push(
+        "portfolio pattern thumbnails must use a designer-owned live portfolio homepage or case-study page, not a blog, guide, template, roundup, portfolio builder, or vendor-content URL",
+      );
+    }
   }
   if (
     previousStep === "set_criteria" &&
@@ -509,7 +550,8 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     check.reasons.some((reason) =>
       reason.includes("original public sourceUrl") ||
       reason.includes("distinct original example pages") ||
-      reason.includes("original example, not a listicle"),
+      reason.includes("original example, not a listicle") ||
+      reason.includes("designer-owned live portfolio"),
     )
   ) {
     return (
@@ -517,7 +559,9 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
       `to the ORIGINAL designer, portfolio, product, or pattern-library page, then re-send the SAME substantive ` +
       `turn as JSON with a distinct public http(s) sourceUrl and the example's own sourceTitle on EVERY ` +
       `pattern_shortlist artifact. The visible interface on each sourceUrl must demonstrate that card's pattern. ` +
-      `Do not reuse one source, return an article/listicle/tutorial/gallery index, invent URLs, or use search-result ` +
+      `For portfolio redesign work, every source must be an individual designer's own live portfolio homepage or ` +
+      `their own case-study page—the kind of layout shown by Joey Shiner—not a portfolio builder, vendor, blog, ` +
+      `guide, template, roundup, or article about portfolios. Do not reuse one source, invent URLs, or use search-result ` +
       `pages. If an original cannot be reached, replace that candidate. Keep the existing supportingLine, ingredients, ` +
       `recommendation, selection invitation, and all other valid specUpdates.`
     );
