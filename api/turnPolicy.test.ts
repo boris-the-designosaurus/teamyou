@@ -823,6 +823,99 @@ describe("checkTurnPolicy", () => {
     expect(correction).toContain("Do not reuse one source");
   });
 
+  it("rejects portfolio vendor and blog URLs even when their source titles look harmless", () => {
+    const candidate = turn({
+      reply:
+        "I recommend **Outcome first** because it puts proof above the fold. Select one or more patterns and combine useful ingredients.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Portfolio structures to compare",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Outcome first",
+            status: "exploring",
+            sourceUrl: "https://tailorcv.com/blog/portfolio-case-study",
+            sourceTitle: "Outcome-led project example",
+            step: "find_patterns",
+          },
+          {
+            kind: "pattern_shortlist",
+            title: "Narrative arc",
+            status: "exploring",
+            sourceUrl: "https://productic.net/resources/portfolio-layout",
+            sourceTitle: "Narrative project example",
+            step: "find_patterns",
+          },
+        ],
+      },
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: [],
+    });
+
+    const result = checkTurnPolicy("find_patterns", candidate, {
+      patternWebSearchEnabled: true,
+      specSnapshot: {
+        brief: {
+          goal: "Redesign my product design portfolio to win interviews",
+          user: "Hiring managers",
+        },
+      },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/designer-owned live portfolio/);
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "individual designer's own live portfolio homepage",
+    );
+  });
+
+  it("accepts distinct designer-owned portfolio and case-study pages", () => {
+    const candidate = turn({
+      reply:
+        "I recommend **Personal studio** because it makes the designer and work immediately scannable. Select one or more patterns and combine useful ingredients.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Portfolio structures to compare",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Personal studio",
+            status: "exploring",
+            sourceUrl: "https://joeyshiner.com/",
+            sourceTitle: "Joey Shiner",
+            step: "find_patterns",
+          },
+          {
+            kind: "pattern_shortlist",
+            title: "Case-study narrative",
+            status: "exploring",
+            sourceUrl: "https://simonpan.com/work/uber",
+            sourceTitle: "Simon Pan — Uber",
+            step: "find_patterns",
+          },
+        ],
+      },
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: [],
+    });
+
+    const result = checkTurnPolicy("find_patterns", candidate, {
+      patternWebSearchEnabled: true,
+      specSnapshot: {
+        brief: { goal: "Redesign my product design portfolio" },
+      },
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("accepts I'd start with as a grounded pattern recommendation", () => {
     const result = checkTurnPolicy(
       "set_criteria",
