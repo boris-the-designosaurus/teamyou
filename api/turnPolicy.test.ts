@@ -701,6 +701,40 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("keeps an existing pattern-card workspace open on a nonblocking turn", () => {
+    const candidate = turn({
+      reply:
+        "Here are five structures to compare. I'd start with **Metric-first header** because it puts impact before the scroll — select one or more, combine ingredients, or ask for different examples.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Which patterns to shortlist",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {},
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: [],
+    });
+
+    const withoutSavedCards = checkTurnPolicy("find_patterns", candidate);
+    expect(withoutSavedCards.ok).toBe(false);
+    expect(withoutSavedCards.reasons.join(" ")).toMatch(/nonblocking.*did not advance/);
+
+    const withSavedCards = checkTurnPolicy("find_patterns", candidate, {
+      specSnapshot: {
+        milestoneArtifacts: [
+          {
+            id: "pattern-1",
+            kind: "pattern_shortlist",
+            title: "Metric-first header",
+            status: "exploring",
+          },
+        ],
+      },
+    });
+    expect(withSavedCards.ok).toBe(true);
+  });
+
   it("requires source pages when retrieved pattern thumbnails are enabled", () => {
     const candidate = turn({
       reply:

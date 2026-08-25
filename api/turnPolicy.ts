@@ -105,6 +105,20 @@ function snapshotHasEvidenceBrief(snapshot: unknown): boolean {
   return !!evidenceBrief && typeof evidenceBrief === "object";
 }
 
+function snapshotHasPatternShortlist(snapshot: unknown): boolean {
+  if (!snapshot || typeof snapshot !== "object") return false;
+  const artifacts = (snapshot as { milestoneArtifacts?: unknown }).milestoneArtifacts;
+  return (
+    Array.isArray(artifacts) &&
+    artifacts.some(
+      (artifact) =>
+        !!artifact &&
+        typeof artifact === "object" &&
+        (artifact as { kind?: unknown }).kind === "pattern_shortlist",
+    )
+  );
+}
+
 function capturedBriefValue(
   turn: CoachTurnResponse,
   context: TurnPolicyContext,
@@ -347,9 +361,11 @@ export function checkTurnPolicy(
       "the turn announces a pattern set but does not capture it as pattern_shortlist milestoneArtifacts, so the pattern cards cannot display in chat",
     );
   }
+  const patternWorkspaceAvailable =
+    newPatterns.length > 0 || snapshotHasPatternShortlist(context.specSnapshot);
   const performedPatternExploration =
     (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
-    newPatterns.length > 0 &&
+    patternWorkspaceAvailable &&
     replyQuestions === 0;
 
   // Framing is a guided conversation, so an acknowledgement-only turn is a
