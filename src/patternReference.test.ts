@@ -14,6 +14,11 @@ describe("pattern reference previews", () => {
     expect(preview).toContain("url=https%3A%2F%2Fexample.com%2Fproduct%3Fview%3Dpattern");
   });
 
+  it("can force a fresh screenshot instead of using the cached copy", () => {
+    const preview = pagePreviewUrl("https://example.com/product", { force: true });
+    expect(preview).toContain("force=true");
+  });
+
   it("rejects non-http links", () => {
     expect(isPublicHttpUrl("javascript:alert(1)")).toBe(false);
     expect(pagePreviewUrl("data:image/png;base64,abc")).toBeUndefined();

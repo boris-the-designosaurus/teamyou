@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { MilestoneArtifact } from "../types";
 import { CheckmarkIcon } from "../icons";
@@ -11,10 +11,23 @@ import {
 
 const CHOSEN_STATUSES = new Set(["selected", "ready_for_review", "approved_for_build"]);
 
-function PatternThumbnail({ artifact }: { artifact: MilestoneArtifact }) {
-  const [imageUrl, setImageUrl] = useState(() => initialPatternImage(artifact));
+function PatternThumbnail({
+  artifact,
+  imageUrlOverride,
+}: {
+  artifact: MilestoneArtifact;
+  imageUrlOverride?: string;
+}) {
+  const [imageUrl, setImageUrl] = useState(
+    () => imageUrlOverride ?? initialPatternImage(artifact),
+  );
   const [failed, setFailed] = useState(false);
   const screenshotUrl = pagePreviewUrl(artifact.sourceUrl);
+
+  useEffect(() => {
+    setImageUrl(imageUrlOverride ?? initialPatternImage(artifact));
+    setFailed(false);
+  }, [artifact, imageUrlOverride]);
 
   if (!imageUrl || failed) {
     return <div className="direction-card-thumb-placeholder" aria-hidden />;
@@ -26,7 +39,7 @@ function PatternThumbnail({ artifact }: { artifact: MilestoneArtifact }) {
       alt={`Reference example for ${artifact.title}`}
       loading="lazy"
       onError={() => {
-        if (artifact.thumbnailUrl && screenshotUrl && imageUrl !== screenshotUrl) {
+        if (screenshotUrl && imageUrl !== screenshotUrl) {
           setImageUrl(screenshotUrl);
           return;
         }
@@ -38,9 +51,12 @@ function PatternThumbnail({ artifact }: { artifact: MilestoneArtifact }) {
 
 function PatternPreview(props: {
   artifact: MilestoneArtifact;
+  imageUrlOverride?: string;
+  refreshing?: boolean;
+  onRefresh?: () => void;
   onClose: () => void;
 }) {
-  const { artifact, onClose } = props;
+  const { artifact, imageUrlOverride, refreshing, onRefresh, onClose } = props;
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -68,19 +84,33 @@ function PatternPreview(props: {
             <h2 id="pattern-preview-title">{artifact.title}</h2>
             {artifact.supportingLine && <p>{artifact.supportingLine}</p>}
           </div>
-          <button
-            type="button"
-            className="pattern-preview-close"
-            onClick={onClose}
-            aria-label="Close pattern preview"
-            autoFocus
-          >
-            ×
-          </button>
+          <div className="pattern-preview-header-actions">
+            {onRefresh && (
+              <button
+                type="button"
+                className="pattern-preview-refresh"
+                onClick={onRefresh}
+                disabled={refreshing}
+                aria-label={`Refresh thumbnail for ${artifact.title}`}
+                title="Capture a fresh thumbnail"
+              >
+                ↻ <span>{refreshing ? "Refreshing…" : "Refresh"}</span>
+              </button>
+            )}
+            <button
+              type="button"
+              className="pattern-preview-close"
+              onClick={onClose}
+              aria-label="Close pattern preview"
+              autoFocus
+            >
+              ×
+            </button>
+          </div>
         </header>
 
         <div className="pattern-preview-image">
-          <PatternThumbnail artifact={artifact} />
+          <PatternThumbnail artifact={artifact} imageUrlOverride={imageUrlOverride} />
         </div>
 
         {isPublicHttpUrl(artifact.sourceUrl) && (
@@ -112,10 +142,43 @@ export function DirectionCards(props: {
 }) {
   const { artifacts, onChoose, onContinue } = props;
   const [previewArtifact, setPreviewArtifact] = useState<MilestoneArtifact | null>(null);
+  const [refreshedImages, setRefreshedImages] = useState<Record<string, string>>({});
+  const [refreshingIds, setRefreshingIds] = useState<Record<string, boolean>>({});
+  const objectUrls = useRef<Record<string, string>>({});
+
+  useEffect(
+    () => () => {
+      Object.values(objectUrls.current).forEach((url) => URL.revokeObjectURL(url));
+    },
+    [],
+  );
   if (!artifacts.length) return null;
 
   const isShortlist = artifacts[0].kind === "pattern_shortlist";
   const chosen = artifacts.filter((a) => CHOSEN_STATUSES.has(a.status));
+  const refreshThumbnail = async (artifact: MilestoneArtifact) => {
+    const freshUrl = pagePreviewUrl(artifact.sourceUrl, { force: true });
+    if (!freshUrl || refreshingIds[artifact.id]) return;
+    setRefreshingIds((current) => ({ ...current, [artifact.id]: true }));
+
+    try {
+      // Microlink's `force=true` invalidates its screenshot cache; no-store
+      // prevents the browser from returning its own cached response.
+      const response = await fetch(freshUrl, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Thumbnail refresh failed (${response.status})`);
+      const blobUrl = URL.createObjectURL(await response.blob());
+      const previous = objectUrls.current[artifact.id];
+      objectUrls.current[artifact.id] = blobUrl;
+      setRefreshedImages((current) => ({ ...current, [artifact.id]: blobUrl }));
+      if (previous) URL.revokeObjectURL(previous);
+    } catch {
+      // If cross-origin fetch is unavailable, loading the forced URL directly
+      // still requests a fresh Microlink cache copy.
+      setRefreshedImages((current) => ({ ...current, [artifact.id]: freshUrl }));
+    } finally {
+      setRefreshingIds((current) => ({ ...current, [artifact.id]: false }));
+    }
+  };
 
   return (
     <div className="direction-cards-wrap">
@@ -123,18 +186,35 @@ export function DirectionCards(props: {
         {artifacts.map((a) => {
           const isChosen = CHOSEN_STATUSES.has(a.status);
           const canPreview = !!initialPatternImage(a);
+          const canRefresh = isPublicHttpUrl(a.sourceUrl);
+          const refreshedImage = refreshedImages[a.id];
+          const refreshing = refreshingIds[a.id] ?? false;
           return (
             <div key={a.id} className={`direction-card${isChosen ? " chosen" : ""}`}>
-              <button
-                type="button"
-                className="direction-card-thumb direction-card-thumb-button"
-                onClick={() => setPreviewArtifact(a)}
-                disabled={!canPreview}
-                aria-label={`View larger example for ${a.title}`}
-              >
-                <PatternThumbnail artifact={a} />
-                {canPreview && <span className="direction-card-thumb-action">View larger</span>}
-              </button>
+              <div className="direction-card-thumb-wrap">
+                <button
+                  type="button"
+                  className="direction-card-thumb direction-card-thumb-button"
+                  onClick={() => setPreviewArtifact(a)}
+                  disabled={!canPreview}
+                  aria-label={`View larger example for ${a.title}`}
+                >
+                  <PatternThumbnail artifact={a} imageUrlOverride={refreshedImage} />
+                  {canPreview && <span className="direction-card-thumb-action">View larger</span>}
+                </button>
+                {canRefresh && (
+                  <button
+                    type="button"
+                    className="direction-card-thumb-refresh"
+                    onClick={() => void refreshThumbnail(a)}
+                    disabled={refreshing}
+                    aria-label={`Refresh thumbnail for ${a.title}`}
+                    title="Capture a fresh thumbnail"
+                  >
+                    {refreshing ? "…" : "↻"}
+                  </button>
+                )}
+              </div>
               <div className="direction-card-body">
                 <div className="direction-card-title-row">
                   <span className="direction-card-title">{a.title}</span>
@@ -190,6 +270,13 @@ export function DirectionCards(props: {
       {previewArtifact && (
         <PatternPreview
           artifact={previewArtifact}
+          imageUrlOverride={refreshedImages[previewArtifact.id]}
+          refreshing={refreshingIds[previewArtifact.id] ?? false}
+          onRefresh={
+            isPublicHttpUrl(previewArtifact.sourceUrl)
+              ? () => void refreshThumbnail(previewArtifact)
+              : undefined
+          }
           onClose={() => setPreviewArtifact(null)}
         />
       )}
