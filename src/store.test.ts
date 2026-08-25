@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { emptySpec, type WorkItem } from "./types";
 import {
   migrateLegacyDesignProject,
-  reopenCurrentPortfolioDirection,
+  clearCurrentPortfolioPatterns,
   saveStore,
   storageSafeStore,
   type Store,
@@ -59,8 +59,8 @@ describe("migrateLegacyDesignProject", () => {
   });
 });
 
-describe("reopenCurrentPortfolioDirection", () => {
-  it("reopens only the active portfolio project and requires a fresh selection", () => {
+describe("clearCurrentPortfolioPatterns", () => {
+  it("removes stale cards and reopens the active portfolio project at pattern finding", () => {
     const doc = storedDoc("Portfolio redesign", "Design project: Get hired for product design");
     doc.item.type = "design_project";
     doc.item.currentStep = "refine_treatments";
@@ -74,22 +74,24 @@ describe("reopenCurrentPortfolioDirection", () => {
         step: "find_patterns",
       },
     ];
+    doc.item.messages[0].milestoneArtifactIds = ["pattern-1"];
     const store: Store = {
       version: 2,
       currentId: doc.item.id,
       docs: { [doc.item.id]: doc },
     };
 
-    const reopened = reopenCurrentPortfolioDirection(
+    const reopened = clearCurrentPortfolioPatterns(
       store,
       "reopen-message",
       "2026-08-24T12:00:00.000Z",
     );
 
-    expect(reopened.docs[doc.item.id].item.currentStep).toBe("choose_direction");
-    expect(reopened.docs[doc.item.id].item.spec.milestoneArtifacts[0].status).toBe("exploring");
-    expect(reopened.docs[doc.item.id].item.messages.at(-1)?.milestoneArtifactIds).toEqual(["pattern-1"]);
-    expect(reopened.docs[doc.item.id].guide?.need).toBe("Direction selection");
+    expect(reopened.docs[doc.item.id].item.currentStep).toBe("find_patterns");
+    expect(reopened.docs[doc.item.id].item.spec.milestoneArtifacts).toEqual([]);
+    expect(reopened.docs[doc.item.id].item.messages[0].milestoneArtifactIds).toBeUndefined();
+    expect(reopened.docs[doc.item.id].item.messages.at(-1)?.quickReplies).toEqual(["Generate fresh patterns"]);
+    expect(reopened.docs[doc.item.id].guide?.need).toBe("Fresh sourced pattern set");
     expect(store.docs[doc.item.id].item.currentStep).toBe("refine_treatments");
   });
 
@@ -102,7 +104,7 @@ describe("reopenCurrentPortfolioDirection", () => {
       docs: { [doc.item.id]: doc },
     };
 
-    expect(reopenCurrentPortfolioDirection(store, "id", "now")).toBe(store);
+    expect(clearCurrentPortfolioPatterns(store, "id", "now")).toBe(store);
   });
 });
 

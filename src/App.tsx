@@ -22,7 +22,7 @@ import {
 import { callCoach, CoachError } from "./coachClient";
 import {
   loadStore,
-  reopenCurrentPortfolioDirection,
+  clearCurrentPortfolioPatterns,
   saveStore,
   docList,
   pickOpenId,
@@ -56,7 +56,7 @@ const VALID_TYPES: WorkItemType[] = [
   "presentation",
 ];
 
-const REOPEN_PORTFOLIO_DIRECTION_KEY = "teamyou:reopenPortfolioDirection:2026-08-24";
+const REGENERATE_PORTFOLIO_PATTERNS_KEY = "teamyou:regeneratePortfolioPatterns:2026-08-24:v2";
 
 function nowISO() {
   return new Date().toISOString();
@@ -110,15 +110,16 @@ export function App() {
     saveStore(s);
     localStorage.setItem("teamyou:seedVersion", String(SEED_VERSION));
   }
-  // One-time local recovery requested while validating the refreshed pattern
-  // thumbnails. Only the currently open portfolio design project is touched.
-  if (localStorage.getItem(REOPEN_PORTFOLIO_DIRECTION_KEY) !== "done") {
-    const reopened = reopenCurrentPortfolioDirection(storeRef.current);
-    if (reopened !== storeRef.current) {
-      storeRef.current = reopened;
-      saveStore(reopened);
+  // One-time local recovery requested while validating retrieved thumbnails.
+  // Remove the stale cards entirely and reopen pattern finding with a one-click
+  // fresh search; all framing and criteria remain intact.
+  if (localStorage.getItem(REGENERATE_PORTFOLIO_PATTERNS_KEY) !== "done") {
+    const cleared = clearCurrentPortfolioPatterns(storeRef.current);
+    if (cleared !== storeRef.current) {
+      storeRef.current = cleared;
+      saveStore(cleared);
     }
-    localStorage.setItem(REOPEN_PORTFOLIO_DIRECTION_KEY, "done");
+    localStorage.setItem(REGENERATE_PORTFOLIO_PATTERNS_KEY, "done");
   }
   const initial = (() => {
     const id = pickOpenId(storeRef.current);
