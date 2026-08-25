@@ -977,6 +977,20 @@ describe("checkTurnPolicy", () => {
     expect(result.reasons.join(" ")).toMatch(/blocking is false/);
   });
 
+  it("builds a focused correction when announced pattern cards are missing", () => {
+    const prompt = turnPolicyCorrectionPrompt({
+      ok: false,
+      reasons: [
+        "the turn announces a pattern set but does not capture it as pattern_shortlist milestoneArtifacts, so the pattern cards cannot display in chat",
+      ],
+    });
+
+    expect(prompt).toContain("specUpdates.milestoneArtifacts must contain 3-5");
+    expect(prompt).toContain('"kind":"pattern_shortlist"');
+    expect(prompt).toContain("Do not return specUpdates: {}");
+    expect(prompt).toContain("guidePanel.captured labels");
+  });
+
   it("builds a corrective prompt that preserves captured updates", () => {
     const check = checkTurnPolicy(
       "define_problem",

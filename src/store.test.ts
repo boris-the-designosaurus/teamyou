@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { emptySpec, type WorkItem } from "./types";
-import { migrateLegacyDesignProject, type StoredDoc } from "./store";
+import {
+  migrateLegacyDesignProject,
+  saveStore,
+  storageSafeStore,
+  type Store,
+  type StoredDoc,
+} from "./store";
 
 function storedDoc(content: string, title = "Case study: Generate contract work"): StoredDoc {
   const item: WorkItem = {
@@ -49,5 +55,64 @@ describe("migrateLegacyDesignProject", () => {
   it("leaves unrelated case studies unchanged", () => {
     const before = storedDoc("Help me document the results of Self-Scheduling.");
     expect(migrateLegacyDesignProject(before)).toBe(before);
+  });
+});
+
+
+describe("screenshot-safe persistence", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function storeWithScreenshot(persistedDataUrl?: string): Store {
+    const doc = storedDoc("Portfolio evidence");
+    doc.item.currentStep = "find_patterns";
+    doc.item.messages[0].attachments = [
+      {
+        id: "screenshot-1",
+        name: "analytics.png",
+        dataUrl: "data:image/png;base64,FULL_IMAGE",
+        mediaType: "image/png",
+        persistedDataUrl,
+        persistedMediaType: persistedDataUrl ? "image/jpeg" : undefined,
+        sendable: true,
+      },
+    ];
+    return {
+      version: 2,
+      currentId: doc.item.id,
+      docs: { [doc.item.id]: doc },
+    };
+  }
+
+  it("stores the lightweight preview without mutating the live project", () => {
+    const store = storeWithScreenshot("data:image/jpeg;base64,PREVIEW");
+    const safe = storageSafeStore(store);
+    const attachment = safe.docs["doc-1"].item.messages[0].attachments![0];
+
+    expect(attachment.dataUrl).toContain("PREVIEW");
+    expect(attachment.mediaType).toBe("image/jpeg");
+    expect(store.docs["doc-1"].item.messages[0].attachments![0].dataUrl).toContain(
+      "FULL_IMAGE",
+    );
+    expect(safe.docs["doc-1"].item.currentStep).toBe("find_patterns");
+  });
+
+  it("preserves currentStep and the transcript when a legacy full image exceeds quota", () => {
+    const writes: string[] = [];
+    vi.stubGlobal("localStorage", {
+      setItem: vi.fn((_key: string, value: string) => {
+        if (value.includes("FULL_IMAGE")) {
+          throw new DOMException("quota", "QuotaExceededError");
+        }
+        writes.push(value);
+      }),
+    });
+
+    saveStore(storeWithScreenshot());
+
+    expect(writes).toHaveLength(1);
+    const saved = JSON.parse(writes[0]) as Store;
+    expect(saved.docs["doc-1"].item.currentStep).toBe("find_patterns");
+    expect(saved.docs["doc-1"].item.messages[0].content).toBe("Portfolio evidence");
+    expect(saved.docs["doc-1"].item.messages[0].attachments![0].dataUrl).toBe("");
   });
 });
