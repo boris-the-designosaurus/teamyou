@@ -60,6 +60,79 @@ export function migrateLegacyDesignProject(doc: StoredDoc): StoredDoc {
   };
 }
 
+const PORTFOLIO_DIRECTION_PROJECT = /\b(?:portfolio|hired|product design job)\b/i;
+
+/**
+ * One-time recovery for the active portfolio project used while validating the
+ * pattern workspace. It deliberately preserves the full decision record and
+ * merely clears the pattern selection so Choose a direction must be completed
+ * again. Returning the same object means no eligible project was open.
+ */
+export function reopenCurrentPortfolioDirection(
+  store: Store,
+  messageId: string = crypto.randomUUID(),
+  timestamp = new Date().toISOString(),
+): Store {
+  const currentId = store.currentId;
+  if (!currentId) return store;
+  const current = store.docs[currentId];
+  if (!current || current.item.type !== "design_project") return store;
+
+  const searchableText = [
+    current.item.title,
+    current.item.spec.brief.goal,
+    current.item.spec.brief.problem,
+  ].filter(Boolean).join(" ");
+  if (!PORTFOLIO_DIRECTION_PROJECT.test(searchableText)) return store;
+
+  const patternIds = current.item.spec.milestoneArtifacts
+    .filter((artifact) => artifact.kind === "pattern_shortlist")
+    .map((artifact) => artifact.id);
+  if (patternIds.length === 0) return store;
+
+  const item: WorkItem = {
+    ...current.item,
+    currentStep: "choose_direction",
+    spec: {
+      ...current.item.spec,
+      milestoneArtifacts: current.item.spec.milestoneArtifacts.map((artifact) =>
+        artifact.kind === "pattern_shortlist"
+          ? { ...artifact, status: "exploring" as const }
+          : artifact,
+      ),
+    },
+    messages: [
+      ...current.item.messages,
+      {
+        id: messageId,
+        role: "coach",
+        content:
+          "Choose a direction has been reopened so you can review the updated pattern thumbnails. Select one or more patterns below, then generate the direction again.",
+        milestoneArtifactIds: patternIds,
+        createdAt: timestamp,
+      },
+    ],
+    updatedAt: timestamp,
+  };
+
+  return {
+    ...store,
+    docs: {
+      ...store.docs,
+      [currentId]: {
+        item,
+        guide: {
+          title: "Choose a direction",
+          captured: [],
+          need: "Direction selection",
+          nextPrompt: "Which pattern or combination should move forward?",
+          priorSummary: "Criteria and pattern options are preserved.",
+        },
+      },
+    },
+  };
+}
+
 const emptyStore = (): Store => ({
   version: VERSION,
   currentId: null,
