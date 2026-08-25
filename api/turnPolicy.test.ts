@@ -737,6 +737,60 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts a natural I'd anchor on recommendation", () => {
+    const result = checkTurnPolicy(
+      "find_patterns",
+      turn({
+        reply:
+          "Here are five structurally distinct patterns. **I'd anchor on Named-role process narrative** since it directly credits collaborators while isolating the designer's own decisions. Select one or more cards, combine ingredients across them, request more, or share your own reference.",
+        activeStep: "find_patterns",
+        stepGate: {
+          linkedDecision: "Which structural patterns to compare",
+          blocking: false,
+          disposition: "proceed",
+        },
+        specUpdates: {
+          milestoneArtifacts: [
+            {
+              kind: "pattern_shortlist",
+              title: "Named-role process narrative",
+              status: "exploring",
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Metric-first project card",
+              status: "exploring",
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Compact role framing",
+              status: "exploring",
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Process-led case study",
+              status: "exploring",
+              step: "find_patterns",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Credential-anchored gallery",
+              status: "exploring",
+              step: "find_patterns",
+            },
+          ],
+        },
+        guidePanel: { title: "Find relevant patterns", need: "" },
+        quickReplies: [],
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
   it("keeps an existing pattern-card workspace open on a nonblocking turn", () => {
     const candidate = turn({
       reply:
