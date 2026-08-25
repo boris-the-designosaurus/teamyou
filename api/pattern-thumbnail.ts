@@ -1,4 +1,5 @@
 const MICROLINK_ENDPOINT = "https://api.microlink.io";
+const THUM_ENDPOINT = "https://image.thum.io/get";
 const MAX_IMAGE_BYTES = 2_500_000;
 
 export type PatternThumbnailResult = {
@@ -36,6 +37,23 @@ function errorResult(status: number, message: string): PatternThumbnailResult {
   };
 }
 
+async function readImageResponse(
+  response: Response,
+  cacheControl: string,
+): Promise<PatternThumbnailResult | null> {
+  if (!response.ok) return null;
+  const contentType = response.headers.get("content-type")?.split(";")[0] ?? "";
+  if (!contentType.startsWith("image/")) return null;
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.byteLength === 0 || bytes.byteLength > MAX_IMAGE_BYTES) return null;
+  return { status: 200, contentType, body: bytes, cacheControl };
+}
+
+function thumCaptureUrl(sourceUrl: string, force: boolean): string {
+  const cacheHours = force ? 0 : 1;
+  return `${THUM_ENDPOINT}/width/960/crop/600/maxAge/${cacheHours}/noanimate/?url=${encodeURIComponent(sourceUrl)}`;
+}
+
 /** Capture a source page server-side and return image bytes to the browser. */
 export async function fetchPatternThumbnail(
   source: string | undefined,
@@ -52,31 +70,38 @@ export async function fetchPatternThumbnail(
     embed: "screenshot.url",
     "viewport.width": "960",
     "viewport.height": "600",
+    waitUntil: "networkidle2",
+    waitForTimeout: "1500",
   });
   if (force) params.set("force", "true");
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25_000);
+  const timeout = setTimeout(() => controller.abort(), 28_000);
   try {
-    const response = await fetchImpl(`${MICROLINK_ENDPOINT}?${params}`, {
+    // Thum.io has a no-key thumbnail endpoint and avoids Microlink's small
+    // anonymous daily quota. Microlink remains a second provider for pages
+    // Thum cannot render.
+    const thumResponse = await fetchImpl(thumCaptureUrl(sourceUrl, force), {
       signal: controller.signal,
       headers: { accept: "image/avif,image/webp,image/png,image/*" },
     });
-    if (!response.ok) return errorResult(502, `capture_failed_${response.status}`);
+    const cacheControl = force
+      ? "no-store"
+      : "public, max-age=3600, stale-while-revalidate=86400";
+    const thumImage = await readImageResponse(thumResponse, cacheControl);
+    if (thumImage) return thumImage;
 
-    const contentType = response.headers.get("content-type")?.split(";")[0] ?? "";
-    if (!contentType.startsWith("image/")) return errorResult(502, "capture_was_not_an_image");
-    const bytes = new Uint8Array(await response.arrayBuffer());
-    if (bytes.byteLength === 0 || bytes.byteLength > MAX_IMAGE_BYTES) {
-      return errorResult(502, "capture_size_invalid");
-    }
+    const microlinkResponse = await fetchImpl(`${MICROLINK_ENDPOINT}?${params}`, {
+      signal: controller.signal,
+      headers: { accept: "image/avif,image/webp,image/png,image/*" },
+    });
+    const microlinkImage = await readImageResponse(microlinkResponse, cacheControl);
+    if (microlinkImage) return microlinkImage;
 
-    return {
-      status: 200,
-      contentType,
-      body: bytes,
-      cacheControl: force ? "no-store" : "public, max-age=3600, stale-while-revalidate=86400",
-    };
+    return errorResult(
+      502,
+      `capture_failed_thum_${thumResponse.status}_microlink_${microlinkResponse.status}`,
+    );
   } catch (error) {
     return errorResult(
       502,
