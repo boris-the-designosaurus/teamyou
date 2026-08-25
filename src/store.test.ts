@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { emptySpec, type WorkItem } from "./types";
 import {
   migrateLegacyDesignProject,
+  reopenCurrentPortfolioDirection,
   saveStore,
   storageSafeStore,
   type Store,
@@ -55,6 +56,53 @@ describe("migrateLegacyDesignProject", () => {
   it("leaves unrelated case studies unchanged", () => {
     const before = storedDoc("Help me document the results of Self-Scheduling.");
     expect(migrateLegacyDesignProject(before)).toBe(before);
+  });
+});
+
+describe("reopenCurrentPortfolioDirection", () => {
+  it("reopens only the active portfolio project and requires a fresh selection", () => {
+    const doc = storedDoc("Portfolio redesign", "Design project: Get hired for product design");
+    doc.item.type = "design_project";
+    doc.item.currentStep = "refine_treatments";
+    doc.item.spec.milestoneArtifacts = [
+      {
+        id: "pattern-1",
+        kind: "pattern_shortlist",
+        title: "Metric-first header",
+        status: "selected",
+        createdAt: "2026-08-23T00:00:00.000Z",
+        step: "find_patterns",
+      },
+    ];
+    const store: Store = {
+      version: 2,
+      currentId: doc.item.id,
+      docs: { [doc.item.id]: doc },
+    };
+
+    const reopened = reopenCurrentPortfolioDirection(
+      store,
+      "reopen-message",
+      "2026-08-24T12:00:00.000Z",
+    );
+
+    expect(reopened.docs[doc.item.id].item.currentStep).toBe("choose_direction");
+    expect(reopened.docs[doc.item.id].item.spec.milestoneArtifacts[0].status).toBe("exploring");
+    expect(reopened.docs[doc.item.id].item.messages.at(-1)?.milestoneArtifactIds).toEqual(["pattern-1"]);
+    expect(reopened.docs[doc.item.id].guide?.need).toBe("Direction selection");
+    expect(store.docs[doc.item.id].item.currentStep).toBe("refine_treatments");
+  });
+
+  it("leaves a non-portfolio project untouched", () => {
+    const doc = storedDoc("Design a billing modal", "Design project: Billing modal");
+    doc.item.type = "design_project";
+    const store: Store = {
+      version: 2,
+      currentId: doc.item.id,
+      docs: { [doc.item.id]: doc },
+    };
+
+    expect(reopenCurrentPortfolioDirection(store, "id", "now")).toBe(store);
   });
 });
 

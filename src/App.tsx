@@ -22,6 +22,7 @@ import {
 import { callCoach, CoachError } from "./coachClient";
 import {
   loadStore,
+  reopenCurrentPortfolioDirection,
   saveStore,
   docList,
   pickOpenId,
@@ -54,6 +55,8 @@ const VALID_TYPES: WorkItemType[] = [
   "case_study",
   "presentation",
 ];
+
+const REOPEN_PORTFOLIO_DIRECTION_KEY = "teamyou:reopenPortfolioDirection:2026-08-24";
 
 function nowISO() {
   return new Date().toISOString();
@@ -106,6 +109,16 @@ export function App() {
     for (const doc of buildSeedDocs()) s.docs[doc.item.id] = doc;
     saveStore(s);
     localStorage.setItem("teamyou:seedVersion", String(SEED_VERSION));
+  }
+  // One-time local recovery requested while validating the refreshed pattern
+  // thumbnails. Only the currently open portfolio design project is touched.
+  if (localStorage.getItem(REOPEN_PORTFOLIO_DIRECTION_KEY) !== "done") {
+    const reopened = reopenCurrentPortfolioDirection(storeRef.current);
+    if (reopened !== storeRef.current) {
+      storeRef.current = reopened;
+      saveStore(reopened);
+    }
+    localStorage.setItem(REOPEN_PORTFOLIO_DIRECTION_KEY, "done");
   }
   const initial = (() => {
     const id = pickOpenId(storeRef.current);
