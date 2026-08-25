@@ -322,6 +322,19 @@ export type ArtifactStatus =
   | "working_build"
   | "verified";
 
+/** Small, renderer-owned description of a generated low-fidelity direction.
+ * It is intentionally structural rather than pixel-perfect: TeamYou draws the
+ * comparison in chat, while high-fidelity work still belongs in the design tool. */
+export type WireframeSpec = {
+  surface: "page" | "modal" | "panel";
+  eyebrow?: string;
+  headline: string;
+  body?: string;
+  primaryAction?: string;
+  secondaryAction?: string;
+  blocks?: string[];
+};
+
 export type MilestoneArtifact = {
   id: string; // client-assigned
   kind: ArtifactKind;
@@ -332,6 +345,7 @@ export type MilestoneArtifact = {
   sourceTitle?: string;
   supportingLine?: string; // why chosen / what state it represents
   ingredients?: string[]; // short reusable pattern traits the user can combine
+  wireframeSpec?: WireframeSpec;
   createdAt: string;
   step: FlowStep;
 };
@@ -646,6 +660,7 @@ export type ProposedMilestoneArtifact = {
   sourceTitle?: string;
   supportingLine?: string;
   ingredients?: string[];
+  wireframeSpec?: WireframeSpec;
   step: FlowStep;
 };
 export type ProposedBuildInstruction = { label: string; text: string; rationale?: string };
