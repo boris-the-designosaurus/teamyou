@@ -318,6 +318,63 @@ function repairAdvancedTurnQuestionGate(
   };
 }
 
+/** A same-step set of visible choices is blocking by definition. Claude
+ * occasionally labels it `proceed`, which makes the flow validator reject an
+ * otherwise useful comparison. Normalize the bookkeeping and preserve the
+ * actual cards/quick replies instead of regenerating the design work. */
+function repairSameStepChoiceGate(
+  previousStep: FlowStep,
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+): CoachTurnResponse | null {
+  const hasChoice =
+    (turn.quickReplies?.length ?? 0) >= 2 ||
+    /\b(?:pick|choose|select)\b[^.!?]{0,100}\b(?:variation|version|option|direction|card)\b/i.test(
+      turn.reply,
+    );
+  if (
+    turn.activeStep !== previousStep ||
+    !hasChoice ||
+    turn.stepGate?.disposition === "ask" ||
+    !policyReasons.some((reason) =>
+      reason.includes("nonblocking") && reason.includes("did not advance"),
+    )
+  ) {
+    return null;
+  }
+
+  const labels = (turn.quickReplies ?? []).slice(0, 3);
+  const needByStep: Partial<Record<FlowStep, string>> = {
+    review_shortlist: "Shortlist selection",
+    choose_direction: "Direction choice",
+    refine_treatments: "Preferred variation",
+    select_for_review: "Version selection",
+  };
+  const need = turn.guidePanel.need?.trim() || needByStep[turn.activeStep] || "Preferred option";
+  const options = labels.length > 0 ? labels.join(", ") : "one of the visible options";
+  const nextPrompt =
+    turn.guidePanel.nextPrompt?.trim() ||
+    `Which should we carry forward: ${options}?`;
+  const replyWithoutChoiceInstruction = turn.reply
+    .replace(/(?:Pick|Choose|Select)\b[^.!?]*(?:[.!?]|$)\s*$/i, "")
+    .trim();
+
+  return {
+    ...turn,
+    reply: `${replyWithoutChoiceInstruction} ${nextPrompt}`.trim(),
+    stepGate: {
+      linkedDecision: need,
+      blocking: true,
+      disposition: "ask",
+    },
+    guidePanel: {
+      ...turn.guidePanel,
+      need,
+      nextPrompt,
+    },
+  };
+}
+
 function repairCompletedPortfolioRequest(
   previousStep: FlowStep,
   turn: CoachTurnResponse,
@@ -582,6 +639,27 @@ export async function withPolicyRetry(
       );
       if (repairedPolicy.ok) {
         return { status: 200, json: repairedQuestionGate };
+      }
+    }
+
+    const repairedChoiceGate = repairSameStepChoiceGate(
+      previousStep,
+      candidate,
+      policyCheck.reasons,
+    );
+    if (repairedChoiceGate) {
+      const repairedStyle = checkReplyStyle(
+        repairedChoiceGate.reply,
+        repairedChoiceGate.responseMode ?? "concise",
+        { activeStep: repairedChoiceGate.activeStep },
+      );
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repairedChoiceGate,
+        policyContext,
+      );
+      if (repairedStyle.ok && repairedPolicy.ok) {
+        return { status: 200, json: repairedChoiceGate };
       }
     }
 
