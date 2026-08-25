@@ -916,6 +916,44 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("requires a 3-5 card comparison when the user requests fresh patterns", () => {
+    const candidate = turn({
+      reply:
+        "I recommend **Outcome first** because it puts proof above the fold. Select one or more patterns and combine useful ingredients.",
+      activeStep: "find_patterns",
+      stepGate: {
+        linkedDecision: "Portfolio structures to compare",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: [
+          {
+            kind: "pattern_shortlist",
+            title: "Outcome first",
+            status: "exploring",
+            sourceUrl: "https://simonpan.com/work/uber",
+            sourceTitle: "Simon Pan — Uber",
+            step: "find_patterns",
+          },
+        ],
+      },
+      guidePanel: { title: "Find relevant patterns", need: "" },
+      quickReplies: [],
+    });
+
+    const result = checkTurnPolicy("find_patterns", candidate, {
+      latestUserText: "Generate fresh patterns",
+      patternWebSearchEnabled: true,
+      specSnapshot: { brief: { goal: "Redesign my portfolio" } },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/must return 3-5/);
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "3-5 distinct pattern_shortlist artifacts",
+    );
+  });
+
   it("accepts I'd start with as a grounded pattern recommendation", () => {
     const result = checkTurnPolicy(
       "set_criteria",
