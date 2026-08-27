@@ -6,6 +6,7 @@ import {
   updateBuildHandoff,
   updateWorkingBuild,
   countPassedCategories,
+  deleteTodo,
   reviewCategoryState,
   isVagueFinding,
   stepSummaryLine,
@@ -21,6 +22,46 @@ function seqIds(prefix = "id") {
 }
 
 describe("mergeSpec — Rule 3", () => {
+  it("deletes one todo and its owned evidence without touching shared rules", () => {
+    const spec = emptySpec();
+    spec.rules.acceptanceCriteria = [{
+      id: "criterion-1",
+      text: "The empty state is clear",
+      status: "locked",
+    }];
+    spec.rules.todos = [
+      {
+        id: "todo-1",
+        title: "Design empty state",
+        status: "todo",
+        linkedAcceptanceCriterionId: "criterion-1",
+        attachments: [{
+          id: "todo-shot",
+          type: "screenshot",
+          label: "Empty state",
+          url: "https://example.com/empty.png",
+          createdAt: "2026-08-27T12:00:00.000Z",
+          isPinned: true,
+        }],
+      },
+      { id: "todo-2", title: "Check mobile", status: "todo" },
+    ];
+    spec.attachments = [{
+      id: "shared-shot",
+      type: "screenshot",
+      label: "Shared reference",
+      url: "https://example.com/shared.png",
+      createdAt: "2026-08-27T12:00:00.000Z",
+      isPinned: false,
+    }];
+
+    const next = deleteTodo(spec, "todo-1");
+
+    expect(next.rules.todos.map((todo) => todo.id)).toEqual(["todo-2"]);
+    expect(next.rules.acceptanceCriteria).toEqual(spec.rules.acceptanceCriteria);
+    expect(next.attachments).toEqual(spec.attachments);
+  });
+
   it("scalar overwrite: brief fields replace when present, untouched when absent", () => {
     let spec = emptySpec();
 
