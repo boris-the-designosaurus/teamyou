@@ -16,6 +16,7 @@ import {
   threadsForArtifact,
 } from "../commentThreads";
 import { CloseIcon, ChevronDownIcon, ShieldIcon, SendIcon, CheckmarkIcon } from "../icons";
+import { WireframeVisual } from "./DirectionCards";
 
 const SEVERITY_LABEL: Record<FindingSeverity, string> = {
   blocker: "Blocker",
@@ -33,9 +34,12 @@ type WorkspaceTab = "checks" | "discussions";
  */
 export function ReviewWorkspace(props: {
   artifact: MilestoneArtifact;
+  artifacts: MilestoneArtifact[];
   spec: Spec;
   reviewCategories: ReviewCategory[];
   onClose: () => void;
+  onSelectArtifact: (artifactId: string) => void;
+  onChooseArtifact: (artifactId: string) => void;
   onUpdateSpec: (updater: (spec: Spec) => Spec) => void;
   onRunReview: () => void;
   onApproveForBuild: () => void;
@@ -101,6 +105,7 @@ export function ReviewWorkspace(props: {
     <div className="review-workspace">
       <div className="review-workspace-topbar">
         <div className="review-workspace-title">
+          <button type="button" className="review-workspace-back" onClick={props.onClose} aria-label="Back to work">←</button>
           <span>{artifact.title}</span>
           <span className="tag milestone-status-tag">{ARTIFACT_STATUS_LABEL[artifact.status]}</span>
         </div>
@@ -127,6 +132,78 @@ export function ReviewWorkspace(props: {
       </nav>
 
       <div className="review-workspace-body">
+        <aside className="review-version-rail" aria-label="Design versions">
+          {props.artifacts.map((candidate) => (
+            <button
+              key={candidate.id}
+              type="button"
+              className={`review-version-thumb${candidate.id === artifact.id ? " active" : ""}`}
+              onClick={() => props.onSelectArtifact(candidate.id)}
+              title={candidate.title}
+            >
+              <span className="review-version-preview">
+                {candidate.kind === "wireframe" ? (
+                  <WireframeVisual artifact={candidate} />
+                ) : candidate.thumbnailUrl ? (
+                  <img src={candidate.thumbnailUrl} alt="" />
+                ) : (
+                  <i />
+                )}
+              </span>
+              <strong>{candidate.title}</strong>
+            </button>
+          ))}
+        </aside>
+
+        <main className="review-design-canvas">
+          <div
+            className={`review-design-artboard${tab === "discussions" ? " commenting" : ""}`}
+            onClick={(event) => {
+              if (tab !== "discussions") return;
+              const rect = event.currentTarget.getBoundingClientRect();
+              setPendingAnchor({
+                xPct: ((event.clientX - rect.left) / rect.width) * 100,
+                yPct: ((event.clientY - rect.top) / rect.height) * 100,
+              });
+              setHighlightedThreadId(null);
+            }}
+          >
+            {artifact.kind === "wireframe" ? (
+              <WireframeVisual artifact={artifact} />
+            ) : artifact.thumbnailUrl ? (
+              <img src={artifact.thumbnailUrl} alt={artifact.title} />
+            ) : (
+              <div className="review-design-missing">No visual attached yet</div>
+            )}
+            {threads
+              .filter((thread): thread is CommentThread & { anchor: { xPct: number; yPct: number } } => !!thread.anchor)
+              .map((thread, index) => (
+                <button
+                  key={thread.id}
+                  type="button"
+                  className={`review-artifact-pin${highlightedThreadId === thread.id ? " active" : ""}${
+                    thread.status === "resolved" ? " resolved" : ""
+                  }`}
+                  style={{ left: `${thread.anchor.xPct}%`, top: `${thread.anchor.yPct}%` }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setHighlightedThreadId(thread.id);
+                    setTab("discussions");
+                  }}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            {pendingAnchor && (
+              <span
+                className="review-artifact-pin pending"
+                style={{ left: `${pendingAnchor.xPct}%`, top: `${pendingAnchor.yPct}%` }}
+              />
+            )}
+          </div>
+        </main>
+
+        <aside className="review-inspector">
         {tab === "checks" ? (
           <div className="review-checks">
             <div className="review-categories">
@@ -189,44 +266,6 @@ export function ReviewWorkspace(props: {
           </div>
         ) : (
           <div className="discussions">
-            {artifact.thumbnailUrl && (
-              <div className="review-artifact-pin-wrap">
-                <img
-                  src={artifact.thumbnailUrl}
-                  alt={artifact.title}
-                  className="review-artifact-pin-image"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-                    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-                    setPendingAnchor({ xPct, yPct });
-                    setHighlightedThreadId(null);
-                  }}
-                />
-                {threads
-                  .filter((t): t is CommentThread & { anchor: { xPct: number; yPct: number } } => !!t.anchor)
-                  .map((t, i) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`review-artifact-pin${highlightedThreadId === t.id ? " active" : ""}${
-                        t.status === "resolved" ? " resolved" : ""
-                      }`}
-                      style={{ left: `${t.anchor.xPct}%`, top: `${t.anchor.yPct}%` }}
-                      title={t.messages[0]?.text}
-                      onClick={() => setHighlightedThreadId(t.id)}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                {pendingAnchor && (
-                  <span
-                    className="review-artifact-pin pending"
-                    style={{ left: `${pendingAnchor.xPct}%`, top: `${pendingAnchor.yPct}%` }}
-                  />
-                )}
-              </div>
-            )}
             {pendingAnchor && (
               <p className="review-pending-anchor-hint">
                 Commenting at the pinned point — type below and send, or{" "}
@@ -254,6 +293,7 @@ export function ReviewWorkspace(props: {
             )}
           </div>
         )}
+        </aside>
       </div>
 
       <div className="review-composer">
@@ -266,8 +306,16 @@ export function ReviewWorkspace(props: {
           onChange={(e) => setDraft(e.target.value)}
         />
         <div className="review-actions">
-          <button type="button" className="review-action" onClick={() => void submitDraft()} title="Comment">
-            <SendIcon /> Comment
+          <button
+            type="button"
+            className="review-action"
+            onClick={() => {
+              if (draft.trim()) void submitDraft();
+              else setTab("discussions");
+            }}
+            title="Comments"
+          >
+            <SendIcon /> Comments{threads.length > 0 ? ` (${threads.length})` : ""}
           </button>
           <button
             type="button"
@@ -281,7 +329,10 @@ export function ReviewWorkspace(props: {
           <button
             type="button"
             className="review-action"
-            onClick={props.onRunReview}
+            onClick={() => {
+              setTab("checks");
+              props.onRunReview();
+            }}
             disabled={props.reviewRunning}
             title="Run review"
           >
@@ -290,15 +341,26 @@ export function ReviewWorkspace(props: {
           <button type="button" className="review-action" disabled title="No linked Figma file yet">
             Open in Figma <ChevronDownIcon />
           </button>
-          <button
-            type="button"
-            className="review-action primary"
-            onClick={props.onApproveForBuild}
-            disabled={artifact.status === "approved_for_build"}
-            title="Approve for build"
-          >
-            Approve for build
-          </button>
+          {artifact.kind === "wireframe" ? (
+            <button
+              type="button"
+              className="review-action primary"
+              onClick={() => props.onChooseArtifact(artifact.id)}
+              disabled={artifact.status === "selected"}
+            >
+              {artifact.status === "selected" ? "Chosen" : "Choose direction"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="review-action primary"
+              onClick={props.onApproveForBuild}
+              disabled={artifact.status === "approved_for_build"}
+              title="Approve for build"
+            >
+              Approve for build
+            </button>
+          )}
         </div>
       </div>
     </div>

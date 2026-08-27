@@ -50,6 +50,8 @@ const PORTFOLIO_CONTEXT =
 const FRESH_PATTERN_REQUEST =
   /\b(?:generate|find|search|retrieve|replace|regenerate|refresh)\b[\s\S]{0,40}\b(?:fresh|new|different|more)?\s*(?:patterns?|pattern cards?|shortlist|examples?)\b/i;
 const GENERATE_WIREFRAMES_REQUEST = /^\s*Generate wireframes\b/i;
+const VISUAL_TREATMENT_CHOICE =
+  /\b(?:visual|layout|wireframe|treatment|variation|version|hero|project card|card content|content format|metric|outcome)\b/i;
 
 function groundsLatestAttachment(reply: string): boolean {
   return (
@@ -418,6 +420,23 @@ export function checkTurnPolicy(
       "the Generate wireframes action must immediately return 2-3 drawable wireframe artifacts with complete wireframeSpec data",
     );
   }
+  const treatmentChoiceText = [
+    context.latestUserText ?? "",
+    turn.reply,
+    turn.guidePanel.need ?? "",
+    ...(turn.quickReplies ?? []),
+  ].join(" ");
+  if (
+    previousStep === "refine_treatments" &&
+    turn.activeStep === "refine_treatments" &&
+    (turn.quickReplies?.length ?? 0) >= 2 &&
+    VISUAL_TREATMENT_CHOICE.test(treatmentChoiceText) &&
+    !turnHasDrawableWireframes(turn)
+  ) {
+    reasons.push(
+      "a visual treatment choice must show 2-3 drawable wireframe artifacts instead of describing invisible alternatives in chat",
+    );
+  }
   if (
     FRESH_PATTERN_REQUEST.test(context.latestUserText ?? "") &&
     newPatterns.length < 3
@@ -478,6 +497,10 @@ export function checkTurnPolicy(
     (turn.activeStep === "find_patterns" || turn.activeStep === "review_shortlist") &&
     patternWorkspaceAvailable &&
     replyQuestions === 0;
+  const performedVisualTreatmentExploration =
+    turn.activeStep === "refine_treatments" &&
+    turnHasDrawableWireframes(turn) &&
+    replyQuestions === 0;
 
   // Framing is a guided conversation, so an acknowledgement-only turn is a
   // dead end even when the Guide happens to show the step as complete. The
@@ -534,7 +557,12 @@ export function checkTurnPolicy(
         `stepGate disposition is "${turn.stepGate.disposition}" but blocking is true`,
       );
     }
-    if (!isAsk && stayedOnStep && !performedPatternExploration) {
+    if (
+      !isAsk &&
+      stayedOnStep &&
+      !performedPatternExploration &&
+      !performedVisualTreatmentExploration
+    ) {
       reasons.push(
         `the turn says the current step is nonblocking (${turn.stepGate.disposition}) but did not advance`,
       );
@@ -614,6 +642,20 @@ export function checkTurnPolicy(
 }
 
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
+  if (
+    check.reasons.some((reason) =>
+      reason.includes("visual treatment choice must show"),
+    )
+  ) {
+    return (
+      `You asked the user to compare visual treatments that are not visible. Re-send the SAME turn with ` +
+      `2-3 wireframe milestoneArtifacts at step refine_treatments, each with a complete wireframeSpec and a ` +
+      `meaningfully different visible treatment of the chosen direction. Use the actual option labels and locked ` +
+      `content in the rendered headlines, body, actions, and blocks. Recommend one with one grounded reason. ` +
+      `Do not describe options that have no artifact, and do not duplicate the visual choice as quick replies; ` +
+      `keep guidePanel.need empty and the workspace nonblocking because the visible cards are the choices.`
+    );
+  }
   if (
     check.reasons.some((reason) =>
       reason.includes("Generate wireframes action must immediately return"),

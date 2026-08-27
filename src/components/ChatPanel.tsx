@@ -81,6 +81,7 @@ export function ChatPanel(props: {
   onSend: (text: string, attachments: ImageAttachment[]) => void;
   milestoneArtifacts?: MilestoneArtifact[];
   onChooseArtifact?: (artifactId: string) => void;
+  onOpenArtifactWorkspace?: (artifactId: string) => void;
   // Guide "Need" → chat locate (product boundary: the coach's question lives
   // ONLY here, never duplicated in the Guide). A new object on every click —
   // even a repeat click of the same Need — re-triggers the scroll/highlight.
@@ -307,6 +308,7 @@ export function ChatPanel(props: {
                       m.milestoneArtifactIds!.includes(a.id),
                     )}
                     onChoose={props.onChooseArtifact}
+                    onOpenWorkspace={props.onOpenArtifactWorkspace}
                     onContinue={(selected) => {
                       const action = selected[0]?.kind === "wireframe"
                         ? "Develop selected wireframe"

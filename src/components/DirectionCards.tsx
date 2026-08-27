@@ -129,7 +129,7 @@ function CaseStudyWireframe({
 }
 
 /** Render a real low-fidelity comparison from structured Coach output. */
-function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
+export function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
   const spec = artifact.wireframeSpec ?? inferredWireframeSpec(artifact);
   const blocks = spec.blocks?.length ? spec.blocks.slice(0, 3) : ["Primary content", "Supporting proof"];
 
@@ -328,6 +328,7 @@ export function DirectionCards(props: {
   artifacts: MilestoneArtifact[];
   onChoose: (artifactId: string) => void;
   onContinue?: (selected: MilestoneArtifact[]) => void;
+  onOpenWorkspace?: (artifactId: string) => void;
 }) {
   const { artifacts, onChoose, onContinue } = props;
   const [previewArtifact, setPreviewArtifact] = useState<MilestoneArtifact | null>(null);
@@ -386,9 +387,17 @@ export function DirectionCards(props: {
                 <button
                   type="button"
                   className="direction-card-thumb direction-card-thumb-button"
-                  onClick={() => setPreviewArtifact(a)}
+                  onClick={() =>
+                    a.kind === "wireframe" && props.onOpenWorkspace
+                      ? props.onOpenWorkspace(a.id)
+                      : setPreviewArtifact(a)
+                  }
                   disabled={!canPreview}
-                  aria-label={`View larger example for ${a.title}`}
+                  aria-label={
+                    a.kind === "wireframe" && props.onOpenWorkspace
+                      ? `Open design workspace for ${a.title}`
+                      : `View larger example for ${a.title}`
+                  }
                 >
                   <PatternThumbnail artifact={a} imageUrlOverride={refreshedImage} />
                   {canPreview && <span className="direction-card-thumb-action">View larger</span>}

@@ -667,6 +667,151 @@ function repairGenerateWireframes(
   };
 }
 
+/** Visual refinement cannot be evaluated from prose. If the model offers two
+ * treatment labels without artifacts, turn the labels and current selected
+ * wireframe into a concrete drawable comparison instead of surfacing another
+ * policy error or a text-only gate. */
+function repairVisualTreatmentChoice(
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+  policyContext: import("./turnPolicy").TurnPolicyContext,
+): CoachTurnResponse | null {
+  if (
+    !policyReasons.some((reason) =>
+      reason.includes("visual treatment choice must show"),
+    )
+  ) {
+    return null;
+  }
+
+  const labels = (turn.quickReplies ?? []).slice(0, 3);
+  if (labels.length < 2) return null;
+
+  const snapshot =
+    policyContext.specSnapshot && typeof policyContext.specSnapshot === "object"
+      ? (policyContext.specSnapshot as Record<string, unknown>)
+      : {};
+  const savedArtifacts = Array.isArray(snapshot.milestoneArtifacts)
+    ? snapshot.milestoneArtifacts.filter(
+        (item): item is Record<string, unknown> =>
+          !!item && typeof item === "object" && item.kind === "wireframe",
+      )
+    : [];
+  const base =
+    savedArtifacts.find((item) => item.status === "selected") ??
+    savedArtifacts[savedArtifacts.length - 1];
+  const baseSpec =
+    base?.wireframeSpec && typeof base.wireframeSpec === "object"
+      ? (base.wireframeSpec as Record<string, unknown>)
+      : {};
+  const snapshotText = JSON.stringify(snapshot);
+  const portfolio = /portfolio|case stud(?:y|ies)|hiring manager/i.test(snapshotText);
+  const cardContentChoice = /project card|card content|outcome|metric/i.test(
+    `${policyContext.latestUserText ?? ""} ${turn.reply} ${labels.join(" ")}`,
+  );
+
+  const artifacts = labels.map((label, index) => {
+    const outcomeWithCause = /cause|contribution|context|explain/i.test(label);
+    const blocks = cardContentChoice
+      ? outcomeWithCause
+        ? [
+            "Project card — 40% faster onboarding by simplifying setup",
+            "My role + contribution",
+            "Project preview",
+          ]
+        : [
+            "Project card — 40% faster onboarding",
+            "Role tag",
+            "Project preview",
+          ]
+      : [
+          `${label} treatment`,
+          "Primary content hierarchy",
+          "Supporting proof + action",
+        ];
+    return {
+      kind: "wireframe" as const,
+      title: `Treatment ${String.fromCharCode(65 + index)} — ${label}`,
+      status: "exploring" as const,
+      supportingLine: cardContentChoice
+        ? outcomeWithCause
+          ? "Pairs the measurable result with the action that produced it."
+          : "Keeps the project card focused on the measurable result alone."
+        : `Shows the chosen direction using the ${label} treatment.`,
+      ingredients: blocks,
+      wireframeSpec: {
+        surface:
+          baseSpec.surface === "modal" || baseSpec.surface === "panel"
+            ? (baseSpec.surface as "modal" | "panel")
+            : ("page" as const),
+        layout: portfolio ? ("portfolio_home" as const) : undefined,
+        eyebrow:
+          typeof baseSpec.eyebrow === "string"
+            ? baseSpec.eyebrow
+            : "Product Designer",
+        headline:
+          typeof baseSpec.headline === "string"
+            ? baseSpec.headline
+            : "Outcomes you can point to",
+        body: cardContentChoice
+          ? outcomeWithCause
+            ? "Project cards show the outcome and the short cause phrase together."
+            : "Project cards lead with the outcome and defer the explanation."
+          : typeof baseSpec.body === "string"
+            ? baseSpec.body
+            : `A visible ${label} treatment of the selected direction.`,
+        primaryAction:
+          typeof baseSpec.primaryAction === "string"
+            ? baseSpec.primaryAction
+            : portfolio
+              ? "View project"
+              : "Continue",
+        secondaryAction:
+          typeof baseSpec.secondaryAction === "string"
+            ? baseSpec.secondaryAction
+            : undefined,
+        blocks,
+      },
+      step: "refine_treatments" as const,
+    };
+  });
+  const existingNonWireframes = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind !== "wireframe",
+  );
+
+  return {
+    ...turn,
+    reply:
+      `**${artifacts.length} visible treatments are ready.** I'd start with ${artifacts[0].title} because it keeps the outcome understandable at a glance; compare them in the design workspace and choose or combine what works.`,
+    activeStep: "refine_treatments",
+    stepGate: {
+      linkedDecision: "Which visible treatment to refine",
+      blocking: false,
+      disposition: "proceed",
+    },
+    specUpdates: {
+      ...turn.specUpdates,
+      milestoneArtifacts: [...existingNonWireframes, ...artifacts],
+    },
+    guidePanel: {
+      title: STEP_TITLES.refine_treatments,
+      captured: artifacts.map((artifact) => artifact.title),
+      need: "",
+      priorSummary: "Visible treatments generated from the selected direction.",
+    },
+    activityEvents: [
+      ...turn.activityEvents,
+      {
+        type: "milestone_captured",
+        importance: "significant",
+        label: `Generated ${artifacts.length} visible treatments`,
+      },
+    ],
+    quickReplies: [],
+    recommendedQuickReply: undefined,
+  };
+}
+
 /**
  * The decision-criticality gate's brevity contract, enforced as code: a
  * structurally-valid turn that violates the concise-reply rules (too long,
@@ -778,6 +923,27 @@ export async function withPolicyRetry(
       );
       if (repairedStyle.ok && repairedPolicy.ok) {
         return { status: 200, json: repairedWireframes };
+      }
+    }
+
+    const repairedTreatments = repairVisualTreatmentChoice(
+      candidate,
+      policyCheck.reasons,
+      policyContext,
+    );
+    if (repairedTreatments) {
+      const repairedStyle = checkReplyStyle(
+        repairedTreatments.reply,
+        repairedTreatments.responseMode ?? "concise",
+        { activeStep: repairedTreatments.activeStep },
+      );
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repairedTreatments,
+        policyContext,
+      );
+      if (repairedStyle.ok && repairedPolicy.ok) {
+        return { status: 200, json: repairedTreatments };
       }
     }
 

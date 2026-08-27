@@ -119,4 +119,33 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain("Up next");
     expect(html).toContain("Contact");
   });
+
+  it("opens wireframes in the design workspace when that action is available", () => {
+    const artifact: MilestoneArtifact = {
+      id: "wireframe-workspace",
+      kind: "wireframe",
+      title: "Outcome-led homepage",
+      status: "exploring",
+      wireframeSpec: {
+        surface: "page",
+        layout: "portfolio_home",
+        headline: "Proof before the scroll",
+        blocks: ["Outcome", "Contribution"],
+      },
+      createdAt: "2026-08-25T12:00:00.000Z",
+      step: "choose_direction",
+    };
+
+    const html = renderToStaticMarkup(
+      <DirectionCards
+        artifacts={[artifact]}
+        onChoose={vi.fn()}
+        onOpenWorkspace={vi.fn()}
+      />,
+    );
+
+    expect(html).toContain(
+      'aria-label="Open design workspace for Outcome-led homepage"',
+    );
+  });
 });

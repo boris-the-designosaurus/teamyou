@@ -1448,6 +1448,38 @@ describe("checkTurnPolicy", () => {
     expect(turnPolicyCorrectionPrompt(result)).toContain("wireframeSpec");
   });
 
+  it("requires visible artifacts for visual treatment choices", () => {
+    const result = checkTurnPolicy(
+      "refine_treatments",
+      turn({
+        reply:
+          "I'd show the outcome with a short cause phrase. Does that format work, or do you want outcome alone?",
+        activeStep: "refine_treatments",
+        stepGate: {
+          linkedDecision: "Project card content format",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {},
+        guidePanel: {
+          title: "Explore and refine treatments",
+          need: "Card content format",
+          nextPrompt: "Which format should the card use?",
+        },
+        quickReplies: ["Outcome + cause phrase", "Outcome alone"],
+      }),
+      { latestUserText: "Project card content" },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toContain(
+      "visual treatment choice must show",
+    );
+    const prompt = turnPolicyCorrectionPrompt(result);
+    expect(prompt).toContain("2-3 wireframe milestoneArtifacts");
+    expect(prompt).toContain("Do not describe options that have no artifact");
+  });
+
   it("allows Generate wireframes to complete selected-pattern review and advance", () => {
     const result = checkTurnPolicy(
       "find_patterns",
