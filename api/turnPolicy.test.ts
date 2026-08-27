@@ -1413,6 +1413,99 @@ describe("checkTurnPolicy", () => {
     expect(turnPolicyCorrectionPrompt(result)).toContain("wireframeSpec");
   });
 
+  it("allows Generate wireframes to complete selected-pattern review and advance", () => {
+    const result = checkTurnPolicy(
+      "find_patterns",
+      turn({
+        reply:
+          "**Three wireframes are ready.** I'd anchor on Outcome-first grid because it puts impact before the scroll. Pick one or mix elements across the three.",
+        activeStep: "choose_direction",
+        stepGate: {
+          linkedDecision: "Which wireframe direction to carry into design",
+          blocking: false,
+          disposition: "proceed",
+        },
+        specUpdates: {
+          milestoneArtifacts: ["Outcome-first grid", "Narrative-first scroll", "Split contribution layout"].map(
+            (title) => ({
+              kind: "wireframe" as const,
+              title,
+              status: "exploring" as const,
+              step: "choose_direction" as const,
+              wireframeSpec: {
+                surface: "page" as const,
+                layout: "portfolio_home" as const,
+                headline: title,
+                blocks: ["Project cards", "Contribution callout"],
+              },
+            }),
+          ),
+        },
+        guidePanel: {
+          title: "Choose a direction",
+          captured: ["Three wireframes generated from selected patterns"],
+          need: "",
+        },
+        quickReplies: [],
+      }),
+      {
+        latestUserText:
+          "Generate wireframes for: Step-by-step process narrative + Large personal positioning",
+        specSnapshot: {
+          milestoneArtifacts: [
+            {
+              kind: "pattern_shortlist",
+              title: "Step-by-step process narrative",
+              status: "selected",
+            },
+            {
+              kind: "pattern_shortlist",
+              title: "Large personal positioning",
+              status: "selected",
+            },
+          ],
+        },
+      },
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("still rejects skipping pattern review when no pattern was selected", () => {
+    const result = checkTurnPolicy(
+      "find_patterns",
+      turn({
+        reply: "**Three wireframes are ready.** Pick one.",
+        activeStep: "choose_direction",
+        specUpdates: {
+          milestoneArtifacts: ["A", "B", "C"].map((title) => ({
+            kind: "wireframe" as const,
+            title,
+            status: "exploring" as const,
+            step: "choose_direction" as const,
+            wireframeSpec: {
+              surface: "page" as const,
+              headline: title,
+              blocks: ["Project cards"],
+            },
+          })),
+        },
+        guidePanel: { title: "Choose a direction", need: "" },
+      }),
+      {
+        latestUserText: "Generate wireframes for: Unselected pattern",
+        specSnapshot: {
+          milestoneArtifacts: [
+            { kind: "pattern_shortlist", title: "Pattern", status: "exploring" },
+          ],
+        },
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toContain("skipped ahead");
+  });
+
   it("builds a corrective prompt that preserves captured updates", () => {
     const check = checkTurnPolicy(
       "define_problem",
