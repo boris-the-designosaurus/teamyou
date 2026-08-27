@@ -61,6 +61,7 @@ describe("DirectionCards pattern workspace", () => {
       ingredients: ["Outcome proof", "Personal voice", "Project cards"],
       wireframeSpec: {
         surface: "page",
+        layout: "portfolio_home",
         eyebrow: "Selected work",
         headline: "24% more completed bookings",
         body: "Senior product designer for complex SaaS workflows.",
@@ -79,10 +80,43 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain("24% more completed bookings");
     expect(html).toContain("Role + contribution");
     expect(html).toContain("Selected work");
-    expect(html).toContain("FEATURED CASE STUDY");
-    expect(html).toContain("Role, decision, and measurable outcome");
-    expect(html).toContain("wireframe-project-grid");
+    expect(html).toContain("Jonathan Warrecker");
+    expect(html).toContain("Work");
+    expect(html).toContain("wireframe-home-projects");
+    expect(html).toContain("wireframe-layout-portfolio_home");
     expect(html).toContain("Develop selected direction");
     expect(html).not.toContain("Live example required");
+  });
+
+  it("draws a full case-study narrative when the page layout asks for one", () => {
+    const artifact: MilestoneArtifact = {
+      id: "wireframe-case-1",
+      kind: "wireframe",
+      title: "TeamYou case study",
+      status: "exploring",
+      supportingLine: "Connect the decisions to the result.",
+      ingredients: ["Decision trail", "Measured outcome", "Next project"],
+      wireframeSpec: {
+        surface: "page",
+        layout: "case_study",
+        eyebrow: "TeamYou",
+        headline: "A judgment system for product work",
+        blocks: ["Key contribution", "Self scheduling", "Results"],
+      },
+      createdAt: "2026-08-25T12:00:00.000Z",
+      step: "choose_direction",
+    };
+
+    const html = renderToStaticMarkup(
+      <DirectionCards artifacts={[artifact]} onChoose={vi.fn()} onContinue={vi.fn()} />,
+    );
+
+    expect(html).toContain("wireframe-layout-case_study");
+    expect(html).toContain("Background");
+    expect(html).toContain("Problem");
+    expect(html).toContain("Solution");
+    expect(html).toContain("Results");
+    expect(html).toContain("Up next");
+    expect(html).toContain("Contact");
   });
 });

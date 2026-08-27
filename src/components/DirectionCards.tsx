@@ -14,9 +14,11 @@ const CHOSEN_STATUSES = new Set(["selected", "ready_for_review", "approved_for_b
 function inferredWireframeSpec(artifact: MilestoneArtifact) {
   const text = `${artifact.title} ${artifact.supportingLine ?? ""}`;
   const portfolio = /portfolio|homepage|hero|project|case study|metric-led|narrative-led/i.test(text);
+  const caseStudy = /case study|project detail|background|problem|solution|results/i.test(text);
   const modal = /modal|dialog|offer|commitment|trial|upgrade/i.test(text);
   return {
     surface: modal ? "modal" as const : portfolio ? "page" as const : "panel" as const,
+    layout: caseStudy ? "case_study" as const : "portfolio_home" as const,
     eyebrow: portfolio ? "Selected work" : "Recommended next step",
     headline: artifact.title.replace(/^Variation\s+[A-Z]\s*[—-]\s*/i, ""),
     body: artifact.supportingLine,
@@ -26,60 +28,124 @@ function inferredWireframeSpec(artifact: MilestoneArtifact) {
   };
 }
 
+function WireframeHeader() {
+  return (
+    <header className="wireframe-site-header" aria-hidden>
+      <div className="wireframe-brand"><i />Jonathan Warrecker</div>
+      <nav><span /><span /><span /></nav>
+      <div className="wireframe-social"><i /><i /><i /></div>
+    </header>
+  );
+}
+
+function WireframeProjectCard({
+  title,
+  featured = false,
+}: {
+  title: string;
+  featured?: boolean;
+}) {
+  return (
+    <article className={`wireframe-home-project${featured ? " featured" : ""}`}>
+      <div className="wireframe-home-project-copy">
+        <strong>{title}</strong>
+        <span className="wireframe-line long" /><span className="wireframe-line short" />
+        <div className="wireframe-tags"><i /><i /><i /></div>
+      </div>
+      <div className="wireframe-home-project-media" aria-hidden>
+        <b /><span />{featured && <em />}
+      </div>
+    </article>
+  );
+}
+
+function PortfolioHomeWireframe({
+  artifact,
+  spec,
+  blocks,
+}: {
+  artifact: MilestoneArtifact;
+  spec: NonNullable<MilestoneArtifact["wireframeSpec"]> | ReturnType<typeof inferredWireframeSpec>;
+  blocks: string[];
+}) {
+  const projects = [blocks[0] || "TeamYou", blocks[1] || "Self scheduling", blocks[2] || "Inbox"];
+  return (
+    <div className="wireframe-page-canvas wireframe-home-canvas">
+      <WireframeHeader />
+      <main>
+        <section className="wireframe-home-intro">
+          {spec.eyebrow && <small>{spec.eyebrow}</small>}
+          <h2>{spec.headline || artifact.title}</h2>
+          <div className="wireframe-intro-lines" aria-hidden><i /><i /></div>
+          {spec.body && <p>{spec.body}</p>}
+        </section>
+        <section className="wireframe-home-work">
+          <h3>Work</h3>
+          <div className="wireframe-home-projects">
+            {projects.map((project, index) => (
+              <WireframeProjectCard key={`${project}-${index}`} title={project} featured={index === 0} />
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function CaseStudyWireframe({
+  artifact,
+  spec,
+  blocks,
+}: {
+  artifact: MilestoneArtifact;
+  spec: NonNullable<MilestoneArtifact["wireframeSpec"]> | ReturnType<typeof inferredWireframeSpec>;
+  blocks: string[];
+}) {
+  const projectTitle = spec.eyebrow || artifact.title.replace(/^Variation\s+[A-Z]\s*[—-]\s*/i, "");
+  return (
+    <div className="wireframe-page-canvas wireframe-case-canvas">
+      <WireframeHeader />
+      <main>
+        <section className="wireframe-case-intro">
+          <h2>{projectTitle}</h2>
+          <div className="wireframe-intro-lines" aria-hidden><i /><i /></div>
+          <p>{spec.headline}</p>
+        </section>
+        <div className="wireframe-case-hero" aria-hidden><span /></div>
+        <div className="wireframe-case-body">
+          <aside><strong>Context</strong><span>Background</span><span>Problem</span><span>Solution</span><span>Results</span></aside>
+          <div className="wireframe-case-story">
+            <section><h3>Background</h3><i /><i /><i /><div className="wireframe-case-actions"><b /><b /><b /></div></section>
+            <section><h3>Problem</h3><i /><i /><i /></section>
+            <section><h3>Solution</h3><i /><i /><i /><div className="wireframe-case-feature"><b /><div><strong>{blocks[0] || "Key contribution"}</strong><i /><i /></div></div></section>
+            <section><h3>Results</h3><i /><i /><i /><div className="wireframe-result-cards"><b /><b /><b /></div></section>
+          </div>
+        </div>
+        <section className="wireframe-up-next"><h3>Up next</h3><WireframeProjectCard title={blocks[1] || "Self scheduling"} /></section>
+        <section className="wireframe-contact"><h3>Contact</h3><div><i /><i /><i /><b /></div></section>
+      </main>
+    </div>
+  );
+}
+
 /** Render a real low-fidelity comparison from structured Coach output. */
 function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
   const spec = artifact.wireframeSpec ?? inferredWireframeSpec(artifact);
   const blocks = spec.blocks?.length ? spec.blocks.slice(0, 3) : ["Primary content", "Supporting proof"];
 
   if (spec.surface === "page") {
+    const layout = spec.layout ?? (/case study|project detail|background|problem|solution|results/i.test(
+      `${artifact.title} ${artifact.supportingLine ?? ""} ${spec.eyebrow ?? ""}`,
+    ) ? "case_study" : "portfolio_home");
     return (
       <div
-        className="wireframe-visual wireframe-visual-page"
+        className={`wireframe-visual wireframe-visual-page wireframe-layout-${layout}`}
         role="img"
         aria-label={`Wireframe for ${artifact.title}`}
       >
-        <div className="wireframe-browserbar">
-          <span>Portfolio</span><i /><i /><i />
-        </div>
-        <div className="wireframe-page">
-          <section className="wireframe-page-hero">
-            <div className="wireframe-page-hero-copy">
-              {spec.eyebrow && <div className="wireframe-eyebrow">{spec.eyebrow}</div>}
-              <div className="wireframe-headline">{spec.headline}</div>
-              {spec.body && <div className="wireframe-copy">{spec.body}</div>}
-              <div className="wireframe-actions">
-                {spec.primaryAction && <span className="primary">{spec.primaryAction}</span>}
-                {spec.secondaryAction && <span>{spec.secondaryAction}</span>}
-              </div>
-            </div>
-            <div className="wireframe-hero-media" aria-hidden>
-              <b /><i /><i /><i />
-            </div>
-          </section>
-
-          <section className="wireframe-proof-row" aria-label="Proof summary">
-            {blocks.map((block, index) => (
-              <div key={block}>
-                <strong>{index === 0 ? "24%" : index === 1 ? "15+" : "3×"}</strong>
-                <span>{block}</span>
-              </div>
-            ))}
-          </section>
-
-          <section className="wireframe-work-section">
-            <div className="wireframe-section-heading"><strong>Selected work</strong><i /></div>
-            <div className="wireframe-project-grid">
-              {blocks.slice(0, 2).map((block, index) => (
-                <article key={`${block}-${index}`}>
-                  <div className="wireframe-project-media" aria-hidden><b /><i /><i /></div>
-                  <small>{index === 0 ? "FEATURED CASE STUDY" : "RECENT PROJECT"}</small>
-                  <strong>{block}</strong>
-                  <span>Role, decision, and measurable outcome</span>
-                </article>
-              ))}
-            </div>
-          </section>
-        </div>
+        {layout === "case_study"
+          ? <CaseStudyWireframe artifact={artifact} spec={spec} blocks={blocks} />
+          : <PortfolioHomeWireframe artifact={artifact} spec={spec} blocks={blocks} />}
       </div>
     );
   }

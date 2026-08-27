@@ -543,6 +543,7 @@ function repairGenerateWireframes(
       ingredients: blocks,
       wireframeSpec: {
         surface: portfolio ? ("page" as const) : modal ? ("modal" as const) : ("panel" as const),
+        layout: portfolio ? ("portfolio_home" as const) : undefined,
         eyebrow: patternTitle,
         headline: variant.headline,
         body: variant.body,
