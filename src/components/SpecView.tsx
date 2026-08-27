@@ -40,6 +40,7 @@ export function SpecDoc(props: {
   spec: Spec;
   type: WorkItemType;
   onPinTodoAttachment?: (todoId: string, attachmentId: string) => void;
+  onDeleteTodo?: (todoId: string) => void;
   onFocusTarget?: (target: ResolveTarget) => void;
 }) {
   const { spec, type } = props;
@@ -171,6 +172,7 @@ export function SpecDoc(props: {
                         : undefined
                     }
                     onFocus={props.onFocusTarget}
+                    onDelete={props.onDeleteTodo}
                   />
                 ))}
               </ul>
@@ -224,8 +226,9 @@ function TodoRow(props: {
   spec: Spec;
   onPin?: (attachmentId: string) => void;
   onFocus?: (target: ResolveTarget) => void;
+  onDelete?: (todoId: string) => void;
 }) {
-  const { todo, spec, onPin, onFocus } = props;
+  const { todo, spec, onPin, onFocus, onDelete } = props;
   const [open, setOpen] = useState(false);
 
   // Expanding a todo makes it the active work context (drives the Guide's
@@ -246,17 +249,30 @@ function TodoRow(props: {
 
   return (
     <li className={`todo-row${open ? " open" : ""}`}>
-      <button
-        type="button"
-        className="todo-row-head"
-        aria-expanded={open}
-        onClick={toggle}
-      >
-        <span className="tag">{todo.status}</span>
-        <span className="todo-title">{todo.title}</span>
-        {atts.length > 0 && <span className="todo-evi-count">{atts.length}</span>}
-        <ChevronDownIcon className="todo-chevron" aria-hidden />
-      </button>
+      <div className="todo-row-controls">
+        <button
+          type="button"
+          className="todo-row-head"
+          aria-expanded={open}
+          onClick={toggle}
+        >
+          <span className="tag">{todo.status}</span>
+          <span className="todo-title">{todo.title}</span>
+          {atts.length > 0 && <span className="todo-evi-count">{atts.length}</span>}
+          <ChevronDownIcon className="todo-chevron" aria-hidden />
+        </button>
+        {onDelete && (
+          <button
+            type="button"
+            className="todo-delete"
+            onClick={() => onDelete(todo.id)}
+            aria-label={`Delete todo: ${todo.title}`}
+            title="Delete todo"
+          >
+            Delete
+          </button>
+        )}
+      </div>
 
       {!open && atts.length > 0 && <SectionEvidence items={atts} />}
 
