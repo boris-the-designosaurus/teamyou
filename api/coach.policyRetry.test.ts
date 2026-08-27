@@ -442,4 +442,83 @@ describe("withPolicyRetry", () => {
     expect(generate).not.toHaveBeenCalled();
   });
 
+  it("turns a blank single hi-fi proposal into visible alternatives", async () => {
+    const blankProposal: CoachTurnResponse = {
+      reply: "**Advancing to Select a version for review** — Treatment A is proposed.",
+      activeStep: "select_for_review",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Confirm version",
+        blocking: true,
+        disposition: "ask",
+      },
+      specUpdates: {
+        milestoneArtifacts: [{
+          kind: "hifi_design",
+          title: "Treatment A",
+          status: "selected",
+          step: "select_for_review",
+        }],
+      },
+      guidePanel: {
+        title: "Select a version for review",
+        need: "Confirm version",
+        nextPrompt: "Prepare this version?",
+      },
+      activityEvents: [],
+      quickReplies: ["Prepare for build", "Compare again"],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic repair should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "refine_treatments",
+      [],
+      JSON.stringify(blankProposal),
+      blankProposal,
+      generate,
+      {
+        latestUserText: "Ready to propose hifi design",
+        workItemType: "design_project",
+        specSnapshot: {
+          brief: { goal: "Redesign a product design portfolio" },
+          milestoneArtifacts: [{
+            id: "wireframe-1",
+            kind: "wireframe",
+            title: "Outcome-led project grid",
+            status: "selected",
+            wireframeSpec: {
+              surface: "page",
+              layout: "portfolio_home",
+              headline: "Outcomes you can point to",
+              blocks: ["Outcome", "Contribution", "Selected work"],
+            },
+          }],
+        },
+      },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "refine_treatments",
+      stepGate: { blocking: false, disposition: "proceed" },
+      guidePanel: { need: "" },
+      quickReplies: [],
+    });
+    const artifacts =
+      "specUpdates" in result.json
+        ? result.json.specUpdates.milestoneArtifacts ?? []
+        : [];
+    expect(artifacts.filter((artifact) => artifact.kind === "hifi_design")).toHaveLength(3);
+    expect(
+      artifacts
+        .filter((artifact) => artifact.kind === "hifi_design")
+        .every((artifact) => !!artifact.wireframeSpec?.headline && !!artifact.wireframeSpec.blocks?.length),
+    ).toBe(true);
+    expect(generate).not.toHaveBeenCalled();
+  });
+
 });

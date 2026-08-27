@@ -812,6 +812,174 @@ function repairVisualTreatmentChoice(
   };
 }
 
+/** Moving from a chosen wireframe into visual design must produce visible
+ * mockups, not a single metadata card. Build a complete comparison from the
+ * selected structural artifact if both model correction attempts omit it. */
+function repairGenerateHiFi(
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+  policyContext: import("./turnPolicy").TurnPolicyContext,
+): CoachTurnResponse | null {
+  if (
+    !policyReasons.some((reason) =>
+      reason.includes("hi-fi proposal action must immediately show"),
+    )
+  ) {
+    return null;
+  }
+
+  const snapshot =
+    policyContext.specSnapshot && typeof policyContext.specSnapshot === "object"
+      ? (policyContext.specSnapshot as Record<string, unknown>)
+      : {};
+  const savedArtifacts = Array.isArray(snapshot.milestoneArtifacts)
+    ? snapshot.milestoneArtifacts.filter(
+        (item): item is Record<string, unknown> =>
+          !!item &&
+          typeof item === "object" &&
+          (item.kind === "wireframe" || item.kind === "hifi_design"),
+      )
+    : [];
+  const base =
+    savedArtifacts.find((item) => item.status === "selected") ??
+    savedArtifacts[savedArtifacts.length - 1];
+  const baseSpec =
+    base?.wireframeSpec && typeof base.wireframeSpec === "object"
+      ? (base.wireframeSpec as Record<string, unknown>)
+      : {};
+  const snapshotText = JSON.stringify(snapshot);
+  const portfolio = /portfolio|case stud(?:y|ies)|hiring manager|product designer/i.test(snapshotText);
+  const baseBlocks = Array.isArray(baseSpec.blocks)
+    ? baseSpec.blocks.filter((item): item is string => typeof item === "string")
+    : [];
+  const surface =
+    baseSpec.surface === "modal" || baseSpec.surface === "panel"
+      ? (baseSpec.surface as "modal" | "panel")
+      : ("page" as const);
+  const layout =
+    baseSpec.layout === "case_study"
+      ? ("case_study" as const)
+      : portfolio
+        ? ("portfolio_home" as const)
+        : undefined;
+  const variants = portfolio
+    ? [
+        {
+          title: "Proof-first",
+          headline: "40% faster onboarding",
+          body: "A measurable result leads, followed immediately by the decision and contribution that produced it.",
+          supportingLine: "Makes impact visible before a hiring manager opens the case study.",
+          blocks: ["Outcome-led project card", "Role + contribution", "Selected work"],
+        },
+        {
+          title: "Story-first",
+          headline: "I design complex products that perform",
+          body: "A concise personal point of view leads into projects with clear outcome and ownership signals.",
+          supportingLine: "Balances personal voice with proof while keeping the portfolio easy to scan.",
+          blocks: ["Personal positioning", "Outcome + cause", "Project gallery"],
+        },
+        {
+          title: "Work-first",
+          headline: "Selected work",
+          body: "The page moves directly into project evidence, with role and outcome attached to every card.",
+          supportingLine: "Reduces introduction time and makes the strongest work the primary visual hierarchy.",
+          blocks: ["Project grid", "Metric headline", "Contribution tag"],
+        },
+      ]
+    : [
+        {
+          title: "Trust-first",
+          headline: "Let your agent finish this import",
+          body: "Review what will happen before anything changes.",
+          supportingLine: "Makes control and preview the strongest message before asking for commitment.",
+          blocks: ["Preview the first 10", "You stay in control", "Nothing changes until approval"],
+        },
+        {
+          title: "Preview-first",
+          headline: "Review the first 10 proposed tags",
+          body: "See the agent's work, correct anything, then decide whether to continue.",
+          supportingLine: "Leads with tangible proof of usefulness and keeps the trial decision secondary.",
+          blocks: ["Sample results", "Edit or reject", "Apply after approval"],
+        },
+        {
+          title: "Outcome-first",
+          headline: "Finish this import without manual tagging",
+          body: "The result leads while review and control remain visible underneath.",
+          supportingLine: "Creates more urgency while preserving the safeguards established in the wireframe.",
+          blocks: ["Task outcome", "Completion preview", "Manual control"],
+        },
+      ];
+
+  const artifacts = variants.map((variant) => ({
+    kind: "hifi_design" as const,
+    title: variant.title,
+    status: "exploring" as const,
+    supportingLine: variant.supportingLine,
+    ingredients: variant.blocks,
+    wireframeSpec: {
+      surface,
+      layout,
+      eyebrow:
+        typeof baseSpec.eyebrow === "string"
+          ? baseSpec.eyebrow
+          : portfolio
+            ? "Product Designer"
+            : "AI import assistant",
+      headline: variant.headline,
+      body: variant.body,
+      primaryAction:
+        typeof baseSpec.primaryAction === "string"
+          ? baseSpec.primaryAction
+          : portfolio
+            ? "View project"
+            : "Preview first 10",
+      secondaryAction:
+        typeof baseSpec.secondaryAction === "string"
+          ? baseSpec.secondaryAction
+          : portfolio
+            ? "Contact"
+            : "Maybe later",
+      blocks: [...variant.blocks, ...baseBlocks].slice(0, 4),
+    },
+    step: "refine_treatments" as const,
+  }));
+  const existingNonHiFi = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind !== "hifi_design",
+  );
+
+  return {
+    ...turn,
+    reply:
+      `**Three visible high-fidelity treatments are ready.** I'd start with ${artifacts[0].title} because ${artifacts[0].supportingLine.toLowerCase()} Compare the main design and alternatives, then choose or combine what works.`,
+    activeStep: "refine_treatments",
+    stepGate: {
+      linkedDecision: "Which high-fidelity treatment to select for review",
+      blocking: false,
+      disposition: "proceed",
+    },
+    specUpdates: {
+      ...turn.specUpdates,
+      milestoneArtifacts: [...existingNonHiFi, ...artifacts],
+    },
+    guidePanel: {
+      title: STEP_TITLES.refine_treatments,
+      captured: artifacts.map((artifact) => artifact.title),
+      need: "",
+      priorSummary: "High-fidelity treatments generated from the selected wireframe.",
+    },
+    activityEvents: [
+      ...turn.activityEvents,
+      {
+        type: "milestone_captured",
+        importance: "milestone",
+        label: "Generated 3 visible high-fidelity treatments",
+      },
+    ],
+    quickReplies: [],
+    recommendedQuickReply: undefined,
+  };
+}
+
 /**
  * The decision-criticality gate's brevity contract, enforced as code: a
  * structurally-valid turn that violates the concise-reply rules (too long,
@@ -944,6 +1112,27 @@ export async function withPolicyRetry(
       );
       if (repairedStyle.ok && repairedPolicy.ok) {
         return { status: 200, json: repairedTreatments };
+      }
+    }
+
+    const repairedHiFi = repairGenerateHiFi(
+      candidate,
+      policyCheck.reasons,
+      policyContext,
+    );
+    if (repairedHiFi) {
+      const repairedStyle = checkReplyStyle(
+        repairedHiFi.reply,
+        repairedHiFi.responseMode ?? "concise",
+        { activeStep: repairedHiFi.activeStep },
+      );
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repairedHiFi,
+        policyContext,
+      );
+      if (repairedStyle.ok && repairedPolicy.ok) {
+        return { status: 200, json: repairedHiFi };
       }
     }
 

@@ -153,4 +153,37 @@ describe("DirectionCards pattern workspace", () => {
       'aria-label="Open large wireframe for Outcome-led homepage"',
     );
   });
+
+  it("renders hi-fi alternatives without requiring hosted thumbnails", () => {
+    const artifacts: MilestoneArtifact[] = ["Trust-first", "Outcome-first"].map(
+      (title, index) => ({
+        id: `hifi-${index}`,
+        kind: "hifi_design" as const,
+        title,
+        status: index === 0 ? ("selected" as const) : ("exploring" as const),
+        supportingLine: "A visible high-fidelity treatment.",
+        ingredients: ["Preview", "Control", "Primary action"],
+        wireframeSpec: {
+          surface: "modal" as const,
+          headline: title === "Trust-first" ? "Review before anything changes" : "Finish the import faster",
+          body: "The product-context treatment is visible in the card.",
+          primaryAction: "Preview first 10",
+          secondaryAction: "Maybe later",
+          blocks: ["Preview", "Control", "Approval"],
+        },
+        createdAt: "2026-08-27T12:00:00.000Z",
+        step: "refine_treatments" as const,
+      }),
+    );
+
+    const html = renderToStaticMarkup(
+      <DirectionCards artifacts={artifacts} onChoose={vi.fn()} onContinue={vi.fn()} />,
+    );
+
+    expect(html).toContain("hifi-visual");
+    expect(html).toContain("Review before anything changes");
+    expect(html).toContain("Review selected design");
+    expect(html).toContain("wireframe-comparison-rail");
+    expect(html).not.toContain("Live example required");
+  });
 });

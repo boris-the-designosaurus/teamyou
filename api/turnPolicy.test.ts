@@ -1480,6 +1480,44 @@ describe("checkTurnPolicy", () => {
     expect(prompt).toContain("Do not describe options that have no artifact");
   });
 
+  it("requires 2-3 drawable hi-fi alternatives before version review", () => {
+    const result = checkTurnPolicy(
+      "refine_treatments",
+      turn({
+        reply: "**Advancing to Select a version for review** — Treatment A is proposed.",
+        activeStep: "select_for_review",
+        stepGate: {
+          linkedDecision: "Confirm version",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {
+          milestoneArtifacts: [{
+            kind: "hifi_design",
+            title: "Treatment A",
+            status: "selected",
+            step: "select_for_review",
+          }],
+        },
+        guidePanel: {
+          title: "Select a version for review",
+          need: "Confirm version",
+          nextPrompt: "Prepare this version?",
+        },
+        quickReplies: ["Prepare for build", "Compare again"],
+      }),
+      { latestUserText: "Ready to propose hifi design" },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toContain(
+      "hi-fi proposal action must immediately show",
+    );
+    expect(turnPolicyCorrectionPrompt(result)).toContain(
+      "2-3 visually distinct hifi_design",
+    );
+  });
+
   it("allows Generate wireframes to complete selected-pattern review and advance", () => {
     const result = checkTurnPolicy(
       "find_patterns",

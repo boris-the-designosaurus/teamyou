@@ -50,6 +50,8 @@ const PORTFOLIO_CONTEXT =
 const FRESH_PATTERN_REQUEST =
   /\b(?:generate|find|search|retrieve|replace|regenerate|refresh)\b[\s\S]{0,40}\b(?:fresh|new|different|more)?\s*(?:patterns?|pattern cards?|shortlist|examples?)\b/i;
 const GENERATE_WIREFRAMES_REQUEST = /^\s*Generate wireframes\b/i;
+const PROPOSE_HIFI_REQUEST =
+  /\b(?:ready to propose|propose|generate|create|show)\b[\s\S]{0,50}\b(?:hi[- ]?fi|high[- ]?fidelity|visual treatments?|mockups?)\b/i;
 const VISUAL_TREATMENT_CHOICE =
   /\b(?:visual|layout|wireframe|treatment|variation|version|hero|project card|card content|content format|metric|outcome)\b/i;
 
@@ -180,6 +182,22 @@ function turnHasDrawableWireframes(turn: CoachTurnResponse): boolean {
     wireframes.length >= 2 &&
     wireframes.length <= 3 &&
     wireframes.every(
+      (artifact) =>
+        !!artifact.wireframeSpec &&
+        hasText(artifact.wireframeSpec.headline) &&
+        !!artifact.wireframeSpec.blocks?.length,
+    )
+  );
+}
+
+function turnHasDrawableHiFi(turn: CoachTurnResponse): boolean {
+  const designs = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "hifi_design",
+  );
+  return (
+    designs.length >= 2 &&
+    designs.length <= 3 &&
+    designs.every(
       (artifact) =>
         !!artifact.wireframeSpec &&
         hasText(artifact.wireframeSpec.headline) &&
@@ -406,6 +424,9 @@ export function checkTurnPolicy(
   const newWireframes = (turn.specUpdates.milestoneArtifacts ?? []).filter(
     (artifact) => artifact.kind === "wireframe",
   );
+  const newHiFiDesigns = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "hifi_design",
+  );
   if (
     GENERATE_WIREFRAMES_REQUEST.test(context.latestUserText ?? "") &&
     (newWireframes.length < 2 ||
@@ -418,6 +439,22 @@ export function checkTurnPolicy(
   ) {
     reasons.push(
       "the Generate wireframes action must immediately return 2-3 drawable wireframe artifacts with complete wireframeSpec data",
+    );
+  }
+  if (
+    PROPOSE_HIFI_REQUEST.test(context.latestUserText ?? "") &&
+    (turn.activeStep !== "refine_treatments" ||
+      newHiFiDesigns.length < 2 ||
+      newHiFiDesigns.length > 3 ||
+      newHiFiDesigns.some(
+        (artifact) =>
+          !artifact.wireframeSpec ||
+          !hasText(artifact.wireframeSpec.headline) ||
+          !(artifact.wireframeSpec.blocks?.length),
+      ))
+  ) {
+    reasons.push(
+      "the hi-fi proposal action must immediately show 2-3 drawable hifi_design alternatives before advancing to version review",
     );
   }
   const treatmentChoiceText = [
@@ -499,7 +536,7 @@ export function checkTurnPolicy(
     replyQuestions === 0;
   const performedVisualTreatmentExploration =
     turn.activeStep === "refine_treatments" &&
-    turnHasDrawableWireframes(turn) &&
+    (turnHasDrawableWireframes(turn) || turnHasDrawableHiFi(turn)) &&
     replyQuestions === 0;
 
   // Framing is a guided conversation, so an acknowledgement-only turn is a
@@ -642,6 +679,20 @@ export function checkTurnPolicy(
 }
 
 export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
+  if (
+    check.reasons.some((reason) =>
+      reason.includes("hi-fi proposal action must immediately show"),
+    )
+  ) {
+    return (
+      `The user asked to carry the selected wireframe into high-fidelity design, but you advanced with a blank or single text-only artifact. ` +
+      `Re-send the SAME turn at refine_treatments with 2-3 visually distinct hifi_design milestoneArtifacts in specUpdates. ` +
+      `Every artifact must include a complete wireframeSpec (surface, concrete headline/body/actions, and 2-4 blocks) so TeamYou can render the actual mockup without an external image URL. ` +
+      `Preserve the selected wireframe's structure and locked content while varying visual hierarchy/treatment. Recommend one with a grounded reason, ` +
+      `ask no question, keep quickReplies empty and guidePanel.need empty, and keep the workspace nonblocking so the visible designs are the choices. ` +
+      `Do not advance to select_for_review until the user has seen and selected one of these designs.`
+    );
+  }
   if (
     check.reasons.some((reason) =>
       reason.includes("visual treatment choice must show"),
