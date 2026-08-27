@@ -16,7 +16,7 @@ import {
   threadsForArtifact,
 } from "../commentThreads";
 import { CloseIcon, ChevronDownIcon, ShieldIcon, SendIcon, CheckmarkIcon } from "../icons";
-import { WireframeVisual } from "./DirectionCards";
+import { HiFiVisual, WireframeVisual } from "./DirectionCards";
 
 const SEVERITY_LABEL: Record<FindingSeverity, string> = {
   blocker: "Blocker",
@@ -154,6 +154,8 @@ export function ReviewWorkspace(props: {
               <span className="review-version-preview">
                 {candidate.kind === "wireframe" ? (
                   <WireframeVisual artifact={candidate} />
+                ) : candidate.kind === "hifi_design" ? (
+                  <HiFiVisual artifact={candidate} />
                 ) : candidate.thumbnailUrl ? (
                   <img src={candidate.thumbnailUrl} alt="" />
                 ) : (
@@ -180,6 +182,8 @@ export function ReviewWorkspace(props: {
           >
             {artifact.kind === "wireframe" ? (
               <WireframeVisual artifact={artifact} />
+            ) : artifact.kind === "hifi_design" ? (
+              <HiFiVisual artifact={artifact} />
             ) : artifact.thumbnailUrl ? (
               <img src={artifact.thumbnailUrl} alt={artifact.title} />
             ) : (

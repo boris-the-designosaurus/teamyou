@@ -177,6 +177,19 @@ export function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
   );
 }
 
+/** High-fidelity treatments use the same structural spec as wireframes, then
+ * apply a product-context visual layer. This guarantees a visible design even
+ * when the Coach cannot provide a hosted image URL. */
+export function HiFiVisual({ artifact }: { artifact: MilestoneArtifact }) {
+  const context = `${artifact.title} ${artifact.supportingLine ?? ""} ${artifact.wireframeSpec?.layout ?? ""}`;
+  const portfolio = /portfolio|homepage|case study|project grid|product designer/i.test(context);
+  return (
+    <div className={`hifi-visual ${portfolio ? "hifi-portfolio" : "hifi-product"}`}>
+      <WireframeVisual artifact={artifact} />
+    </div>
+  );
+}
+
 function PatternThumbnail({
   artifact,
   imageUrlOverride,
@@ -199,6 +212,9 @@ function PatternThumbnail({
 
   if (artifact.kind === "wireframe") {
     return <WireframeVisual artifact={artifact} />;
+  }
+  if (artifact.kind === "hifi_design") {
+    return <HiFiVisual artifact={artifact} />;
   }
 
   if (!imageUrl || failed) {
@@ -349,8 +365,10 @@ export function DirectionCards(props: {
 
   const isShortlist = artifacts[0].kind === "pattern_shortlist";
   const isWireframeSet = artifacts[0].kind === "wireframe";
+  const isHiFiSet = artifacts[0].kind === "hifi_design";
+  const isDesignSet = isWireframeSet || isHiFiSet;
   const chosen = artifacts.filter((a) => CHOSEN_STATUSES.has(a.status));
-  const focusedWireframe = isWireframeSet
+  const focusedWireframe = isDesignSet
     ? artifacts.find((artifact) => artifact.id === focusedWireframeId) ?? chosen[0] ?? artifacts[0]
     : undefined;
   const refreshThumbnail = async (artifact: MilestoneArtifact) => {
@@ -377,7 +395,7 @@ export function DirectionCards(props: {
     }
   };
 
-  if (isWireframeSet && focusedWireframe) {
+  if (isDesignSet && focusedWireframe) {
     const isFocusedChosen = CHOSEN_STATUSES.has(focusedWireframe.status);
     return (
       <div className="direction-cards-wrap wireframe-comparison-wrap">
@@ -391,11 +409,13 @@ export function DirectionCards(props: {
                 onClick={() => setFocusedWireframeId(artifact.id)}
                 title={artifact.title}
               >
-                <PatternThumbnail artifact={artifact} />
+                {artifact.kind === "hifi_design"
+                  ? <HiFiVisual artifact={artifact} />
+                  : <PatternThumbnail artifact={artifact} />}
               </button>
             ))}
           </aside>
-          <article className={`wireframe-comparison-card${isFocusedChosen ? " chosen" : ""}`}>
+          <article className={`wireframe-comparison-card${isFocusedChosen ? " chosen" : ""}${isHiFiSet ? " hifi" : ""}`}>
             <header className="wireframe-comparison-header">
               <h3>{focusedWireframe.title}</h3>
               <div>
@@ -426,7 +446,9 @@ export function DirectionCards(props: {
               onClick={() => props.onOpenWorkspace?.(focusedWireframe.id)}
               aria-label={`Open large wireframe for ${focusedWireframe.title}`}
             >
-              <WireframeVisual artifact={focusedWireframe} />
+              {focusedWireframe.kind === "hifi_design"
+                ? <HiFiVisual artifact={focusedWireframe} />
+                : <WireframeVisual artifact={focusedWireframe} />}
             </button>
             <div className="wireframe-comparison-details">
               {focusedWireframe.supportingLine && (
@@ -451,7 +473,7 @@ export function DirectionCards(props: {
               disabled={chosen.length === 0}
               onClick={() => onContinue(chosen)}
             >
-              Develop selected direction
+              {isHiFiSet ? "Review selected design" : "Develop selected direction"}
             </button>
           </div>
         )}
@@ -465,7 +487,7 @@ export function DirectionCards(props: {
         {artifacts.map((a) => {
           const isChosen = CHOSEN_STATUSES.has(a.status);
           const canPreview =
-            a.kind === "pattern_shortlist" || a.kind === "wireframe" || !!initialPatternImage(a);
+            a.kind === "pattern_shortlist" || a.kind === "wireframe" || a.kind === "hifi_design" || !!initialPatternImage(a);
           const canRefresh = isPublicHttpUrl(a.sourceUrl);
           const refreshedImage = refreshedImages[a.id];
           const refreshing = refreshingIds[a.id] ?? false;
@@ -476,13 +498,13 @@ export function DirectionCards(props: {
                   type="button"
                   className="direction-card-thumb direction-card-thumb-button"
                   onClick={() =>
-                    a.kind === "wireframe" && props.onOpenWorkspace
+                    (a.kind === "wireframe" || a.kind === "hifi_design") && props.onOpenWorkspace
                       ? props.onOpenWorkspace(a.id)
                       : setPreviewArtifact(a)
                   }
                   disabled={!canPreview}
                   aria-label={
-                    a.kind === "wireframe" && props.onOpenWorkspace
+                    (a.kind === "wireframe" || a.kind === "hifi_design") && props.onOpenWorkspace
                       ? `Open design workspace for ${a.title}`
                       : `View larger example for ${a.title}`
                   }
