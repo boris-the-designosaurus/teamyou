@@ -1600,23 +1600,35 @@ body {
 .wireframe-comparison-visual {
   display: block;
   width: calc(100% - 56px);
-  min-height: 520px;
+  height: 360px;
+  max-height: 360px;
   margin: 0 28px;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 0;
   border-radius: 18px;
   background: #f3f1ec;
   cursor: zoom-in;
+  scrollbar-gutter: stable;
 }
-.wireframe-comparison-visual > .wireframe-visual { min-height: 520px; font-size: 12px; }
+.wireframe-comparison-visual > .wireframe-visual {
+  height: auto;
+  min-height: 360px;
+  overflow: visible;
+  font-size: 12px;
+}
+.wireframe-comparison-visual > .wireframe-visual-page {
+  height: auto;
+  overflow: visible;
+}
 .wireframe-comparison-visual > .wireframe-visual-page .wireframe-page-canvas { min-height: 900px; }
 .wireframe-comparison-details { padding: 20px 28px 28px; }
 .wireframe-comparison-details p { margin: 0 0 16px; line-height: 1.5; }
 @media (max-width: 720px) {
   .wireframe-comparison { grid-template-columns: 1fr; }
   .wireframe-comparison-rail { flex-direction: row; overflow-x: auto; }
-  .wireframe-comparison-visual { min-height: 420px; }
+  .wireframe-comparison-visual { height: 360px; max-height: 360px; }
 }
 .direction-card-thumb {
   width: 100%;
@@ -1678,15 +1690,31 @@ body {
   to { transform: rotate(360deg); }
 }
 .wireframe-visual {
+  /* One low-fidelity visual language for every project and every direction.
+     Layout may change; these tokens do not. */
+  --wf-canvas: #ffffff;
+  --wf-stage: #efede8;
+  --wf-fill: #e2dfd8;
+  --wf-fill-soft: #f7f6f3;
+  --wf-line: #d7d4cd;
+  --wf-border: #918d85;
+  --wf-text: #292929;
+  --wf-text-muted: #6f6b65;
+  --wf-radius-s: 6px;
+  --wf-radius-m: 10px;
+  --wf-space: 8px;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  color: #222;
-  background: #f3f1ec;
+  color: var(--wf-text);
+  background: var(--wf-stage);
+  font-family: var(--font-sans);
   font-size: 9px;
   line-height: 1.25;
   text-align: left;
 }
+.wireframe-visual,
+.wireframe-visual * { box-sizing: border-box; }
 .wireframe-visual-page {
   position: relative;
   height: 100%;
@@ -2142,6 +2170,62 @@ body {
 .wireframe-actions .primary {
   color: #fff;
   background: #55524e;
+}
+/* Shared wireframe material tokens. These late overrides deliberately keep
+   portfolio pages, case studies, panels, and modals visually related. */
+.wireframe-page-canvas,
+.wireframe-site-header,
+.wireframe-home-project-media,
+.wireframe-visual-modal .wireframe-surface,
+.wireframe-visual-panel .wireframe-surface,
+.wireframe-actions span {
+  background: var(--wf-canvas);
+}
+.wireframe-visual-modal,
+.wireframe-visual-panel,
+.wireframe-case-hero,
+.wireframe-case-feature,
+.wireframe-result-cards b,
+.wireframe-contact > div,
+.wireframe-home-project {
+  background: var(--wf-stage);
+}
+.wireframe-brand i,
+.wireframe-social i,
+.wireframe-site-header nav span,
+.wireframe-intro-lines i,
+.wireframe-case-actions b,
+.wireframe-tags i,
+.wireframe-checklist i,
+.wireframe-project-media,
+.wireframe-home-project-media em {
+  background: var(--wf-fill);
+}
+.wireframe-home-project,
+.wireframe-home-project-media em,
+.wireframe-hero-media,
+.wireframe-project-grid article,
+.wireframe-offer-box,
+.wireframe-actions span,
+.wireframe-visual-modal .wireframe-surface,
+.wireframe-visual-panel .wireframe-surface {
+  border-color: var(--wf-border);
+}
+.wireframe-site-header,
+.wireframe-proof-row,
+.wireframe-section-heading i {
+  border-color: var(--wf-line);
+}
+.wireframe-home-intro small,
+.wireframe-home-intro p,
+.wireframe-case-intro p,
+.wireframe-copy,
+.wireframe-eyebrow,
+.wireframe-checklist div,
+.wireframe-project-grid article > small,
+.wireframe-project-grid article > span,
+.wireframe-offer-box > span {
+  color: var(--wf-text-muted);
 }
 .pattern-preview-image .wireframe-visual-modal,
 .pattern-preview-image .wireframe-visual-panel {
