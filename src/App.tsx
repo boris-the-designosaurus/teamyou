@@ -303,6 +303,11 @@ export function App() {
       const newMilestoneArtifactIds = mergedSpec.milestoneArtifacts
         .filter((a) => !priorArtifactIds.has(a.id))
         .map((a) => a.id);
+      const newWireframeArtifactIds = mergedSpec.milestoneArtifacts
+        .filter(
+          (a) => !priorArtifactIds.has(a.id) && a.kind === "wireframe",
+        )
+        .map((a) => a.id);
       // Saved cards normally stay attached to the turn that introduced them.
       // When the user explicitly asks to see them again, re-link the existing
       // shortlist to THIS coach turn so the UI renders the cards at the bottom
@@ -379,6 +384,12 @@ export function App() {
         };
       });
       setGuide(turn.guidePanel);
+      // Wireframes are decisions the user must see at useful scale. Open the
+      // focused workspace as soon as a new comparison is generated instead
+      // of leaving the user to interpret a prose description in chat.
+      if (newWireframeArtifactIds.length > 0) {
+        setReviewArtifactId(newWireframeArtifactIds[0]);
+      }
     } catch (err) {
       if (err instanceof CoachError) {
         setError({ message: err.message, raw: err.raw });

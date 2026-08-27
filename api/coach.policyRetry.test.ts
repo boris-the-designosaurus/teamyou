@@ -79,7 +79,7 @@ const validFinalCorrection: CoachTurnResponse = {
 };
 
 describe("withPolicyRetry", () => {
-  it("repairs a same-step treatment choice mislabeled as nonblocking", async () => {
+  it("turns a text-only treatment choice into visible artifacts", async () => {
     const treatmentChoice: CoachTurnResponse = {
       reply:
         "Both variations hold the outcome-first sequencing while testing tone. **Variation A leads faster with a stated metric**, which best fits the comprehension barrier. Pick A, B, or ask for a different angle to keep refining.",
@@ -116,15 +116,25 @@ describe("withPolicyRetry", () => {
     expect(result.status).toBe(200);
     expect(result.json).toMatchObject({
       activeStep: "refine_treatments",
-      stepGate: { blocking: true, disposition: "ask" },
+      stepGate: { blocking: false, disposition: "proceed" },
       guidePanel: {
-        need: "Preferred variation",
+        need: "",
       },
-      quickReplies: ["Variation A", "Variation B", "See another angle"],
+      quickReplies: [],
     });
-    expect("reply" in result.json ? result.json.reply : "").toContain(
-      "Which should we carry forward",
-    );
+    const artifacts =
+      "specUpdates" in result.json
+        ? result.json.specUpdates.milestoneArtifacts ?? []
+        : [];
+    expect(artifacts).toHaveLength(3);
+    expect(
+      artifacts.every(
+        (artifact) =>
+          artifact.kind === "wireframe" &&
+          !!artifact.wireframeSpec?.headline &&
+          !!artifact.wireframeSpec.blocks?.length,
+      ),
+    ).toBe(true);
     expect(generate).not.toHaveBeenCalled();
   });
 
