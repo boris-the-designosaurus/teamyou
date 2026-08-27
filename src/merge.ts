@@ -42,6 +42,19 @@ export type MakeId = () => string;
 
 export const defaultMakeId: MakeId = () => crypto.randomUUID();
 
+/** Delete one explicit todo and the evidence owned by that todo. Shared/spec
+ * attachments and linked acceptance criteria remain because they are separate
+ * decision-record objects. */
+export function deleteTodo(spec: Spec, todoId: string): Spec {
+  return {
+    ...spec,
+    rules: {
+      ...spec.rules,
+      todos: spec.rules.todos.filter((todo) => todo.id !== todoId),
+    },
+  };
+}
+
 /** Keep model-proposed reference links safe for anchors and preview services. */
 export function normalizePublicUrl(value: string | undefined): string | undefined {
   if (!value) return undefined;
