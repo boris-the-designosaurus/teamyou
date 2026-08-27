@@ -327,6 +327,9 @@ export type ArtifactStatus =
  * comparison in chat, while high-fidelity work still belongs in the design tool. */
 export type WireframeSpec = {
   surface: "page" | "modal" | "panel";
+  /** Page-only composition. Omitted values remain backwards compatible and
+   * are inferred from the artifact copy by the renderer. */
+  layout?: "portfolio_home" | "case_study";
   eyebrow?: string;
   headline: string;
   body?: string;
