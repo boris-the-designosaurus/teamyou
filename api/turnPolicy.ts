@@ -278,9 +278,9 @@ export function checkTurnPolicy(
   const from = FLOW_STEPS.indexOf(previousStep);
   const to = FLOW_STEPS.indexOf(turn.activeStep);
   const generateWireframesTransition =
-    GENERATE_WIREFRAMES_REQUEST.test(context.latestUserText ?? "") &&
     snapshotHasSelectedPattern(context.specSnapshot) &&
-    turnHasDrawableWireframes(turn);
+    turnHasDrawableWireframes(turn) &&
+    turn.activeStep === "choose_direction";
 
   if (to < from) {
     const reopened = turn.flowRevision

@@ -1484,7 +1484,9 @@ describe("checkTurnPolicy", () => {
         quickReplies: [],
       }),
       {
-        latestUserText: "Generate wireframes",
+        // The UI command can be phrased or serialized differently. The
+        // persistent selection plus complete artifacts is the reliable signal.
+        latestUserText: "Use the selected pattern",
         specSnapshot: {
           milestoneArtifacts: [
             {
