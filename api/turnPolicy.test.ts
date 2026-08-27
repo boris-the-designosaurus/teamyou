@@ -55,6 +55,41 @@ describe("checkTurnPolicy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts a PDF-grounded wireframe observation using natural upload language", () => {
+    const result = checkTurnPolicy(
+      "select_for_review",
+      turn({
+        reply:
+          "The uploaded homepage still opens with name and a positioning-style header before the project list, and the case-study wireframe opens with Background, Problem, and Solution before any outcome.",
+        activeStep: "select_for_review",
+        stepGate: {
+          linkedDecision: "Whether the uploaded wireframes satisfy outcome-first sequencing",
+          blocking: true,
+          disposition: "ask",
+        },
+        specUpdates: {
+          evidence: [
+            {
+              kind: "fact",
+              text: "Uploaded homepage wireframe shows the project list below a positioning header.",
+              step: "select_for_review",
+            },
+          ],
+        },
+        guidePanel: {
+          title: "Select a version for review",
+          need: "Confirm outcome-first correction",
+          nextPrompt: "Should I adapt Variation A to this layout?",
+        },
+      }),
+      { latestAttachmentCount: 2 },
+    );
+
+    expect(result.reasons).not.toContain(
+      "the latest user turn included attachments, but the reply does not ground an observation in what they show",
+    );
+  });
+
   it("accepts a concrete observation grounded in an attached analytics dashboard", () => {
     const result = checkTurnPolicy(
       "assess_evidence",

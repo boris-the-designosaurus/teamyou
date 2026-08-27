@@ -33,8 +33,8 @@ const FLEXIBLE_PATTERN_SELECTION =
 const GROUNDED_PATTERN_RECOMMENDATION =
   /\b(?:recommend(?:ed|ing|ation)?|strongest fit|best fit|i(?:'d|’d| would) (?:anchor on|start (?:with|there)|lead with|go with)|my (?:recommendation|pick|choice) is)\b/i;
 const STRATEGIC_EMPHASIS = /\*\*[^*\n]+\*\*/;
-const SCREENSHOT_GROUNDING =
-  /\b(screenshot|image|reference|comparison|current (?:page|screen|site|portfolio)|shown|visible|looking at|based on what (?:is|you've) shown)\b/i;
+const ATTACHMENT_GROUNDING =
+  /\b(screenshots?|images?|pdfs?|documents?|uploads?|uploaded|wireframes?|reference|comparison|current (?:page|screen|site|portfolio)|shown|visible|looking at|based on what (?:is|you've) shown)\b/i;
 const DATA_ARTIFACT =
   /\b(?:ga4|google analytics|analytics dashboard|dashboard|chart|graph|spreadsheet|report)\b/i;
 const DATA_ARTIFACT_OBSERVATION =
@@ -51,15 +51,15 @@ const FRESH_PATTERN_REQUEST =
   /\b(?:generate|find|search|retrieve|replace|regenerate|refresh)\b[\s\S]{0,40}\b(?:fresh|new|different|more)?\s*(?:patterns?|pattern cards?|shortlist|examples?)\b/i;
 const GENERATE_WIREFRAMES_REQUEST = /^\s*Generate wireframes for:/i;
 
-function groundsLatestScreenshot(reply: string): boolean {
+function groundsLatestAttachment(reply: string): boolean {
   return (
-    SCREENSHOT_GROUNDING.test(reply) ||
+    ATTACHMENT_GROUNDING.test(reply) ||
     (DATA_ARTIFACT.test(reply) && DATA_ARTIFACT_OBSERVATION.test(reply))
   );
 }
 
-function turnGroundsLatestScreenshot(turn: CoachTurnResponse): boolean {
-  if (groundsLatestScreenshot(turn.reply)) return true;
+function turnGroundsLatestAttachment(turn: CoachTurnResponse): boolean {
+  if (groundsLatestAttachment(turn.reply)) return true;
 
   const evidenceText = (turn.specUpdates.evidence ?? [])
     .map((item) => item.text)
@@ -77,7 +77,7 @@ function turnGroundsLatestScreenshot(turn: CoachTurnResponse): boolean {
   const structuredEvidenceText = `${evidenceText} ${evidenceBriefText}`;
 
   return (
-    SCREENSHOT_GROUNDING.test(evidenceText) ||
+    ATTACHMENT_GROUNDING.test(evidenceText) ||
     (DATA_ARTIFACT.test(structuredEvidenceText) &&
       ((evidenceBrief?.stats?.length ?? 0) > 0 ||
         (turn.specUpdates.evidence ?? []).some((item) => item.kind === "fact")))
@@ -324,10 +324,10 @@ export function checkTurnPolicy(
 
   if (
     (context.latestAttachmentCount ?? 0) > 0 &&
-    !turnGroundsLatestScreenshot(turn)
+    !turnGroundsLatestAttachment(turn)
   ) {
     reasons.push(
-      "the latest user turn included screenshots, but the reply does not ground an observation in what they show",
+      "the latest user turn included attachments, but the reply does not ground an observation in what they show",
     );
   }
 
@@ -353,7 +353,7 @@ export function checkTurnPolicy(
     previousStep === "assess_evidence" &&
     (context.latestAttachmentCount ?? 0) > 0 &&
     /\d/.test(turn.reply) &&
-    groundsLatestScreenshot(turn.reply);
+    groundsLatestAttachment(turn.reply);
   const quantitativeEvidenceTurn =
     previousStep === "assess_evidence" &&
     (latestUserSuppliedNumbers ||
@@ -717,7 +717,7 @@ export function turnPolicyCorrectionPrompt(check: TurnPolicyCheck): string {
     `moment already imply the visitor's judgment, synthesize one recommended judgment into brief.task and ` +
     `advance instead of asking the designer to choose among overlapping evaluation dimensions. Keep ` +
     `quickReplies empty so a role is never presented as an alternative to an arrival or workflow moment. ` +
-    `When the latest user turn includes screenshots, ground one concise observation either in the reply ` +
+    `When the latest user turn includes screenshots or documents, ground one concise observation either in the reply ` +
     `or in the visible structured evidence/evidenceBrief; do not repeat report stats in prose merely to prove ` +
     `inspection. Distinguish current-state evidence from inspiration/reference, and do not replace ` +
     `the user's supported barrier with an unrelated theory. When quantitative evidence is captured during Assess ` +
