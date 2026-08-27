@@ -13,6 +13,7 @@ import {
 import {
   chooseMilestoneArtifact,
   countPassedCategories,
+  deleteTodo,
   mergeSpec,
   setMilestoneArtifactStatus,
   toActivityEvents,
@@ -411,6 +412,19 @@ export function App() {
     setWorkItem((prev) => ({ ...prev, spec: updater(prev.spec), updatedAt: nowISO() }));
   }
 
+  function removeTodo(todoId: string) {
+    const todo = workItem.spec.rules.todos.find((item) => item.id === todoId);
+    if (!todo) return;
+    const confirmed = window.confirm(
+      `Delete “${todo.title}”? Any evidence attached only to this todo will also be removed.`,
+    );
+    if (!confirmed) return;
+    updateSpec((spec) => deleteTodo(spec, todoId));
+    setActiveTarget((target) =>
+      target.kind === "todo" && target.id === todoId ? { kind: "spec" } : target,
+    );
+  }
+
   function approveForBuild(artifactId: string) {
     const artifact = workItem.spec.milestoneArtifacts.find((item) => item.id === artifactId);
     if (!artifact || loading) return;
@@ -664,6 +678,7 @@ export function App() {
                   updatedAt: nowISO(),
                 }))
               }
+              onDeleteTodo={removeTodo}
             />
           )}
         </div>
