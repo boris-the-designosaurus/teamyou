@@ -555,9 +555,16 @@ export function App() {
     return (
       <ReviewWorkspace
         artifact={reviewArtifact}
+        artifacts={workItem.spec.milestoneArtifacts.filter(
+          (artifact) => artifact.kind === reviewArtifact.kind,
+        )}
         spec={workItem.spec}
         reviewCategories={REVIEW_CATEGORIES}
         onClose={() => setReviewArtifactId(null)}
+        onSelectArtifact={setReviewArtifactId}
+        onChooseArtifact={(artifactId) =>
+          updateSpec((spec) => chooseMilestoneArtifact(spec, artifactId))
+        }
         onUpdateSpec={updateSpec}
         onRunReview={() => void runArtifactReview(reviewArtifact.id)}
         onApproveForBuild={() =>
@@ -599,6 +606,7 @@ export function App() {
                   updatedAt: nowISO(),
                 }))
               }
+              onOpenArtifactWorkspace={setReviewArtifactId}
             />
           ) : (
             <SpecDoc
