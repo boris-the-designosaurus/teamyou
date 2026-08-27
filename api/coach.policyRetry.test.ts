@@ -201,6 +201,74 @@ describe("withPolicyRetry", () => {
     expect(generate).not.toHaveBeenCalled();
   });
 
+  it("keeps valid generated wireframes and removes a contradictory trailing question", async () => {
+    const artifacts = ["Impact-led hero", "Personal intro", "Case study narrative"].map(
+      (title, index) => ({
+        kind: "wireframe" as const,
+        title,
+        status: "exploring" as const,
+        step: "choose_direction" as const,
+        wireframeSpec: {
+          surface: "page" as const,
+          layout: index === 2 ? ("case_study" as const) : ("portfolio_home" as const),
+          headline: title,
+          blocks: ["Outcome", "Contribution", "Project card"],
+        },
+      }),
+    );
+    const validCardsWrongGate: CoachTurnResponse = {
+      reply:
+        "Three wireframes are up. Want to develop the first one further, or combine elements from the other two?",
+      activeStep: "choose_direction",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Which wireframe direction to develop further",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: { milestoneArtifacts: artifacts },
+      guidePanel: {
+        title: "Choose a direction",
+        captured: ["Three wireframes generated"],
+        need: "Direction to develop",
+        nextPrompt: "Want to develop the first one further?",
+      },
+      activityEvents: [],
+      quickReplies: [],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("Valid wireframes should be repaired without another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "find_patterns",
+      [],
+      JSON.stringify(validCardsWrongGate),
+      validCardsWrongGate,
+      generate,
+      {
+        latestUserText: "Generate wireframes",
+        specSnapshot: {
+          milestoneArtifacts: [
+            { kind: "pattern_shortlist", title: "Joey Shiner", status: "selected" },
+          ],
+        },
+      },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "choose_direction",
+      stepGate: { blocking: false, disposition: "proceed" },
+      guidePanel: { need: "" },
+      specUpdates: { milestoneArtifacts: artifacts },
+    });
+    expect("reply" in result.json ? result.json.reply : "").not.toContain("?");
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it("accepts a valid second correction instead of returning a blank policy error", async () => {
     const generated = [
       JSON.stringify(stillInvalid),
