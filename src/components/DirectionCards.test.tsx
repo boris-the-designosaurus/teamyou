@@ -181,9 +181,11 @@ describe("DirectionCards pattern workspace", () => {
     );
 
     expect(html).toContain("hifi-visual");
+    expect(html).toContain("hifi-product-scene");
     expect(html).toContain("Review before anything changes");
     expect(html).toContain("Review selected design");
     expect(html).toContain("wireframe-comparison-rail");
+    expect(html).not.toContain('class="wireframe-visual');
     expect(html).not.toContain("Live example required");
   });
 });

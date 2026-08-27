@@ -521,4 +521,65 @@ describe("withPolicyRetry", () => {
     expect(generate).not.toHaveBeenCalled();
   });
 
+  it("records an authorized reopen when hi-fi alternatives return from review selection", async () => {
+    const treatments: CoachTurnResponse = {
+      reply: "Three hi-fi treatments are on the board. **Dominant-metric leads** because it gives the locked outcome-first criterion the greatest visual weight.",
+      activeStep: "refine_treatments",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Which hi-fi treatment to carry into review",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {
+        milestoneArtifacts: ["Dominant-metric", "Balanced-weight", "Card-framed"].map((title) => ({
+          kind: "hifi_design" as const,
+          title,
+          status: "exploring" as const,
+          step: "refine_treatments" as const,
+          wireframeSpec: {
+            surface: "page" as const,
+            layout: "portfolio_home" as const,
+            headline: "Cut onboarding time 42%",
+            blocks: ["Outcome", "Personal voice", "Selected work"],
+          },
+        })),
+      },
+      guidePanel: {
+        title: "Explore and refine treatments",
+        captured: ["Three visible hi-fi treatments"],
+        need: "",
+      },
+      activityEvents: [],
+      quickReplies: [],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic repair should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "select_for_review",
+      [],
+      JSON.stringify(treatments),
+      treatments,
+      generate,
+      {
+        latestUserText: "Propose hi-fi design",
+        workItemType: "design_project",
+      },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "refine_treatments",
+      flowRevision: {
+        reopenedStep: "refine_treatments",
+        preservesExistingWork: true,
+      },
+    });
+    expect(generate).not.toHaveBeenCalled();
+  });
+
 });

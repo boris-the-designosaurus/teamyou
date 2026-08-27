@@ -112,7 +112,7 @@ export function ReviewWorkspace(props: {
   }
 
   return (
-    <div className="review-workspace">
+    <div className={`review-workspace kind-${artifact.kind}`}>
       <div className="review-workspace-topbar">
         <div className="review-workspace-title">
           <button type="button" className="review-workspace-back" onClick={props.onClose} aria-label="Back to work">←</button>
