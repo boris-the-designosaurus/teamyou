@@ -43,7 +43,7 @@ import { ActivityFeed } from "./components/ActivityFeed";
 import { ProcessMap } from "./components/ProcessMap";
 import { Today } from "./components/Today";
 import { ReviewWorkspace } from "./components/ReviewWorkspace";
-import { REVIEW_CATEGORIES } from "./types";
+import { REVIEW_CATEGORIES, WIREFRAME_REVIEW_CATEGORIES } from "./types";
 import { buildAskStreakNudge, nextAskStreak, turnWasAsk } from "./coachGate";
 import { findLastCoachMessageId } from "./chatLocate";
 import { appendCoachTurnMessages, requestsPatternCardRedisplay } from "./messageOrder";
@@ -423,12 +423,15 @@ export function App() {
     setReviewRunning(true);
     setError(null);
     try {
+      const isWireframeReview = artifact.kind === "wireframe";
       const acceptanceCriteriaNote =
         artifact.kind === "working_build" && workItem.spec.rules.acceptanceCriteria.length > 0
           ? ` For each locked acceptance criterion this build's behavior confirms or fails, also return specUpdates.acceptanceCriteriaStatusUpdates (real criterion id, status "met" or "failed").`
           : "";
       const turn = await callCoachScoped(
-        `Run a review of the artifact "${artifact.title}" (artifactId "${artifact.id}") against the locked problem, scope, acceptance criteria, and design-system expectations. Return findings in specUpdates.reviewFindings scoped to that artifactId, each with category, severity, finding, evidence, impact, expectedCorrection, and relatedCriterion.${acceptanceCriteriaNote} This is a review action, not a framing turn — leave activeStep as "${workItem.currentStep}" and do not ask a framing question.`,
+        isWireframeReview
+          ? `Run a STRUCTURAL WIREFRAME review of "${artifact.title}" (artifactId "${artifact.id}"). Check only whether this direction addresses the original locked problem, satisfies the locked acceptance criteria, creates a clear information hierarchy/core flow, stays within scope, and avoids a critical conceptual risk. Use only categories problem_alignment, acceptance_criteria, interaction_states, and critical_risks; at this stage interaction_states means the core flow, not detailed UI states. Do NOT review visual polish, design-system compliance, accessibility implementation, responsive implementation, or production details. Return findings in specUpdates.reviewFindings scoped to that artifactId, each with category, severity, finding, evidence, impact, expectedCorrection, and relatedCriterion. This is a review action, not a framing turn — leave activeStep as "${workItem.currentStep}" and do not ask a framing question.`
+          : `Run a review of the artifact "${artifact.title}" (artifactId "${artifact.id}") against the locked problem, scope, acceptance criteria, and design-system expectations. Return findings in specUpdates.reviewFindings scoped to that artifactId, each with category, severity, finding, evidence, impact, expectedCorrection, and relatedCriterion.${acceptanceCriteriaNote} This is a review action, not a framing turn — leave activeStep as "${workItem.currentStep}" and do not ask a framing question.`,
       );
       updateSpec((sp) => {
         let next = mergeSpec(sp, turn.specUpdates);
@@ -570,7 +573,11 @@ export function App() {
           (artifact) => artifact.kind === reviewArtifact.kind,
         )}
         spec={workItem.spec}
-        reviewCategories={REVIEW_CATEGORIES}
+        reviewCategories={
+          reviewArtifact.kind === "wireframe"
+            ? WIREFRAME_REVIEW_CATEGORIES
+            : REVIEW_CATEGORIES
+        }
         onClose={() => setReviewArtifactId(null)}
         onSelectArtifact={setReviewArtifactId}
         onChooseArtifact={(artifactId) =>

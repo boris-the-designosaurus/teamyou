@@ -334,6 +334,9 @@ export function DirectionCards(props: {
   const [previewArtifact, setPreviewArtifact] = useState<MilestoneArtifact | null>(null);
   const [refreshedImages, setRefreshedImages] = useState<Record<string, string>>({});
   const [refreshingIds, setRefreshingIds] = useState<Record<string, boolean>>({});
+  const [focusedWireframeId, setFocusedWireframeId] = useState(
+    () => artifacts.find((artifact) => CHOSEN_STATUSES.has(artifact.status))?.id ?? artifacts[0]?.id ?? "",
+  );
   const objectUrls = useRef<Record<string, string>>({});
 
   useEffect(
@@ -347,6 +350,9 @@ export function DirectionCards(props: {
   const isShortlist = artifacts[0].kind === "pattern_shortlist";
   const isWireframeSet = artifacts[0].kind === "wireframe";
   const chosen = artifacts.filter((a) => CHOSEN_STATUSES.has(a.status));
+  const focusedWireframe = isWireframeSet
+    ? artifacts.find((artifact) => artifact.id === focusedWireframeId) ?? chosen[0] ?? artifacts[0]
+    : undefined;
   const refreshThumbnail = async (artifact: MilestoneArtifact) => {
     const freshUrl = pagePreviewUrl(artifact.sourceUrl, { force: true });
     if (!freshUrl || refreshingIds[artifact.id]) return;
@@ -370,6 +376,88 @@ export function DirectionCards(props: {
       setRefreshingIds((current) => ({ ...current, [artifact.id]: false }));
     }
   };
+
+  if (isWireframeSet && focusedWireframe) {
+    const isFocusedChosen = CHOSEN_STATUSES.has(focusedWireframe.status);
+    return (
+      <div className="direction-cards-wrap wireframe-comparison-wrap">
+        <div className="wireframe-comparison">
+          <aside className="wireframe-comparison-rail" aria-label="Wireframe directions">
+            {artifacts.map((artifact) => (
+              <button
+                key={artifact.id}
+                type="button"
+                className={`wireframe-comparison-thumb${artifact.id === focusedWireframe.id ? " active" : ""}`}
+                onClick={() => setFocusedWireframeId(artifact.id)}
+                title={artifact.title}
+              >
+                <PatternThumbnail artifact={artifact} />
+              </button>
+            ))}
+          </aside>
+          <article className={`wireframe-comparison-card${isFocusedChosen ? " chosen" : ""}`}>
+            <header className="wireframe-comparison-header">
+              <h3>{focusedWireframe.title}</h3>
+              <div>
+                {props.onOpenWorkspace && (
+                  <button
+                    type="button"
+                    className="wireframe-comparison-edit"
+                    onClick={() => props.onOpenWorkspace?.(focusedWireframe.id)}
+                    aria-label={`Edit and review ${focusedWireframe.title}`}
+                    title="Open design workspace"
+                  >
+                    ✎
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`direction-card-choose${isFocusedChosen ? " chosen" : ""}`}
+                  onClick={() => onChoose(focusedWireframe.id)}
+                  aria-pressed={isFocusedChosen}
+                >
+                  <CheckmarkIcon /> {isFocusedChosen ? "Chosen" : "Choose"}
+                </button>
+              </div>
+            </header>
+            <button
+              type="button"
+              className="wireframe-comparison-visual"
+              onClick={() => props.onOpenWorkspace?.(focusedWireframe.id)}
+              aria-label={`Open large wireframe for ${focusedWireframe.title}`}
+            >
+              <WireframeVisual artifact={focusedWireframe} />
+            </button>
+            <div className="wireframe-comparison-details">
+              {focusedWireframe.supportingLine && (
+                <p><strong>Why this fits:</strong> {focusedWireframe.supportingLine}</p>
+              )}
+              {focusedWireframe.ingredients?.length ? (
+                <div className="direction-card-ingredients" aria-label="Useful ingredients">
+                  {focusedWireframe.ingredients.map((ingredient) => (
+                    <span key={ingredient} className="direction-card-ingredient">{ingredient}</span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </article>
+        </div>
+        {onContinue && (
+          <div className="direction-cards-actionbar">
+            <span className="direction-cards-count">{chosen.length} selected</span>
+            <button
+              type="button"
+              className="direction-cards-continue"
+              disabled={chosen.length === 0}
+              onClick={() => onContinue(chosen)}
+            >
+              Develop selected direction
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="direction-cards-wrap">

@@ -84,6 +84,8 @@ describe("DirectionCards pattern workspace", () => {
     expect(html).toContain("Work");
     expect(html).toContain("wireframe-home-projects");
     expect(html).toContain("wireframe-layout-portfolio_home");
+    expect(html).toContain("wireframe-comparison-rail");
+    expect(html).toContain("Why this fits:");
     expect(html).toContain("Develop selected direction");
     expect(html).not.toContain("Live example required");
   });
@@ -145,7 +147,10 @@ describe("DirectionCards pattern workspace", () => {
     );
 
     expect(html).toContain(
-      'aria-label="Open design workspace for Outcome-led homepage"',
+      'aria-label="Edit and review Outcome-led homepage"',
+    );
+    expect(html).toContain(
+      'aria-label="Open large wireframe for Outcome-led homepage"',
     );
   });
 });

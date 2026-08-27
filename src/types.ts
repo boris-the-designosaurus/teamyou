@@ -401,6 +401,15 @@ export const REVIEW_CATEGORIES: ReviewCategory[] = [
   "critical_risks",
 ];
 
+// Rough directions are reviewed for whether the structure solves the locked
+// problem. Production-readiness checks belong to the final mockup/build.
+export const WIREFRAME_REVIEW_CATEGORIES: ReviewCategory[] = [
+  "problem_alignment",
+  "acceptance_criteria",
+  "interaction_states",
+  "critical_risks",
+];
+
 export const REVIEW_CATEGORY_LABEL: Record<ReviewCategory, string> = {
   problem_alignment: "Problem alignment",
   acceptance_criteria: "Acceptance criteria",
