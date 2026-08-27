@@ -351,6 +351,65 @@ function repairAdvancedTurnQuestionGate(
   };
 }
 
+/** Completing the specification is an exit condition, not another choice.
+ * When the Coach explicitly declares the handoff ready but forgets to advance,
+ * move into the build step and ask for the actual working artifact. */
+function repairReadyBuildHandoff(
+  previousStep: FlowStep,
+  turn: CoachTurnResponse,
+  policyReasons: string[],
+): CoachTurnResponse | null {
+  const handoffReady =
+    /\b(?:handoff|instructions?)\b[^.!?]{0,90}\b(?:ready|resolved|complete)\b/i.test(turn.reply) ||
+    /\bevery instruction is resolved\b|\bnothing (?:is )?blocking\b/i.test(turn.reply);
+  if (
+    previousStep !== "prepare_handoff" ||
+    turn.activeStep !== "prepare_handoff" ||
+    turn.stepGate?.disposition !== "proceed" ||
+    !!turn.guidePanel.need?.trim() ||
+    !handoffReady ||
+    !policyReasons.some((reason) =>
+      reason.includes("nonblocking") && reason.includes("did not advance"),
+    )
+  ) {
+    return null;
+  }
+
+  const nextPrompt =
+    "Once the build is ready, share the link or screenshots here so I can verify it against the approved design.";
+  return {
+    ...turn,
+    reply:
+      "The build handoff is ready—every instruction is resolved and nothing is blocking. **Moving to Build in your tool.** " +
+      nextPrompt,
+    activeStep: "build_in_tool",
+    stepGate: {
+      linkedDecision: "Whether a working build is ready to verify",
+      blocking: true,
+      disposition: "ask",
+    },
+    guidePanel: {
+      title: STEP_TITLES.build_in_tool,
+      captured: turn.guidePanel.captured,
+      need: "Working build link",
+      nextPrompt,
+      priorSummary:
+        turn.guidePanel.priorSummary ??
+        "Build handoff completed with all implementation instructions resolved.",
+    },
+    activityEvents: [
+      ...turn.activityEvents,
+      {
+        type: "step_changed",
+        importance: "milestone",
+        label: "Moved to Build in your tool",
+      },
+    ],
+    quickReplies: [],
+    recommendedQuickReply: undefined,
+  };
+}
+
 /** A same-step set of visible choices is blocking by definition. Claude
  * occasionally labels it `proceed`, which makes the flow validator reject an
  * otherwise useful comparison. Normalize the bookkeeping and preserve the
@@ -1125,6 +1184,27 @@ export async function withPolicyRetry(
       );
       if (repairedPolicy.ok) {
         return { status: 200, json: repairedQuestionGate };
+      }
+    }
+
+    const repairedHandoff = repairReadyBuildHandoff(
+      previousStep,
+      candidate,
+      policyCheck.reasons,
+    );
+    if (repairedHandoff) {
+      const repairedStyle = checkReplyStyle(
+        repairedHandoff.reply,
+        repairedHandoff.responseMode ?? "concise",
+        { activeStep: repairedHandoff.activeStep },
+      );
+      const repairedPolicy = checkTurnPolicy(
+        previousStep,
+        repairedHandoff,
+        policyContext,
+      );
+      if (repairedStyle.ok && repairedPolicy.ok) {
+        return { status: 200, json: repairedHandoff };
       }
     }
 
