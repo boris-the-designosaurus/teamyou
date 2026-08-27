@@ -57,6 +57,16 @@ export function ReviewWorkspace(props: {
 
   const findings = spec.reviewFindings.filter((f) => f.artifactId === artifact.id);
   const hasRun = findings.length > 0 || props.reviewHasRun;
+  const isWireframe = artifact.kind === "wireframe";
+
+  function categoryLabel(cat: ReviewCategory): string {
+    if (!isWireframe) return CATEGORY_LABEL[cat];
+    if (cat === "problem_alignment") return "Original problem";
+    if (cat === "acceptance_criteria") return "Locked criteria";
+    if (cat === "interaction_states") return "Hierarchy & core flow";
+    if (cat === "critical_risks") return "Scope & key risks";
+    return CATEGORY_LABEL[cat];
+  }
 
   function categoryState(cat: ReviewCategory): "not_run" | "passed" | "failed" {
     if (!hasRun) return "not_run";
@@ -120,7 +130,7 @@ export function ReviewWorkspace(props: {
           className={`tab${tab === "checks" ? " active" : ""}`}
           onClick={() => setTab("checks")}
         >
-          Review checks
+          {isWireframe ? "Direction checks" : "Review checks"}
         </button>
         <button
           type="button"
@@ -216,7 +226,7 @@ export function ReviewWorkspace(props: {
                     ) : (
                       <ShieldIcon className="review-category-ic" />
                     )}
-                    <span>{CATEGORY_LABEL[cat]}</span>
+                    <span>{categoryLabel(cat)}</span>
                     <span className="review-category-state">
                       {state === "not_run" ? "Not run" : state === "passed" ? "Passed" : "Failed"}
                     </span>
@@ -229,7 +239,9 @@ export function ReviewWorkspace(props: {
               <p className="review-empty">
                 {hasRun
                   ? "No findings against these categories."
-                  : "No review run yet. Run a review to check this artifact against the locked problem, scope, acceptance criteria, and design-system rules."}
+                  : isWireframe
+                    ? "No direction check run yet. Check whether this wireframe solves the original problem, fits the locked criteria, has a clear hierarchy and core flow, and stays in scope."
+                    : "No review run yet. Run a review to check this artifact against the locked problem, scope, acceptance criteria, and design-system rules."}
               </p>
             ) : (
               <ul className="review-findings">
@@ -239,7 +251,7 @@ export function ReviewWorkspace(props: {
                       <span className={`review-severity-badge severity-${f.severity}`}>
                         {SEVERITY_LABEL[f.severity]}
                       </span>
-                      <span className="review-finding-category">{CATEGORY_LABEL[f.category]}</span>
+                      <span className="review-finding-category">{categoryLabel(f.category)}</span>
                       {f.status !== "open" && (
                         <span className="tag">{f.status === "resolved" ? "Resolved" : "Accepted"}</span>
                       )}
@@ -334,9 +346,13 @@ export function ReviewWorkspace(props: {
               props.onRunReview();
             }}
             disabled={props.reviewRunning}
-            title="Run review"
+            title={isWireframe ? "Check direction" : "Run review"}
           >
-            {props.reviewRunning ? "Reviewing…" : "Run review"}
+            {props.reviewRunning
+              ? "Checking…"
+              : isWireframe
+                ? "Check direction"
+                : "Run review"}
           </button>
           <button type="button" className="review-action" disabled title="No linked Figma file yet">
             Open in Figma <ChevronDownIcon />
