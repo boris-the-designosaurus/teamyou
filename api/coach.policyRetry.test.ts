@@ -79,6 +79,60 @@ const validFinalCorrection: CoachTurnResponse = {
 };
 
 describe("withPolicyRetry", () => {
+  it("advances a completed handoff into the build step", async () => {
+    const readyHandoff: CoachTurnResponse = {
+      reply:
+        "The build handoff is ready to send — every instruction is resolved and nothing is blocking. **Send it when you're ready to move into building.**",
+      activeStep: "prepare_handoff",
+      workItemType: "design_project",
+      workMode: "design_exploration",
+      responseMode: "concise",
+      stepGate: {
+        linkedDecision: "Whether the build handoff has remaining gaps",
+        blocking: false,
+        disposition: "proceed",
+      },
+      specUpdates: {},
+      guidePanel: {
+        title: "Complete the specification",
+        captured: [
+          "Navigation: same-page case study opening",
+          "Incomplete projects: coming soon state",
+          "End of case study: contact/resume CTA",
+          "Build handoff status: ready",
+        ],
+        need: "",
+      },
+      activityEvents: [],
+      quickReplies: [],
+    };
+    const generate = vi.fn(async () => {
+      throw new Error("The deterministic transition should avoid another model call.");
+    });
+
+    const result = await withPolicyRetry(
+      "prepare_handoff",
+      [],
+      JSON.stringify(readyHandoff),
+      readyHandoff,
+      generate,
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.json).toMatchObject({
+      activeStep: "build_in_tool",
+      stepGate: { blocking: true, disposition: "ask" },
+      guidePanel: {
+        title: "Build in your tool",
+        need: "Working build link",
+      },
+    });
+    expect("reply" in result.json && result.json.reply).toContain(
+      "share the link or screenshots here",
+    );
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it("recovers a prose-only hi-fi action with visible alternatives", () => {
     const recovered = recoverUnparseableAction("select_for_review", {
       latestUserText: "Propose hi-fi design",
