@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { withPolicyRetry } from "./coach";
+import { recoverUnparseableAction, withPolicyRetry } from "./coach";
 import type { CoachTurnResponse } from "../src/types";
 
 const stillInvalid: CoachTurnResponse = {
@@ -79,6 +79,42 @@ const validFinalCorrection: CoachTurnResponse = {
 };
 
 describe("withPolicyRetry", () => {
+  it("recovers a prose-only hi-fi action with visible alternatives", () => {
+    const recovered = recoverUnparseableAction("select_for_review", {
+      latestUserText: "Propose hi-fi design",
+      workItemType: "design_project",
+      specSnapshot: {
+        brief: { goal: "Redesign a product design portfolio" },
+        milestoneArtifacts: [{
+          id: "wireframe-a",
+          kind: "wireframe",
+          title: "Variation A — Metric-led open",
+          status: "selected",
+          wireframeSpec: {
+            surface: "page",
+            layout: "portfolio_home",
+            headline: "Proof before the scroll",
+            blocks: ["Outcome", "Contribution", "Selected work"],
+          },
+        }],
+      },
+    });
+
+    expect(recovered).toMatchObject({
+      activeStep: "refine_treatments",
+      flowRevision: {
+        reopenedStep: "refine_treatments",
+        preservesExistingWork: true,
+      },
+      guidePanel: { need: "" },
+    });
+    expect(
+      recovered?.specUpdates.milestoneArtifacts?.filter(
+        (artifact) => artifact.kind === "hifi_design",
+      ),
+    ).toHaveLength(3);
+  });
+
   it("turns a text-only treatment choice into visible artifacts", async () => {
     const treatmentChoice: CoachTurnResponse = {
       reply:

@@ -243,6 +243,13 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
   }
 
   let parsed = parseCoachTurn(text);
+  const policyContext: import("./turnPolicy").TurnPolicyContext = {
+    latestAttachmentCount: latestAttachments.length,
+    latestUserText: latestUserMessage?.content ?? "",
+    workItemType,
+    specSnapshot: body.spec,
+    patternWebSearchEnabled: patternWebSearch,
+  };
   if (parsed.ok)
     return withPolicyRetry(
       activeStep,
@@ -250,13 +257,7 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       text,
       parsed.value,
       generate,
-      {
-        latestAttachmentCount: latestAttachments.length,
-        latestUserText: latestUserMessage?.content ?? "",
-        workItemType,
-        specSnapshot: body.spec,
-        patternWebSearchEnabled: patternWebSearch,
-      },
+      policyContext,
     );
 
   // ── One automatic retry: echo the bad output back and demand JSON only. This
@@ -285,14 +286,24 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       retryText,
       parsed.value,
       generate,
-      {
-        latestAttachmentCount: latestAttachments.length,
-        latestUserText: latestUserMessage?.content ?? "",
-        workItemType,
-        specSnapshot: body.spec,
-        patternWebSearchEnabled: patternWebSearch,
-      },
+      policyContext,
     );
+
+  // A named visual-generation action must not become a red parser error just
+  // because both model attempts answered in prose. The same deterministic
+  // hi-fi builder used by the policy gate can complete the action from the
+  // selected structural artifact already stored in the spec.
+  const recoveredAction = recoverUnparseableAction(activeStep, policyContext);
+  if (recoveredAction) {
+    return withPolicyRetry(
+      activeStep,
+      apiMessages,
+      JSON.stringify(recoveredAction),
+      recoveredAction,
+      generate,
+      policyContext,
+    );
+  }
 
   // ── Still bad — fail loudly with the raw output so prompt failures are visible. ──
   return {
@@ -1022,6 +1033,51 @@ function repairGenerateHiFi(
   };
 }
 
+/** Recover only explicit, deterministic visual-generation actions. Ordinary
+ * prose-only replies still fail loudly so prompt/contract regressions remain
+ * visible during development. */
+export function recoverUnparseableAction(
+  previousStep: FlowStep,
+  policyContext: import("./turnPolicy").TurnPolicyContext,
+): CoachTurnResponse | null {
+  const latestUserText = policyContext.latestUserText ?? "";
+  if (
+    !/\b(?:ready to propose|propose|generate|create|show)\b[\s\S]{0,50}\b(?:hi[- ]?fi|high[- ]?fidelity|visual treatments?|mockups?)\b/i.test(
+      latestUserText,
+    )
+  ) {
+    return null;
+  }
+
+  const shell: CoachTurnResponse = {
+    reply: "",
+    activeStep: previousStep,
+    workItemType: policyContext.workItemType,
+    workMode: "design_exploration",
+    responseMode: "concise",
+    stepGate: {
+      linkedDecision: "Which high-fidelity treatment to select for review",
+      blocking: false,
+      disposition: "proceed",
+    },
+    specUpdates: {},
+    guidePanel: {
+      title: STEP_TITLES[previousStep],
+      captured: [],
+      need: "",
+    },
+    activityEvents: [],
+    quickReplies: [],
+  };
+
+  return repairGenerateHiFi(
+    previousStep,
+    shell,
+    ["hi-fi proposal action must immediately show visible alternatives"],
+    policyContext,
+  );
+}
+
 /**
  * The decision-criticality gate's brevity contract, enforced as code: a
  * structurally-valid turn that violates the concise-reply rules (too long,
@@ -1202,6 +1258,18 @@ export async function withPolicyRetry(
 
     const retryParsed = parseCoachTurn(retryText);
     if (!retryParsed.ok) {
+      const recoveredAction = recoverUnparseableAction(previousStep, policyContext);
+      if (recoveredAction) {
+        const recoveredStyle = checkReplyStyle(
+          recoveredAction.reply,
+          recoveredAction.responseMode ?? "concise",
+          { activeStep: recoveredAction.activeStep },
+        );
+        const recoveredPolicy = checkTurnPolicy(previousStep, recoveredAction, policyContext);
+        if (recoveredStyle.ok && recoveredPolicy.ok) {
+          return { status: 200, json: recoveredAction };
+        }
+      }
       return {
         status: 502,
         json: {
