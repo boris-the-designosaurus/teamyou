@@ -56,28 +56,39 @@ export type CoachRequestBody = {
   nudge?: string;
 };
 
-const SUPPORTED_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+const SUPPORTED_IMAGE_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+const SUPPORTED_DOCUMENT_MEDIA = ["application/pdf"];
 
 // Parse an image input into a validated { mediaType, data } base64 source, or
 // null if it isn't a supported base64 data URL (blob:, svg, path, etc.).
-function toImageSource(
+export function toAttachmentSource(
   img: ImageInput,
-): { mediaType: string; data: string } | null {
+): { kind: "image" | "document"; mediaType: string; data: string } | null {
   const url = img.dataUrl ?? "";
-  const m = url.match(/^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i);
+  const m = url.match(/^data:([a-z]+\/[a-z0-9.+-]+);base64,(.+)$/i);
   if (m) {
     const mediaType = m[1].toLowerCase();
-    return SUPPORTED_MEDIA.includes(mediaType) ? { mediaType, data: m[2] } : null;
+    if (SUPPORTED_IMAGE_MEDIA.includes(mediaType)) {
+      return { kind: "image", mediaType, data: m[2] };
+    }
+    if (SUPPORTED_DOCUMENT_MEDIA.includes(mediaType)) {
+      return { kind: "document", mediaType, data: m[2] };
+    }
+    return null;
   }
   // Legacy shape: { mediaType, data }. Only if base64 (never a blob/path).
   if (
     img.mediaType &&
     img.data &&
-    SUPPORTED_MEDIA.includes(img.mediaType) &&
+    [...SUPPORTED_IMAGE_MEDIA, ...SUPPORTED_DOCUMENT_MEDIA].includes(img.mediaType) &&
     !img.data.startsWith("blob:") &&
     !img.data.startsWith("data:")
   ) {
-    return { mediaType: img.mediaType, data: img.data };
+    return {
+      kind: SUPPORTED_DOCUMENT_MEDIA.includes(img.mediaType) ? "document" : "image",
+      mediaType: img.mediaType,
+      data: img.data,
+    };
   }
   return null;
 }
@@ -144,25 +155,36 @@ export async function runCoach(body: CoachRequestBody): Promise<RunCoachResult> 
       // Only user turns carry images. A plain text turn stays a string.
       const images = role === "user" ? (m.images ?? []) : [];
       const sources = images
-        .map(toImageSource)
-        .filter((s): s is { mediaType: string; data: string } => s !== null);
+        .map(toAttachmentSource)
+        .filter((s): s is NonNullable<ReturnType<typeof toAttachmentSource>> => s !== null);
 
       if (sources.length === 0) {
         return { role, content: m.content };
       }
 
-      const blocks: Anthropic.ContentBlockParam[] = sources.map((s) => ({
-        type: "image",
-        source: {
-          type: "base64",
-          media_type: s.mediaType as
-            | "image/png"
-            | "image/jpeg"
-            | "image/gif"
-            | "image/webp",
-          data: s.data,
-        },
-      }));
+      const blocks: Anthropic.ContentBlockParam[] = sources.map((s) =>
+        s.kind === "document"
+          ? {
+              type: "document" as const,
+              source: {
+                type: "base64" as const,
+                media_type: "application/pdf" as const,
+                data: s.data,
+              },
+            }
+          : {
+              type: "image" as const,
+              source: {
+                type: "base64" as const,
+                media_type: s.mediaType as
+                  | "image/png"
+                  | "image/jpeg"
+                  | "image/gif"
+                  | "image/webp",
+                data: s.data,
+              },
+            },
+      );
       if (m.content && m.content.trim().length > 0) {
         blocks.push({ type: "text", text: m.content });
       }

@@ -3,8 +3,10 @@ import type { ImageAttachment } from "./types";
 const MAX_EDGE = 1600; // long-edge cap — keeps screenshots within a sane token/payload size
 const PERSISTED_PREVIEW_EDGE = 720;
 const PERSISTED_PREVIEW_QUALITY = 0.72;
+const MAX_PDF_BYTES = 25 * 1024 * 1024;
 // Formats the Coach (Anthropic vision) can process.
-const SENDABLE = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const SENDABLE_IMAGES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const SENDABLE_DOCUMENTS = ["application/pdf"];
 
 /**
  * Turn an image File/Blob into an ImageAttachment.
@@ -22,6 +24,17 @@ export async function fileToAttachment(file: File): Promise<ImageAttachment> {
     name: file.name,
     bytes: file.size,
   };
+
+  // Claude accepts PDFs as document blocks. Keep the original bytes intact;
+  // unlike screenshots, a PDF must not be re-encoded through canvas.
+  if (file.type === "application/pdf") {
+    return {
+      ...base,
+      dataUrl: rawDataUrl,
+      mediaType: "application/pdf",
+      sendable: file.size <= MAX_PDF_BYTES,
+    };
+  }
 
   // SVG and non-images: keep for local display, never send.
   if (file.type === "image/svg+xml" || !file.type.startsWith("image/")) {
@@ -127,7 +140,14 @@ function reencode(
 
 /** True for a data URL of a Coach-processable image type. */
 export function isSendableImageDataUrl(dataUrl: string): boolean {
-  return SENDABLE.some((t) => dataUrl.startsWith(`data:${t};base64,`));
+  return SENDABLE_IMAGES.some((t) => dataUrl.startsWith(`data:${t};base64,`));
+}
+
+/** True for any attachment type the Coach can receive. */
+export function isSendableAttachmentDataUrl(dataUrl: string): boolean {
+  return [...SENDABLE_IMAGES, ...SENDABLE_DOCUMENTS].some((t) =>
+    dataUrl.startsWith(`data:${t};base64,`),
+  );
 }
 
 /** Split a data URL into its base64 payload (no prefix). */

@@ -6,14 +6,14 @@ import type {
   WorkItemType,
   WorkMode,
 } from "./types";
-import { isSendableImageDataUrl } from "./image";
+import { isSendableAttachmentDataUrl } from "./image";
 
 /**
  * Build the image payloads for one message, dropping anything the Coach can't
  * process (blob: URLs, SVG, unsupported types) so one bad image never breaks the
  * turn. Logs each attachment's shape so the sent payload is always inspectable.
  */
-function toImagePayloads(atts: Message["attachments"]) {
+function toAttachmentPayloads(atts: Message["attachments"]) {
   if (!atts || atts.length === 0) return undefined;
   const out: { id: string; name?: string; dataUrl: string }[] = [];
   for (const a of atts) {
@@ -27,7 +27,8 @@ function toImagePayloads(atts: Message["attachments"]) {
       isPng: url.startsWith("data:image/png;base64,"),
       isJpeg: url.startsWith("data:image/jpeg;base64,"),
       isWebp: url.startsWith("data:image/webp;base64,"),
-      sendable: a.sendable !== false && isSendableImageDataUrl(url),
+      isPdf: url.startsWith("data:application/pdf;base64,"),
+      sendable: a.sendable !== false && isSendableAttachmentDataUrl(url),
     };
     // eslint-disable-next-line no-console
     console.log("[coach] attachment →", info);
@@ -66,7 +67,7 @@ export function toCoachRequestMessages(messages: Message[]): CoachRequestMessage
     content: message.content,
     images:
       index === latestUserIndex
-        ? toImagePayloads(message.attachments)
+        ? toAttachmentPayloads(message.attachments)
         : undefined,
   }));
 }

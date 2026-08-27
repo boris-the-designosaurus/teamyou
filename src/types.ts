@@ -175,14 +175,14 @@ export type WorkItem = {
 
 export type ImageAttachment = {
   id: string;
-  // Full data URL for rendering in the browser (e.g. "data:image/png;base64,...").
+  // Full data URL for rendering/sending (image or application/pdf).
   dataUrl: string;
   // Smaller preview used only for persistence. The full-resolution dataUrl
   // remains in memory long enough for the Coach request, while this prevents
   // screenshots from exhausting localStorage and freezing project progress.
   persistedDataUrl?: string;
   persistedMediaType?: string;
-  mediaType: string; // "image/png" | "image/jpeg" | "image/gif" | "image/webp"
+  mediaType: string; // supported raster image types or "application/pdf"
   name?: string;
   bytes?: number; // approximate payload size, for logging/limits
   // The work object this screenshot was linked to when posted (chat continuity).
@@ -195,7 +195,7 @@ export type Message = {
   id: string;
   role: "user" | "coach" | "system";
   content: string;
-  attachments?: ImageAttachment[]; // screenshots the user posted (vision input)
+  attachments?: ImageAttachment[]; // screenshots or PDFs posted by the user
   // Short suggested replies the Coach offered on THIS message (rendered as
   // pill buttons under it). Cleared once the user has replied to any turn.
   quickReplies?: string[];

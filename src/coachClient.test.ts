@@ -12,6 +12,16 @@ function image(id: string): ImageAttachment {
   };
 }
 
+function pdf(id: string): ImageAttachment {
+  return {
+    id,
+    name: `${id}.pdf`,
+    mediaType: "application/pdf",
+    dataUrl: `data:application/pdf;base64,${id}`,
+    sendable: true,
+  };
+}
+
 function message(
   id: string,
   role: Message["role"],
@@ -73,5 +83,19 @@ describe("toCoachRequestMessages", () => {
     ]);
 
     expect(result.images).toBeUndefined();
+  });
+
+  it("sends PDFs from the latest user turn", () => {
+    const [result] = toCoachRequestMessages([
+      message("latest-user", "user", [pdf("wireframe-reference")]),
+    ]);
+
+    expect(result.images).toEqual([
+      {
+        id: "wireframe-reference",
+        name: "wireframe-reference.pdf",
+        dataUrl: "data:application/pdf;base64,wireframe-reference",
+      },
+    ]);
   });
 });

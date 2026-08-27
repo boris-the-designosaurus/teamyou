@@ -189,9 +189,11 @@ export function ChatPanel(props: {
   }
 
   async function addFiles(files: FileList | File[]) {
-    const imgs = Array.from(files).filter((f) => f.type.startsWith("image/"));
-    if (imgs.length === 0) return;
-    const added = await Promise.all(imgs.map(fileToAttachment));
+    const supported = Array.from(files).filter(
+      (f) => f.type.startsWith("image/") || f.type === "application/pdf",
+    );
+    if (supported.length === 0) return;
+    const added = await Promise.all(supported.map(fileToAttachment));
     setAttachments((prev) => [...prev, ...added]);
   }
 
@@ -267,7 +269,9 @@ export function ChatPanel(props: {
                 <div className="bubble-attachments">
                   {m.attachments.map((a) => (
                     <figure key={a.id} className="bubble-attachment">
-                      {a.dataUrl ? (
+                      {a.mediaType === "application/pdf" ? (
+                        <div className="bubble-pdf"><b>PDF</b><span>{a.name ?? "Document"}</span></div>
+                      ) : a.dataUrl ? (
                         <img src={a.dataUrl} alt={a.name ?? "screenshot"} />
                       ) : (
                         <div className="bubble-attachment-missing">
@@ -362,7 +366,7 @@ export function ChatPanel(props: {
         <div className="composer">
           {attachments.some((a) => a.sendable === false) && (
             <div className="attach-warning">
-              SVG / unsupported images are saved to the spec but can't be sent to
+              Unsupported files are saved to the spec but can't be sent to
               the Coach.
             </div>
           )}
@@ -375,11 +379,15 @@ export function ChatPanel(props: {
                     a.sendable === false ? " unsupported" : ""
                   }`}
                 >
-                  <img
-                    src={a.dataUrl}
-                    alt={a.name ?? "screenshot"}
-                    onLoad={measureComposer}
-                  />
+                  {a.mediaType === "application/pdf" ? (
+                    <div className="attach-pdf" title={a.name}><b>PDF</b><span>{a.name ?? "Document"}</span></div>
+                  ) : (
+                    <img
+                      src={a.dataUrl}
+                      alt={a.name ?? "screenshot"}
+                      onLoad={measureComposer}
+                    />
+                  )}
                   <button
                     type="button"
                     className="attach-remove"
@@ -408,7 +416,11 @@ export function ChatPanel(props: {
             onChange={(e) => setDraft(e.target.value)}
             onPaste={(e) => {
               const files = Array.from(e.clipboardData.items)
-                .filter((it) => it.kind === "file" && it.type.startsWith("image/"))
+                .filter(
+                  (it) =>
+                    it.kind === "file" &&
+                    (it.type.startsWith("image/") || it.type === "application/pdf"),
+                )
                 .map((it) => it.getAsFile())
                 .filter((f): f is File => f !== null);
               if (files.length > 0) {
@@ -427,7 +439,7 @@ export function ChatPanel(props: {
             <button
               type="button"
               className="round-btn plus"
-              title="Attach screenshot"
+              title="Attach screenshot or PDF"
               onClick={() => fileInputRef.current?.click()}
             >
               <ComposerAttachIcon />
@@ -435,7 +447,7 @@ export function ChatPanel(props: {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf,.pdf"
               multiple
               hidden
               onChange={(e) => {

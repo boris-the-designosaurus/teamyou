@@ -540,6 +540,43 @@ body {
   font-size: var(--font-size-75);
   text-align: center;
 }
+.bubble-pdf,
+.attach-pdf {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-bold);
+}
+.bubble-pdf {
+  width: min(280px, 100%);
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+.bubble-pdf b,
+.attach-pdf b {
+  flex: none;
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: var(--bg-danger-subtlest);
+  color: var(--text-danger);
+  font-size: var(--font-size-50);
+}
+.bubble-pdf span,
+.attach-pdf span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.attach-pdf {
+  width: 150px;
+  height: 52px;
+  padding: 7px;
+  border-radius: 8px;
+  font-size: var(--font-size-75);
+}
 .bubble-attachment-link {
   margin-top: 3px;
   font-size: var(--font-size-75);
