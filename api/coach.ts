@@ -816,10 +816,44 @@ function repairVisualTreatmentChoice(
  * mockups, not a single metadata card. Build a complete comparison from the
  * selected structural artifact if both model correction attempts omit it. */
 function repairGenerateHiFi(
+  previousStep: FlowStep,
   turn: CoachTurnResponse,
   policyReasons: string[],
   policyContext: import("./turnPolicy").TurnPolicyContext,
 ): CoachTurnResponse | null {
+  const requestedHiFi =
+    /\b(?:ready to propose|propose|generate|create|show)\b[\s\S]{0,50}\b(?:hi[- ]?fi|high[- ]?fidelity|visual treatments?|mockups?)\b/i.test(
+      policyContext.latestUserText ?? "",
+    );
+  const returnedHiFi = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "hifi_design",
+  );
+  const completeReturnedHiFi =
+    returnedHiFi.length >= 2 &&
+    returnedHiFi.length <= 3 &&
+    returnedHiFi.every(
+      (artifact) =>
+        !!artifact.wireframeSpec?.headline &&
+        !!artifact.wireframeSpec.blocks?.length,
+    );
+  const needsAuthorizedReopen =
+    requestedHiFi &&
+    previousStep === "select_for_review" &&
+    turn.activeStep === "refine_treatments" &&
+    completeReturnedHiFi &&
+    policyReasons.some((reason) => reason.includes("activeStep regressed"));
+
+  if (needsAuthorizedReopen) {
+    return {
+      ...turn,
+      flowRevision: {
+        reopenedStep: "refine_treatments",
+        reason: "The user requested visible high-fidelity alternatives before selecting a version for review.",
+        preservesExistingWork: true,
+      },
+    };
+  }
+
   if (
     !policyReasons.some((reason) =>
       reason.includes("hi-fi proposal action must immediately show"),
@@ -952,6 +986,14 @@ function repairGenerateHiFi(
     reply:
       `**Three visible high-fidelity treatments are ready.** I'd start with ${artifacts[0].title} because ${artifacts[0].supportingLine.toLowerCase()} Compare the main design and alternatives, then choose or combine what works.`,
     activeStep: "refine_treatments",
+    flowRevision:
+      previousStep === "select_for_review"
+        ? {
+            reopenedStep: "refine_treatments",
+            reason: "The user requested visible high-fidelity alternatives before selecting a version for review.",
+            preservesExistingWork: true,
+          }
+        : turn.flowRevision,
     stepGate: {
       linkedDecision: "Which high-fidelity treatment to select for review",
       blocking: false,
@@ -1116,6 +1158,7 @@ export async function withPolicyRetry(
     }
 
     const repairedHiFi = repairGenerateHiFi(
+      previousStep,
       candidate,
       policyCheck.reasons,
       policyContext,

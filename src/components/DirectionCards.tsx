@@ -177,15 +177,87 @@ export function WireframeVisual({ artifact }: { artifact: MilestoneArtifact }) {
   );
 }
 
-/** High-fidelity treatments use the same structural spec as wireframes, then
- * apply a product-context visual layer. This guarantees a visible design even
- * when the Coach cannot provide a hosted image URL. */
+function HiFiActions({ primary, secondary }: { primary?: string; secondary?: string }) {
+  return (
+    <div className="hifi-actions">
+      {primary && <span className="primary">{primary}</span>}
+      {secondary && <span>{secondary}</span>}
+    </div>
+  );
+}
+
+function PortfolioHiFi({ artifact }: { artifact: MilestoneArtifact }) {
+  const spec = artifact.wireframeSpec ?? inferredWireframeSpec(artifact);
+  const blocks = spec.blocks?.length ? spec.blocks.slice(0, 3) : ["Selected work", "Product strategy", "Measured impact"];
+  const caseStudy = spec.layout === "case_study";
+  return (
+    <div className={`hifi-portfolio-page${caseStudy ? " case-study" : ""}`}>
+      <header className="hifi-portfolio-nav">
+        <strong>JW<span>.</span></strong>
+        <nav><span>Work</span><span>About</span><span>Notes</span></nav>
+        <span className="hifi-availability">Available for work</span>
+      </header>
+      <main>
+        <section className="hifi-portfolio-hero">
+          <small>{spec.eyebrow || (caseStudy ? "CASE STUDY · 2026" : "SENIOR PRODUCT DESIGNER")}</small>
+          <h2>{spec.headline || artifact.title}</h2>
+          <p>{spec.body || artifact.supportingLine || "Complex product work, made clear and useful."}</p>
+          <HiFiActions primary={spec.primaryAction || "View selected work"} secondary={spec.secondaryAction || "Download résumé"} />
+        </section>
+        {caseStudy ? (
+          <>
+            <section className="hifi-case-meta"><span><b>Role</b>Lead product designer</span><span><b>Team</b>Product, research, engineering</span><span><b>Impact</b>42% faster onboarding</span></section>
+            <section className="hifi-case-feature"><div><small>THE CHALLENGE</small><h3>{blocks[0]}</h3><p>Turn a complex workflow into a clear sequence that helps people act with confidence.</p></div><i /></section>
+            <section className="hifi-case-results"><small>THE RESULT</small><h3>Proof that the design changed the outcome.</h3><div><b>42%<span>faster completion</span></b><b>31%<span>fewer errors</span></b><b>2.4×<span>more adoption</span></b></div></section>
+          </>
+        ) : (
+          <section className="hifi-portfolio-work">
+            <div className="hifi-section-heading"><small>SELECTED WORK</small><span>2023—2026</span></div>
+            {blocks.map((block, index) => (
+              <article key={`${block}-${index}`} className={`hifi-project hifi-project-${index + 1}`}>
+                <div className="hifi-project-media"><span>{index === 0 ? "42%" : index === 1 ? "03" : "2.4×"}</span><i /></div>
+                <div><small>{index === 0 ? "PLATFORM · SAAS" : index === 1 ? "AI · AUTOMATION" : "MOBILE · GROWTH"}</small><h3>{block}</h3><p>{index === 0 ? "Reduced onboarding time through a clearer setup flow." : "Designed the product system from ambiguity to measurable impact."}</p><span className="hifi-text-link">Read case study →</span></div>
+              </article>
+            ))}
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function ProductHiFi({ artifact }: { artifact: MilestoneArtifact }) {
+  const spec = artifact.wireframeSpec ?? inferredWireframeSpec(artifact);
+  const blocks = spec.blocks?.length ? spec.blocks.slice(0, 3) : ["Preview first", "Stay in control", "Approve changes"];
+  return (
+    <div className="hifi-product-scene">
+      <aside><strong>Eventmate</strong>{["Dashboard", "Leads", "Imports", "Contacts", "Tasks", "Reports"].map((item, index) => <span className={index === 2 ? "active" : ""} key={item}>{item}</span>)}</aside>
+      <div className="hifi-product-app">
+        <header><div><small>Imports</small><strong>Event leads — July 24</strong></div><button>New import</button></header>
+        <section className="hifi-product-table"><div className="hifi-table-head"><span>Name</span><span>Status</span><span>Owner</span></div>{["Q2 conference", "Design summit", "Product week", "Founders dinner"].map((name, index) => <div key={name}><span>{name}</span><i className={index === 2 ? "warn" : ""}>{index === 2 ? "Review" : "Ready"}</i><span>Olivia Rye</span></div>)}</section>
+      </div>
+      <div className="hifi-product-scrim" />
+      <section className="hifi-product-dialog">
+        <button className="hifi-dialog-close" aria-label="Close">×</button>
+        <div className="hifi-dialog-icon">✦</div>
+        {spec.eyebrow && <small>{spec.eyebrow}</small>}
+        <h2>{spec.headline || artifact.title}</h2>
+        <p>{spec.body || artifact.supportingLine || "Review what will happen before anything changes."}</p>
+        <div className="hifi-benefits">{blocks.map((block, index) => <article key={`${block}-${index}`}><i>{index === 0 ? "◫" : index === 1 ? "✓" : "⌁"}</i><strong>{block}</strong><span>{index === 0 ? "See the proposed result first." : index === 1 ? "Edit, skip, or approve every step." : "Your data stays safe."}</span></article>)}</div>
+        <div className="hifi-product-offer"><div><small>TRY IT ON THIS IMPORT</small><strong>14-day trial · Cancel anytime</strong></div><HiFiActions primary={spec.primaryAction || "Preview first 10"} secondary={spec.secondaryAction || "Maybe later"} /></div>
+      </section>
+    </div>
+  );
+}
+
+/** High-fidelity designs deliberately do not reuse the low-fidelity renderer.
+ * Structure can carry forward, but the visual must read as a realistic design. */
 export function HiFiVisual({ artifact }: { artifact: MilestoneArtifact }) {
   const context = `${artifact.title} ${artifact.supportingLine ?? ""} ${artifact.wireframeSpec?.layout ?? ""}`;
   const portfolio = /portfolio|homepage|case study|project grid|product designer/i.test(context);
   return (
     <div className={`hifi-visual ${portfolio ? "hifi-portfolio" : "hifi-product"}`}>
-      <WireframeVisual artifact={artifact} />
+      {portfolio ? <PortfolioHiFi artifact={artifact} /> : <ProductHiFi artifact={artifact} />}
     </div>
   );
 }
