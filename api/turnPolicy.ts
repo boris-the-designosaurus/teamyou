@@ -155,6 +155,37 @@ function snapshotHasPatternShortlist(snapshot: unknown): boolean {
   );
 }
 
+function snapshotHasSelectedPattern(snapshot: unknown): boolean {
+  if (!snapshot || typeof snapshot !== "object") return false;
+  const artifacts = (snapshot as { milestoneArtifacts?: unknown }).milestoneArtifacts;
+  return (
+    Array.isArray(artifacts) &&
+    artifacts.some(
+      (artifact) =>
+        !!artifact &&
+        typeof artifact === "object" &&
+        (artifact as { kind?: unknown }).kind === "pattern_shortlist" &&
+        (artifact as { status?: unknown }).status === "selected",
+    )
+  );
+}
+
+function turnHasDrawableWireframes(turn: CoachTurnResponse): boolean {
+  const wireframes = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "wireframe",
+  );
+  return (
+    wireframes.length >= 2 &&
+    wireframes.length <= 3 &&
+    wireframes.every(
+      (artifact) =>
+        !!artifact.wireframeSpec &&
+        hasText(artifact.wireframeSpec.headline) &&
+        !!artifact.wireframeSpec.blocks?.length,
+    )
+  );
+}
+
 function capturedBriefValue(
   turn: CoachTurnResponse,
   context: TurnPolicyContext,
@@ -246,6 +277,10 @@ export function checkTurnPolicy(
   const reasons: string[] = [];
   const from = FLOW_STEPS.indexOf(previousStep);
   const to = FLOW_STEPS.indexOf(turn.activeStep);
+  const generateWireframesTransition =
+    GENERATE_WIREFRAMES_REQUEST.test(context.latestUserText ?? "") &&
+    snapshotHasSelectedPattern(context.specSnapshot) &&
+    turnHasDrawableWireframes(turn);
 
   if (to < from) {
     const reopened = turn.flowRevision
@@ -268,7 +303,11 @@ export function checkTurnPolicy(
   } else if (to > from + 1) {
     const crossedSteps = FLOW_STEPS.slice(from, to);
     const incompleteSteps = crossedSteps.filter(
-      (step) => !stepHasRequiredCapture(step, turn, context),
+      (step) =>
+        !(
+          generateWireframesTransition &&
+          (step === "find_patterns" || step === "review_shortlist")
+        ) && !stepHasRequiredCapture(step, turn, context),
     );
     if (incompleteSteps.length > 0) {
       reasons.push(
