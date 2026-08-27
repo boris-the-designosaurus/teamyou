@@ -30,7 +30,7 @@ describe("coach flow boundaries", () => {
     expect(prompt).toContain('"sourceTitle"?');
   });
 
-  it("requires screenshot-aware judgment without treating references as proof", () => {
+  it("requires attachment-aware judgment without treating references as proof", () => {
     const prompt = buildSystemPrompt({
       workItemType: "design_project",
       workMode: "design_exploration",
@@ -42,7 +42,8 @@ describe("coach flow boundaries", () => {
       ],
     });
 
-    expect(prompt).toContain("The latest user turn includes 2 screenshots");
+    expect(prompt).toContain("The latest user turn includes 2 attachments");
+    expect(prompt).toContain("screenshots or PDF documents");
     expect(prompt).toContain("ground one concise observation");
     expect(prompt).toContain(
       "either in the reply or in the structured evidence/evidenceBrief",
@@ -52,7 +53,7 @@ describe("coach flow boundaries", () => {
       "distinguish current-state evidence from inspiration/reference",
     );
     expect(prompt).toContain("A reference can suggest a direction, but it cannot prove");
-    expect(prompt).toContain("Screenshots remain chat context by default");
+    expect(prompt).toContain("Attachments remain chat context by default");
   });
 
   it("allows short bullets and requires strategic emphasis without turning chat into a report", () => {
