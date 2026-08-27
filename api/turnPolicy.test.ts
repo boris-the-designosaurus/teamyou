@@ -18,6 +18,56 @@ function turn(overrides: Partial<CoachTurnResponse> = {}): CoachTurnResponse {
 }
 
 describe("checkTurnPolicy", () => {
+  it("accepts a direct request to share a working build without a question mark", () => {
+    const result = checkTurnPolicy(
+      "prepare_handoff",
+      turn({
+        reply:
+          "**Moving to Build in your tool** — once you've built this, share the link or screenshots here so I can verify it against the locked frame.",
+        activeStep: "build_in_tool",
+        stepGate: {
+          linkedDecision: "Whether a working build is ready to verify",
+          blocking: true,
+          disposition: "ask",
+        },
+        guidePanel: {
+          title: "Build in your tool",
+          need: "Working build link",
+          nextPrompt:
+            "Once you've built this, share the link or screenshots here so I can verify it against the locked frame.",
+        },
+      }),
+    );
+
+    expect(result.reasons).not.toContain(
+      "the Guide has an outstanding need, but the actual question was not asked in the chat reply",
+    );
+  });
+
+  it("still rejects a Guide need when the reply only narrates prior sharing", () => {
+    const result = checkTurnPolicy(
+      "build_in_tool",
+      turn({
+        reply: "The working build was shared yesterday.",
+        activeStep: "build_in_tool",
+        stepGate: {
+          linkedDecision: "Working build",
+          blocking: true,
+          disposition: "ask",
+        },
+        guidePanel: {
+          title: "Build in your tool",
+          need: "Working build link",
+          nextPrompt: "Share the working build link here.",
+        },
+      }),
+    );
+
+    expect(result.reasons).toContain(
+      "the Guide has an outstanding need, but the actual question was not asked in the chat reply",
+    );
+  });
+
   it("rejects ignoring screenshots from the latest user turn", () => {
     const result = checkTurnPolicy("define_problem", turn(), {
       latestAttachmentCount: 2,

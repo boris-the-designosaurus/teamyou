@@ -361,6 +361,16 @@ export function checkTurnPolicy(
   const need = turn.guidePanel.need?.trim() ?? "";
   const nextPrompt = turn.guidePanel.nextPrompt?.trim() ?? "";
   const replyQuestions = countQuestions(turn.reply);
+  // Some steps naturally ask for an artifact with a direct imperative rather
+  // than a question mark ("share the link or screenshots here"). That is a
+  // real user prompt, provided the reply names both the requested action and
+  // the concrete input. Past-tense narration such as "the file was shared"
+  // intentionally does not match.
+  const replyRequestsInput =
+    replyQuestions > 0 ||
+    /\b(?:please\s+)?(?:share|upload|attach|paste|send|provide|select|choose|pick|describe)\b[^.!?]{0,120}\b(?:here|which|what|link|url|screenshots?|files?|option|version|direction|details?|response|build)\b/i.test(
+      turn.reply,
+    );
   const stayedOnStep = turn.activeStep === previousStep;
   const questionText = `${turn.reply}\n${nextPrompt}`;
 
@@ -619,7 +629,7 @@ export function checkTurnPolicy(
     if (!nextPrompt) {
       reasons.push("guidePanel.need is present but guidePanel.nextPrompt is missing");
     }
-    if (replyQuestions === 0) {
+    if (!replyRequestsInput) {
       reasons.push(
         "the Guide has an outstanding need, but the actual question was not asked in the chat reply",
       );
