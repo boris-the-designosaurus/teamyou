@@ -48,6 +48,7 @@ import { buildAskStreakNudge, nextAskStreak, turnWasAsk } from "./coachGate";
 import { findLastCoachMessageId } from "./chatLocate";
 import { appendCoachTurnMessages, requestsPatternCardRedisplay } from "./messageOrder";
 import { requestsFreshPatternSearch, resetForFreshPatternSearch } from "./freshPatterns";
+import { approveDesignForBuild, buildApprovalCoachPrompt } from "./designApproval";
 
 const VALID_TYPES: WorkItemType[] = [
   "feature_spec",
@@ -233,7 +234,11 @@ export function App() {
     }
   }
 
-  async function sendMessage(text: string, attachments: ImageAttachment[] = []) {
+  async function sendMessage(
+    text: string,
+    attachments: ImageAttachment[] = [],
+    workItemOverride?: WorkItem,
+  ) {
     const trimmed = text.trim();
     if ((!trimmed && attachments.length === 0) || loading) return;
 
@@ -243,9 +248,10 @@ export function App() {
     // capture the durable observation/reference they support in specUpdates,
     // but merely attaching an image must not promote it into the decision spine.
 
+    const sourceWorkItem = workItemOverride ?? workItem;
     const startingWorkItem = requestsFreshPatternSearch(trimmed)
-      ? resetForFreshPatternSearch(workItem)
-      : workItem;
+      ? resetForFreshPatternSearch(sourceWorkItem)
+      : sourceWorkItem;
 
     const userMsg: Message = {
       id: crypto.randomUUID(),
@@ -403,6 +409,28 @@ export function App() {
 
   function updateSpec(updater: (spec: Spec) => Spec) {
     setWorkItem((prev) => ({ ...prev, spec: updater(prev.spec), updatedAt: nowISO() }));
+  }
+
+  function approveForBuild(artifactId: string) {
+    const artifact = workItem.spec.milestoneArtifacts.find((item) => item.id === artifactId);
+    if (!artifact || loading) return;
+    const approved = approveDesignForBuild(
+      workItem,
+      artifactId,
+      nowISO(),
+      crypto.randomUUID(),
+    );
+
+    // The editor closes as part of the click—not after a network response.
+    setReviewArtifactId(null);
+    setError(null);
+    setWorkItem(approved);
+    setGuide({
+      title: FLOW_STEP_LABEL.prepare_handoff,
+      captured: [`Approved build baseline: ${artifact.title}`],
+      need: "First missing build detail",
+    });
+    void sendMessage(buildApprovalCoachPrompt(artifact.title), [], approved);
   }
 
   /** A narrowly-scoped Coach call that does NOT touch the main chat transcript
@@ -585,9 +613,7 @@ export function App() {
         }
         onUpdateSpec={updateSpec}
         onRunReview={() => void runArtifactReview(reviewArtifact.id)}
-        onApproveForBuild={() =>
-          updateSpec((sp) => setMilestoneArtifactStatus(sp, reviewArtifact.id, "approved_for_build"))
-        }
+        onApproveForBuild={() => approveForBuild(reviewArtifact.id)}
         onAskAI={(q) => askAboutArtifact(q, reviewArtifact.title)}
         reviewRunning={reviewRunning}
         reviewHasRun={reviewedArtifactIds.has(reviewArtifact.id)}

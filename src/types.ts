@@ -145,7 +145,7 @@ export const FLOW_STEP_LABEL: Record<FlowStep, string> = {
   choose_direction: "Choose a direction",
   refine_treatments: "Explore and refine treatments",
   select_for_review: "Select a version for review",
-  prepare_handoff: "Prepare the build handoff",
+  prepare_handoff: "Complete the specification",
   build_in_tool: "Build in your tool",
   verify_build: "Verify the build",
 };
