@@ -477,6 +477,58 @@ function repairGenerateWireframes(
   policyReasons: string[],
   policyContext: import("./turnPolicy").TurnPolicyContext,
 ): CoachTurnResponse | null {
+  const isGenerateAction = /^\s*Generate wireframes\b/i.test(
+    policyContext.latestUserText ?? "",
+  );
+  const returnedWireframes = (turn.specUpdates.milestoneArtifacts ?? []).filter(
+    (artifact) => artifact.kind === "wireframe",
+  );
+  const hasCompleteWireframes =
+    returnedWireframes.length >= 2 &&
+    returnedWireframes.length <= 3 &&
+    returnedWireframes.every(
+      (artifact) =>
+        !!artifact.wireframeSpec?.headline &&
+        !!artifact.wireframeSpec.blocks?.length,
+    );
+  const needsGenerationBookkeepingRepair = policyReasons.some(
+    (reason) =>
+      reason.includes("skipped ahead") ||
+      (reason.includes("nonblocking") &&
+        reason.includes("still asks for confirmation or more information")),
+  );
+
+  // The model did the expensive/design-critical part correctly. Normalize the
+  // flow metadata and let the visible cards carry the choice instead of
+  // regenerating or discarding valid wireframes over a trailing question.
+  if (
+    isGenerateAction &&
+    hasCompleteWireframes &&
+    needsGenerationBookkeepingRepair
+  ) {
+    const recommended = returnedWireframes[0];
+    const { nextPrompt: _nextPrompt, ...guidePanel } = turn.guidePanel;
+    return {
+      ...turn,
+      reply:
+        `**${returnedWireframes.length} wireframe directions are ready.** ` +
+        `I'd start with ${recommended.title} because it makes the primary outcome and contribution easiest to scan; select a card or combine useful elements across them.`,
+      activeStep: "choose_direction",
+      stepGate: {
+        linkedDecision: "Which wireframe direction to develop further",
+        blocking: false,
+        disposition: "proceed",
+      },
+      guidePanel: {
+        ...guidePanel,
+        title: STEP_TITLES.choose_direction,
+        need: "",
+      },
+      quickReplies: [],
+      recommendedQuickReply: undefined,
+    };
+  }
+
   if (
     !policyReasons.some((reason) =>
       reason.includes("Generate wireframes action must immediately return"),
@@ -498,7 +550,7 @@ function repairGenerateWireframes(
   const selected = allArtifacts.filter((item) => item.status === "selected");
   const patterns = (selected.length > 0 ? selected : allArtifacts.slice(-2)).slice(0, 2);
   const requestedTitle = (policyContext.latestUserText ?? "")
-    .replace(/^\s*Generate wireframes for:\s*/i, "")
+    .replace(/^\s*Generate wireframes(?:\s+for\s*:?)?\s*/i, "")
     .trim();
   if (patterns.length === 0) {
     patterns.push({

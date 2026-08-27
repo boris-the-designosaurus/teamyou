@@ -1484,8 +1484,7 @@ describe("checkTurnPolicy", () => {
         quickReplies: [],
       }),
       {
-        latestUserText:
-          "Generate wireframes for: Step-by-step process narrative + Large personal positioning",
+        latestUserText: "Generate wireframes",
         specSnapshot: {
           milestoneArtifacts: [
             {

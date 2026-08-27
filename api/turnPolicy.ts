@@ -49,7 +49,7 @@ const PORTFOLIO_CONTEXT =
   /\b(?:portfolio|case stud(?:y|ies)|hiring manager|design lead|product design(?:er)? job)\b/i;
 const FRESH_PATTERN_REQUEST =
   /\b(?:generate|find|search|retrieve|replace|regenerate|refresh)\b[\s\S]{0,40}\b(?:fresh|new|different|more)?\s*(?:patterns?|pattern cards?|shortlist|examples?)\b/i;
-const GENERATE_WIREFRAMES_REQUEST = /^\s*Generate wireframes for:/i;
+const GENERATE_WIREFRAMES_REQUEST = /^\s*Generate wireframes\b/i;
 
 function groundsLatestAttachment(reply: string): boolean {
   return (
